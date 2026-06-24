@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="SparkySolve — AI-powered field tool for licensed electricians in North Carolina" />
+  <title>⚡ SparkySolve — National Sparky</title>
+
+  <!-- Supabase JS v2 (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <!-- Tailwind CDN (layout utilities) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ─── Theme Tokens ─────────────────────────────────────────────────────── */
+    :root {
+      --bg:          #0b0b0f;
+      --bg2:         #101016;
+      --surface:     #15151d;
+      --surface2:    #1c1c27;
+      --border:      rgba(255,255,255,0.07);
+      --border-hi:   rgba(244,161,0,0.35);
+      --accent:      #f4a100;
+      --accent-dim:  rgba(244,161,0,0.10);
+      --accent-text: #f4a100;
+      --green:       #1adb8f;
+      --green-dim:   rgba(26,219,143,0.10);
+      --red:         #ff4f57;
+      --red-dim:     rgba(255,79,87,0.10);
+      --blue:        #4b9fff;
+      --blue-dim:    rgba(75,159,255,0.10);
+      --t1:          #eeeef2;
+      --t2:          #8888a2;
+      --t3:          #44445a;
+      --r:           10px;
+      --r-sm:        6px;
+      --r-lg:        16px;
+    }
+
+    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--t1);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Layout Shell ──────────────────────────────────────────────────────── */
+    #app-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ─── Auth Screen ────────────────────────────────────────────────────────── */
+    #auth-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      gap: 1.5rem;
+    }
+    .auth-logo {
+      font-size: 3rem;
+      line-height: 1;
+    }
+    .auth-brand {
+      text-align: center;
+    }
+    .auth-brand h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--t1);
+      letter-spacing: -0.02em;
+    }
+    .auth-brand p {
+      font-size: 0.85rem;
+      color: var(--t2);
+      margin-top: 4px;
+    }
+    .auth-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--t3);
+      font-size: 0.75rem;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .auth-features {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 0.25rem;
+    }
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--t2);
+    }
+    .auth-feature span.icon {
+      color: var(--accent);
+      font-size: 0.9rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────────────────────── */
+    #app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--t1);
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+    .header-brand .bolt {
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .usage-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      color: var(--t2);
+      cursor: default;
+    }
+    .usage-pill .usage-bar {
+      width: 36px;
+      height: 4px;
+      background: var(--surface);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .usage-pill .usage-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+    .usage-pill.unlimited { color: var(--green); border-color: var(--green-dim); }
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--t2);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: var(--r-sm);
+      font-size: 1rem;
+      transition: color 0.15s;
+    }
+    .btn-icon:hover { color: var(--t1); }
+
+    /* ─── Tab Nav ────────────────────────────────────────────────────────────── */
+    #tab-nav {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+    }
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 0.7rem 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--t3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .tab-btn .tab-icon { font-size: 1rem; }
+
+    /* ─── Tab Content ────────────────────────────────────────────────────────── */
+    .tab-pane {
+      display: none;
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .tab-pane.active { display: block; }
+
+    /* ─── Cards / Sections ───────────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--t3);
+      margin-bottom: 0.75rem;
+    }
+
+    /* ─── Buttons ────────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0.55rem 1rem;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--accent);
+      color: #0b0b0f;
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--r);
+      font-size: 0.9rem;
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--t1);
+      border: 1px solid var(--border);
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: var(--r);
+    }
+    .btn-secondary:hover:not(:disabled) { border-color: var(--border-hi); }
+    .btn-ghost {
+      background: none;
+      color: var(--t2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 0.35rem 0.7rem;
+      font-size: 0.78rem;
+    }
+    .btn-ghost:hover { color: var(--t1); border-color: rgba(255,255,255,0.15); }
+    .btn-danger-ghost {
+      background: none;
+      color: var(--red);
+      border: 1px solid var(--red-dim);
+      border-radius: var(--r-sm);
+      padding: 0.35rem 0.7rem;
+      font-size: 0.78rem;
+    }
+    .btn-danger-ghost:hover { background: var(--red-dim); }
+
+    /* ─── Form Controls ──────────────────────────────────────────────────────── */
+    .input, .textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--t1);
+      font-size: 0.875rem;
+      padding: 0.6rem 0.75rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .input:focus, .textarea:focus { border-color: var(--border-hi); }
+    .input::placeholder, .textarea::placeholder { color: var(--t3); }
+    .textarea { resize: vertical; min-height: 90px; }
+    .form-label {
+      font-size: 0.78rem;
+      color: var(--t2);
+      margin-bottom: 5px;
+      display: block;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    /* ─── Client Card ────────────────────────────────────────────────────────── */
+    .client-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .client-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .client-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .client-info { flex: 1; min-width: 0; }
+    .client-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--t1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .client-sub {
+      font-size: 0.75rem;
+      color: var(--t2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .client-actions { display: flex; gap: 5px; flex-shrink: 0; }
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--t3);
+      font-size: 0.85rem;
+    }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    /* ─── Diagnose Tab ───────────────────────────────────────────────────────── */
+    .usage-bar-full {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 6px;
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+    .usage-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    .usage-bar-fill.warn { background: var(--red); }
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--r);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+    .upload-zone:hover { border-color: var(--border-hi); background: var(--accent-dim); }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-zone .zone-label {
+      font-size: 0.8rem;
+      color: var(--t2);
+      pointer-events: none;
+    }
+    .photo-preview {
+      width: 100%;
+      max-height: 160px;
+      object-fit: cover;
+      border-radius: var(--r-sm);
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .result-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--t1);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    .voice-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .voice-btn.recording {
+      background: var(--red-dim);
+      border-color: var(--red);
+      animation: pulse 1s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .input-row { display: flex; gap: 8px; align-items: flex-end; }
+    .input-row .textarea { flex: 1; }
+
+    /* ─── Log Items ──────────────────────────────────────────────────────────── */
+    .log-item {
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .log-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .log-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .log-date { font-size: 0.72rem; color: var(--t3); }
+    .log-badges { display: flex; gap: 5px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 1px 6px;
+      border-radius: 20px;
+      background: var(--surface2);
+      color: var(--t2);
+      border: 1px solid var(--border);
+    }
+    .badge-image { background: var(--blue-dim); color: var(--blue); border-color: transparent; }
+    .log-prompt {
+      font-size: 0.82rem;
+      color: var(--t1);
+      font-weight: 500;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .log-response {
+      font-size: 0.78rem;
+      color: var(--t2);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .log-expand { display: none; }
+    .log-response.expanded {
+      display: block;
+      white-space: pre-wrap;
+      -webkit-line-clamp: unset;
+    }
+
+    /* ─── Upgrade Modal ──────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem 1.25rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 1.25rem;
+    }
+    .tier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin: 1rem 0;
+    }
+    .tier-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      text-align: center;
+    }
+    .tier-card:hover { border-color: var(--border-hi); }
+    .tier-card.selected { border-color: var(--accent); background: var(--accent-dim); }
+    .tier-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--t2);
+      margin-bottom: 4px;
+    }
+    .tier-price {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--t1);
+    }
+    .tier-price sup { font-size: 0.65rem; vertical-align: super; }
+    .tier-price sub { font-size: 0.6rem; color: var(--t2); font-weight: 400; }
+    .tier-feature {
+      font-size: 0.68rem;
+      color: var(--t2);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* ─── Toast ──────────────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 0.6rem 1rem;
+      font-size: 0.82rem;
+      color: var(--t1);
+      z-index: 200;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      max-width: calc(100vw - 2rem);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.toast-error { border-color: var(--red); color: var(--red); }
+    #toast.toast-success { border-color: var(--green); color: var(--green); }
+
+    /* ─── Spinner ────────────────────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Misc ───────────────────────────────────────────────────────────────── */
+    .hidden { display: none !important; }
+    .text-accent { color: var(--accent); }
+    .text-muted  { color: var(--t2); }
+    .text-dim    { color: var(--t3); }
+    section + section { margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       AUTH SCREEN
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <div id="auth-screen">
+    <div class="auth-logo">⚡</div>
+
+    <div class="auth-brand">
+      <h1>SparkySolve</h1>
+      <p>National Sparky — NC Electrician Field OS</p>
+    </div>
+
+    <div class="auth-card">
+      <!-- GitHub OAuth -->
+      <button class="btn btn-primary" onclick="loginWithGitHub()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        Sign in with GitHub
+      </button>
+
+      <div class="auth-divider">or use a magic link</div>
+
+      <!-- Magic Link -->
+      <div class="form-group">
+        <label class="form-label" for="magic-email">Work email</label>
+        <input
+          class="input"
+          type="email"
+          id="magic-email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+      </div>
+      <button class="btn btn-secondary" onclick="loginWithMagicLink()">
+        Send magic link
+      </button>
+
+      <p id="auth-msg" class="hidden" style="font-size:0.8rem;color:var(--green);text-align:center;"></p>
+      <p id="auth-err" class="hidden" style="font-size:0.8rem;color:var(--red);text-align:center;"></p>
+    </div>
+
+    <div class="auth-features">
+      <div class="auth-feature"><span class="icon">⚡</span>NC Code Circuit Analyzer (NEC 2023)</div>
+      <div class="auth-feature"><span class="icon">🗺️</span>GPS Dispatch + client routing</div>
+      <div class="auth-feature"><span class="icon">🎙️</span>Voice-to-diagnosis, photo analysis</div>
+      <div class="auth-feature"><span class="icon">📋</span>Cloud-synced job history</div>
+      <div class="auth-feature"><span class="icon">🔒</span>5 free AI diagnostics / month</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       MAIN APP (hidden until auth)
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <div id="main-app" class="hidden" style="display:flex;flex-direction:column;flex:1;">
+
+    <!-- Header -->
+    <header id="app-header">
+      <div class="header-brand">
+        <span class="bolt">⚡</span> SparkySolve
+      </div>
+      <div id="usage-pill" class="usage-pill" title="Monthly AI diagnostics used"></div>
+      <button class="btn-icon" onclick="signOut()" title="Sign out" aria-label="Sign out">↪</button>
+    </header>
+
+    <!-- Tab Nav -->
+    <nav id="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('dispatch')" data-tab="dispatch">
+        <span class="tab-icon">🗺️</span> Dispatch
+      </button>
+      <button class="tab-btn" onclick="switchTab('diagnose')" data-tab="diagnose">
+        <span class="tab-icon">⚡</span> Diagnose
+      </button>
+      <button class="tab-btn" onclick="switchTab('logs')" data-tab="logs">
+        <span class="tab-icon">📋</span> Logs
+      </button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main style="flex:1;overflow-y:auto;">
+
+      <!-- ── Dispatch Tab ────────────────────────────────────────────────── -->
+      <div id="tab-dispatch" class="tab-pane active">
+
+        <!-- Add Client -->
+        <div class="card">
+          <div class="card-title">Add Client</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="form-group">
+              <input class="input" id="c-name"    placeholder="Client name *" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <input class="input" id="c-address" placeholder="Address" autocomplete="off" />
+            </div>
+            <div class="form-row">
+              <input class="input" id="c-phone"   placeholder="Phone" type="tel" />
+              <input class="input" id="c-notes"   placeholder="Notes" />
+            </div>
+            <button class="btn btn-primary" onclick="addClient()">Add to route</button>
+          </div>
+        </div>
+
+        <!-- Client List -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <span class="card-title" style="margin:0;">Route — <span id="client-count">0</span> stops</span>
+            <button class="btn btn-ghost" onclick="optimizeRoute()">Optimize ↗</button>
+          </div>
+          <div id="client-list">
+            <div class="empty-state">
+              <div class="icon">📍</div>
+              <div>No clients yet — add your first stop above.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dispatch -->
+
+      <!-- ── Diagnose Tab ────────────────────────────────────────────────── -->
+      <div id="tab-diagnose" class="tab-pane">
+
+        <!-- Usage meter -->
+        <div class="card" id="usage-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span class="card-title" style="margin:0;" id="usage-label">Monthly diagnostics</span>
+            <button class="btn btn-ghost" onclick="showUpgradeModal()" id="upgrade-btn">Upgrade</button>
+          </div>
+          <div class="usage-bar-full"><div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div></div>
+          <div style="font-size:0.75rem;color:var(--t2);" id="usage-text">Loading…</div>
+        </div>
+
+        <!-- Prompt + Voice -->
+        <div class="card">
+          <div class="card-title">NC Code Circuit Analyzer</div>
+          <div class="input-row" style="margin-bottom:8px;">
+            <textarea
+              class="textarea"
+              id="diag-prompt"
+              placeholder="Describe the circuit issue, code question, or fault…  e.g. 'Kitchen GFCI tripping — 20A circuit, receptacles wired in series, NM-B 12/2 wiring'"
+              rows="4"
+            ></textarea>
+            <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input">🎙️</button>
+          </div>
+
+          <!-- Photo upload -->
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" id="photo-input" />
+            <div class="zone-label" id="zone-label">📷 Tap to attach photo</div>
+            <img id="photo-preview" class="photo-preview" alt="Preview" />
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-primary" id="diag-btn" onclick="submitDiagnosis()" style="flex:1;">
+              ⚡ Analyze
+            </button>
+            <button class="btn btn-secondary" onclick="clearDiagnose()" style="width:auto;padding:0 1rem;">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-container" class="hidden">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <span class="card-title" style="margin:0;">SparkySolve Analysis</span>
+              <button class="btn btn-ghost" onclick="copyResult()">Copy</button>
+            </div>
+            <div class="result-box" id="result-box"></div>
+          </div>
+        </div>
+
+      </div><!-- /diagnose -->
+
+      <!-- ── Logs Tab ────────────────────────────────────────────────────── -->
+      <div id="tab-logs" class="tab-pane">
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <span class="card-title" style="margin:0;">History Vault</span>
+            <button class="btn btn-danger-ghost" onclick="confirmClearLogs()">Clear all</button>
+          </div>
+          <div id="log-list">
+            <div class="empty-state">
+              <div class="icon">📋</div>
+              <div>No diagnostics yet — run an analysis to build history.</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /logs -->
+
+    </main>
+  </div>
+
+</div><!-- /app-shell -->
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     UPGRADE MODAL
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="upgrade-modal" class="modal-overlay hidden" onclick="handleModalBackdrop(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:4px;">Upgrade SparkySolve</h2>
+    <p style="font-size:0.82rem;color:var(--t2);margin-bottom:0.25rem;">
+      Unlimited AI diagnostics, cloud sync, and team features.
+    </p>
+
+    <div class="tier-grid">
+      <div class="tier-card" onclick="selectTier('starter', this)">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price"><sup>$</sup>19<sub>/mo</sub></div>
+        <div class="tier-feature">Unlimited diagnostics<br>Cloud sync</div>
+      </div>
+      <div class="tier-card selected" onclick="selectTier('pro', this)">
+        <div class="tier-name" style="color:var(--accent);">Pro ★</div>
+        <div class="tier-price"><sup>$</sup>49<sub>/mo</sub></div>
+        <div class="tier-feature">3 seats<br>PDF export</div>
+      </div>
+      <div class="tier-card" onclick="selectTier('business', this)">
+        <div class="tier-name">Business</div>
+        <div class="tier-price"><sup>$</sup>99<sub>/mo</sub></div>
+        <div class="tier-feature">Unlimited seats<br>White-label</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="checkout-btn" onclick="startCheckout()">
+      Continue to payment
+    </button>
+    <button class="btn btn-ghost" onclick="hideUpgradeModal()" style="margin-top:8px;">
+      Maybe later
+    </button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" role="alert" aria-live="polite"></div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SCRIPT
+══════════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ─── Config ──────────────────────────────────────────────────────────────────
+// Replace SUPABASE_ANON_KEY with your actual anon/public key from:
+// Supabase Dashboard → Project Settings → API → Project API keys → anon/public
+const SUPABASE_URL      = 'https://dqyqlgnaawqnlxvxwcys.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';  // ← replace before deploying
+const FREE_TIER_LIMIT   = 5;
+
+// ─── Supabase client ──────────────────────────────────────────────────────────
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ─── App state ────────────────────────────────────────────────────────────────
+let _session  = null;
+let _usage    = { tier: 'free', used: 0, limit: FREE_TIER_LIMIT };
+let _clients  = [];
+let _logs     = [];
+let _recog    = null;
+let _isRec    = false;
+let _photoB64 = null;
+let _photoMime = null;
+let _selTier  = 'pro';
+let _toastTimer = null;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTH
+// ─────────────────────────────────────────────────────────────────────────────
+async function loginWithGitHub() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'github',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showAuthErr(error.message);
+}
+
+async function loginWithMagicLink() {
+  const email = document.getElementById('magic-email').value.trim();
+  if (!email || !email.includes('@')) {
+    return showAuthErr('Enter a valid email address');
+  }
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  if (error) return showAuthErr(error.message);
+  showAuthMsg(`Magic link sent to ${email} — check your inbox.`);
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  _session = null;
+  _clients = [];
+  _logs    = [];
+  showAuthScreen();
+}
+
+function showAuthMsg(msg) {
+  const el = document.getElementById('auth-msg');
+  const er = document.getElementById('auth-err');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  er.classList.add('hidden');
+}
+function showAuthErr(msg) {
+  const el = document.getElementById('auth-err');
+  const em = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  em.classList.add('hidden');
+}
+
+// ─── Auth state listener ──────────────────────────────────────────────────────
+sb.auth.onAuthStateChange(async (_event, session) => {
+  if (session) {
+    _session = session;
+    await initApp();
+  } else {
+    _session = null;
+    showAuthScreen();
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APP INIT
+// ─────────────────────────────────────────────────────────────────────────────
+async function initApp() {
+  showMainApp();
+  // Load data in parallel
+  await Promise.all([loadUsage(), loadClients(), loadLogs()]);
+  // Handle checkout redirect params
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'success') {
+    const tier = params.get('tier');
+    toast(`🎉 You're now on the ${tier} plan!`, 'success');
+    await loadUsage();
+    window.history.replaceState({}, '', window.location.pathname);
+  } else if (params.get('checkout') === 'cancelled') {
+    toast('Checkout cancelled — no charge made.');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UI ROUTING
+// ─────────────────────────────────────────────────────────────────────────────
+function showAuthScreen() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('main-app').style.display = '';
+}
+function showMainApp() {
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+  document.getElementById('main-app').style.display = 'flex';
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${name}"]`).classList.add('active');
+  if (name === 'logs') loadLogs();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USAGE METER
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadUsage() {
+  const userId = _session?.user?.id;
+  if (!userId) return;
+
+  // Get tier from user_profiles
+  const { data: profile } = await sb
+    .from('user_profiles')
+    .select('tier')
+    .eq('id', userId)
+    .maybeSingle();
+
+  const tier = profile?.tier || 'free';
+
+  if (tier !== 'free') {
+    _usage = { tier, used: null, limit: null };
+    renderUsageMeter();
+    return;
+  }
+
+  // Count this month's diagnostics
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+
+  const { count } = await sb
+    .from('usage_events')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('event_type', 'diagnostic')
+    .gte('created_at', cutoff.toISOString());
+
+  _usage = { tier: 'free', used: count || 0, limit: FREE_TIER_LIMIT };
+  renderUsageMeter();
+}
+
+function renderUsageMeter() {
+  const pill       = document.getElementById('usage-pill');
+  const fillEl     = document.getElementById('usage-bar-fill');
+  const textEl     = document.getElementById('usage-text');
+  const labelEl    = document.getElementById('usage-label');
+  const upgradeBtn = document.getElementById('upgrade-btn');
+
+  if (_usage.tier !== 'free') {
+    // Paid — show tier badge
+    pill.innerHTML = `<span style="color:var(--green)">✓</span> ${cap(_usage.tier)}`;
+    pill.classList.add('unlimited');
+    if (fillEl)  { fillEl.style.width = '100%'; fillEl.style.background = 'var(--green)'; }
+    if (textEl)  { textEl.textContent = `Unlimited diagnostics — ${cap(_usage.tier)} plan`; }
+    if (labelEl) { labelEl.textContent = 'AI Diagnostics'; }
+    if (upgradeBtn) upgradeBtn.textContent = 'Manage plan';
+    return;
+  }
+
+  const used   = _usage.used || 0;
+  const limit  = _usage.limit || FREE_TIER_LIMIT;
+  const pct    = Math.min(100, Math.round((used / limit) * 100));
+  const remain = Math.max(0, limit - used);
+
+  pill.classList.remove('unlimited');
+  pill.innerHTML = `
+    <div class="usage-bar" aria-hidden="true">
+      <div class="usage-fill" style="width:${pct}%;background:${pct >= 80 ? 'var(--red)' : 'var(--accent)'}"></div>
+    </div>
+    ${used}/${limit}
+  `;
+  if (fillEl)  {
+    fillEl.style.width = `${pct}%`;
+    fillEl.classList.toggle('warn', pct >= 80);
+  }
+  if (textEl) {
+    textEl.textContent = remain > 0
+      ? `${remain} free diagnostic${remain === 1 ? '' : 's'} remaining this month`
+      : 'Free limit reached — upgrade for unlimited access';
+  }
+  if (upgradeBtn) upgradeBtn.classList.toggle('hidden', false);
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DISPATCH — CLIENT MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadClients() {
+  const userId = _session?.user?.id;
+  if (!userId) return;
+  const { data, error } = await sb
+    .from('clients')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  _clients = data || [];
+  renderClients();
+}
+
+async function addClient() {
+  const userId  = _session?.user?.id;
+  const name    = document.getElementById('c-name').value.trim();
+  const address = document.getElementById('c-address').value.trim();
+  const phone   = document.getElementById('c-phone').value.trim();
+  const notes   = document.getElementById('c-notes').value.trim();
+
+  if (!name) return toast('Client name is required', 'error');
+
+  const { data, error } = await sb.from('clients').insert({
+    user_id: userId,
+    name, address, phone, notes
+  }).select().single();
+
+  if (error) return toast(error.message, 'error');
+  _clients.unshift(data);
+  renderClients();
+  ['c-name', 'c-address', 'c-phone', 'c-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  toast(`${name} added to route`, 'success');
+}
+
+async function deleteClient(id) {
+  const { error } = await sb.from('clients').delete().eq('id', id);
+  if (error) return toast(error.message, 'error');
+  _clients = _clients.filter(c => c.id !== id);
+  renderClients();
+  toast('Client removed');
+}
+
+function renderClients() {
+  const list  = document.getElementById('client-list');
+  const count = document.getElementById('client-count');
+  count.textContent = _clients.length;
+
+  if (_clients.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📍</div>
+        <div>No clients yet — add your first stop above.</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = _clients.map(c => `
+    <div class="client-item">
+      <div class="client-avatar">${c.name.charAt(0).toUpperCase()}</div>
+      <div class="client-info">
+        <div class="client-name">${esc(c.name)}</div>
+        <div class="client-sub">${esc(c.address || c.phone || c.notes || '—')}</div>
+      </div>
+      <div class="client-actions">
+        ${c.address
+          ? `<button class="btn btn-ghost" onclick="openGPS('${esc(c.address)}')">🗺️</button>`
+          : ''}
+        <button class="btn btn-danger-ghost" onclick="deleteClient('${c.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openGPS(address) {
+  const query = encodeURIComponent(address);
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${query}`, '_blank');
+}
+
+function optimizeRoute() {
+  if (_clients.length < 2) return toast('Add at least 2 clients to optimize', 'error');
+  const addresses = _clients
+    .filter(c => c.address)
+    .map(c => encodeURIComponent(c.address))
+    .join('/');
+  if (!addresses) return toast('No addresses set on route clients', 'error');
+  window.open(`https://www.google.com/maps/dir/${addresses}`, '_blank');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DIAGNOSE
+// ─────────────────────────────────────────────────────────────────────────────
+async function submitDiagnosis() {
+  const prompt = document.getElementById('diag-prompt').value.trim();
+  if (!prompt) return toast('Enter a circuit question or describe the issue', 'error');
+
+  // Block if free tier limit hit locally (server will also verify)
+  if (_usage.tier === 'free' && _usage.used >= (_usage.limit || FREE_TIER_LIMIT)) {
+    return showUpgradeModal();
+  }
+
+  const btn = document.getElementById('diag-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analyzing…';
+
+  try {
+    const token = _session?.access_token;
+    const body  = { prompt };
+    if (_photoB64)  { body.imageData = _photoB64; body.mimeType = _photoMime; }
+
+    const res  = await fetch('/api/diagnose', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (res.status === 402) {
+      // Free tier limit hit server-side
+      return showUpgradeModal();
+    }
+    if (!res.ok) {
+      throw new Error(data.error || `Server error ${res.status}`);
+    }
+
+    // Show result
+    showResult(data.result);
+
+    // Update local usage from server response
+    if (data.usage) {
+      _usage = data.usage;
+      renderUsageMeter();
+    }
+
+    // Append to log list locally for instant feedback
+    _logs.unshift({
+      id:            `temp-${Date.now()}`,
+      request_text:  prompt,
+      response_text: data.result,
+      has_image:     !!_photoB64,
+      created_at:    new Date().toISOString()
+    });
+
+  } catch (err) {
+    toast(err.message, 'error');
+    showResult(null);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Analyze';
+  }
+}
+
+function showResult(text) {
+  const container = document.getElementById('result-container');
+  const box       = document.getElementById('result-box');
+  if (!text) { container.classList.add('hidden'); return; }
+  box.textContent = text;
+  box.style.display = 'block';
+  container.classList.remove('hidden');
+  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function clearDiagnose() {
+  document.getElementById('diag-prompt').value = '';
+  _photoB64  = null;
+  _photoMime = null;
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('zone-label').textContent = '📷 Tap to attach photo';
+  document.getElementById('result-container').classList.add('hidden');
+  document.getElementById('photo-input').value = '';
+}
+
+function copyResult() {
+  const text = document.getElementById('result-box').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard', 'success'));
+}
+
+// ─── Voice Recognition ────────────────────────────────────────────────────────
+function toggleVoice() {
+  if (_isRec) { stopVoice(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return toast('Speech recognition not supported in this browser', 'error');
+
+  _recog                = new SR();
+  _recog.lang           = 'en-US';
+  _recog.interimResults = true;
+  _recog.continuous     = false;
+
+  const existing = document.getElementById('diag-prompt').value;
+
+  _recog.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('diag-prompt').value = existing
+      ? `${existing} ${transcript}`
+      : transcript;
+  };
+  _recog.onerror = (e) => {
+    toast(`Voice error: ${e.error}`, 'error');
+    stopVoice();
+  };
+  _recog.onend = () => stopVoice();
+
+  _recog.start();
+  _isRec = true;
+  document.getElementById('voice-btn').classList.add('recording');
+}
+
+function stopVoice() {
+  _isRec = false;
+  if (_recog) { try { _recog.stop(); } catch {} }
+  document.getElementById('voice-btn').classList.remove('recording');
+}
+
+// ─── Photo Upload ─────────────────────────────────────────────────────────────
+function handlePhotoUpload(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) return toast('Image must be under 4 MB', 'error');
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    _photoMime = file.type || 'image/jpeg';
+    _photoB64  = dataUrl.split(',')[1]; // strip data:...;base64, prefix
+
+    const preview = document.getElementById('photo-preview');
+    preview.src   = dataUrl;
+    preview.style.display = 'block';
+    document.getElementById('zone-label').textContent = `📎 ${file.name}`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGS
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadLogs() {
+  const userId = _session?.user?.id;
+  if (!userId) return;
+
+  const { data, error } = await sb
+    .from('diagnostic_logs')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) { console.error(error); return; }
+  _logs = data || [];
+  renderLogs();
+}
+
+function renderLogs() {
+  const list = document.getElementById('log-list');
+  if (!_logs.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <div>No diagnostics yet — run an analysis to build history.</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = _logs.map((l, i) => `
+    <div class="log-item">
+      <div class="log-meta">
+        <span class="log-date">${fmtDate(l.created_at)}</span>
+        <span class="log-badges">
+          ${l.has_image ? '<span class="badge badge-image">📷 Photo</span>' : ''}
+          <span class="badge">${cap(l.tier_at_time || 'free')}</span>
+        </span>
+      </div>
+      <div class="log-prompt">${esc(l.request_text || '')}</div>
+      <div class="log-response" id="lr-${i}">${esc(l.response_text || '')}</div>
+      <button
+        class="btn btn-ghost"
+        style="margin-top:6px;font-size:0.7rem;"
+        onclick="toggleLog(${i})"
+        id="lt-${i}"
+      >Show full</button>
+    </div>
+  `).join('');
+}
+
+function toggleLog(i) {
+  const el  = document.getElementById(`lr-${i}`);
+  const btn = document.getElementById(`lt-${i}`);
+  const expanded = el.classList.toggle('expanded');
+  btn.textContent = expanded ? 'Collapse' : 'Show full';
+}
+
+async function confirmClearLogs() {
+  if (!confirm('Clear all diagnostic history? This cannot be undone.')) return;
+  const userId = _session?.user?.id;
+  if (!userId) return;
+  const { error } = await sb.from('diagnostic_logs').delete().eq('user_id', userId);
+  if (error) return toast(error.message, 'error');
+  _logs = [];
+  renderLogs();
+  toast('History cleared');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UPGRADE / STRIPE CHECKOUT
+// ─────────────────────────────────────────────────────────────────────────────
+function showUpgradeModal() { document.getElementById('upgrade-modal').classList.remove('hidden'); }
+function hideUpgradeModal() { document.getElementById('upgrade-modal').classList.add('hidden');    }
+function handleModalBackdrop(e) { if (e.target === e.currentTarget) hideUpgradeModal(); }
+
+function selectTier(tier, el) {
+  _selTier = tier;
+  document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function startCheckout() {
+  const token = _session?.access_token;
+  if (!token) return toast('Session expired — please sign in again', 'error');
+
+  const btn = document.getElementById('checkout-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Redirecting…';
+
+  try {
+    const res  = await fetch('/api/create-checkout', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ tier: _selTier })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Checkout failed');
+    window.location.href = data.url;
+  } catch (err) {
+    toast(err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Continue to payment';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'default') {
+  const el = document.getElementById('toast');
+  clearTimeout(_toastTimer);
+  el.textContent = msg;
+  el.className   = `${type === 'error' ? 'toast-error' : type === 'success' ? 'toast-success' : ''}`;
+  void el.offsetWidth; // force reflow
+  el.classList.add('show');
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+function esc(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric',
+    hour:  '2-digit', minute: '2-digit'
+  });
+}
+</script>
+
+</body>
+</html>
