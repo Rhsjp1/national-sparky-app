@@ -269,7 +269,7 @@ window.openUpgrade = async function() {
   const res = await fetch('/api/create-checkout', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tier: 'starter', priceId: 'FILLME' }),
+    body: JSON.stringify({ tier: 'starter', priceId: process.env.STRIPE_STARTER_PRICE_ID || '' }),
   });
   const json = await res.json();
   if (json.url) window.location.href = json.url;
