@@ -1,1143 +1,305 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RHS Electrical OS</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-
-        body { background-color: #121212; font-family: sans-serif; }
-
-        .tab-content { display: none; }
-
-        .tab-content.active { display: block; }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>RHS Electrical OS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background: #0f1117; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style>
 </head>
-
-<body class="flex flex-col max-w-md mx-auto min-h-screen bg-zinc-950 text-zinc-100 border-x border-zinc-800">
-
-    
-
-    <header class="bg-yellow-400 text-black p-4 shadow-xl border-b-4 border-yellow-600 sticky top-0 z-40">
-
-        <div class="flex justify-between items-center">
-
-            <div>
-
-                <h1 class="text-xl font-black uppercase tracking-wider">⚡ RHS ELECTRICAL OS</h1>
-
-                <p class="text-[10px] font-bold tracking-tight bg-black text-yellow-400 px-1 py-0.5 rounded inline-block mt-0.5">NC STATE COMPLIANT SUITE</p>
-
-            </div>
-
-            <div class="text-right">
-
-                <span id="gps-status" class="text-[10px] bg-zinc-900 text-red-500 px-2 py-1 rounded font-mono font-bold block">GPS OFF</span>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <nav class="flex bg-zinc-900 text-xs font-bold uppercase border-b border-zinc-800 sticky top-[72px] z-40">
-
-        <button onclick="switchTab('dispatch')" id="btn-dispatch" class="flex-1 py-3 text-center text-yellow-400 border-b-2 border-yellow-400">Dispatch</button>
-
-        <button onclick="switchTab('diagnostic')" id="btn-diagnostic" class="flex-1 py-3 text-center text-zinc-400">AI Diagnostic</button>
-
-        <button onclick="switchTab('history')" id="btn-history" class="flex-1 py-3 text-center text-zinc-400">Logs</button>
-
-    </nav>
-
-
-
-    <main class="flex-1 p-4 space-y-4 overflow-y-auto pb-24">
-
-
-
-        <section id="tab-dispatch" class="tab-content active space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider mb-3">Active Service Route</h3>
-
-                <div class="space-y-2">
-
-                    <div class="bg-zinc-800 p-3 rounded-lg border-l-4 border-blue-500 flex justify-between items-center">
-
-                        <div>
-
-                            <p class="text-sm font-bold">Client: John Doe</p>
-
-                            <p class="text-xs text-zinc-400">123 Main St, Candor, NC</p>
-
-                        </div>
-
-                        <button onclick="getGPS('123 Main St, Candor, NC')" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Route</button>
-
-                    </div>
-
-                    <div class="bg-zinc-800 p-3 rounded-lg border-l-4 border-gray-500 flex justify-between items-center opacity-60">
-
-                        <div>
-
-                            <p class="text-sm font-bold">Client: Jane Smith</p>
-
-                            <p class="text-xs text-zinc-400">456 Pine Rd, Biscoe, NC</p>
-
-                        </div>
-
-                        <button onclick="getGPS('456 Pine Rd, Biscoe, NC')" class="bg-zinc-700 text-zinc-400 text-[10px] px-2 py-1 rounded font-bold uppercase">Route</button>
-
-                    </div>
-
-                </div>
-
-                <button onclick="optimizeRoute()" class="w-full mt-3 bg-zinc-800 border border-zinc-700 text-zinc-300 py-2 rounded-lg text-xs font-bold uppercase hover:bg-zinc-700 transition-all">⚡ Optimize Travel Sequence</button>
-
-            </div>
-
-
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider mb-3">Add New Client Account</h3>
-
-                <div class="space-y-2 text-xs">
-
-                    <input id="c-name" type="text" placeholder="Full Name / Business" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <input id="c-phone" type="text" placeholder="Phone Number" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <input id="c-addr" type="text" placeholder="Street Address, City, NC" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <button onclick="saveClient()" class="w-full bg-yellow-400 text-black py-2 rounded font-black uppercase tracking-wide mt-1">Host Client Profile</button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <section id="tab-diagnostic" class="tab-content space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-
-                <div class="flex justify-between items-center">
-
-                    <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider">NC Code Circuit Analyzer</h3>
-
-                    <span class="text-[9px] bg-green-900/50 text-green-400 px-2 py-0.5 rounded border border-green-800 font-mono">LOW-TOKEN MODE</span>
-
-                </div>
-
-
-
-                <div class="bg-zinc-950 border border-dashed border-zinc-700 rounded-lg p-4 text-center relative">
-
-                    <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="previewImage(event)">
-
-                    <label for="photo-input" class="cursor-pointer flex flex-col items-center space-y-1">
-
-                        <span class="text-2xl">📸</span>
-
-                        <span class="text-xs font-bold text-zinc-400">Capture Field Photo (Breaker, Panel, Damage)</span>
-
-                        <span id="file-name" class="text-[10px] text-yellow-400 font-mono"></span>
-
-                    </label>
-
-                    <img id="img-preview" class="hidden mt-2 max-h-32 mx-auto rounded border border-zinc-700">
-
-                </div>
-
-
-
-                <div class="flex gap-2">
-
-                    <button id="mic-btn" onclick="startVoice()" class="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg border border-red-800 active:scale-95 transition-all">
-
-                        <span id="mic-icon" class="text-xl">🎙️</span>
-
-                    </button>
-
-                    <textarea id="diagnostic-input" placeholder="Describe the hazard or system layout..." class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white text-xs outline-none focus:border-yellow-400" rows="2"></textarea>
-
-                </div>
-
-
-
-                <button onclick="runDiagnostic()" class="w-full bg-yellow-400 text-black py-3 rounded-lg font-black uppercase text-xs tracking-wider">Execute System Analysis</button>
-
-            </div>
-
-
-
-            <div id="diagnostic-output" class="hidden bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-
-                <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-
-                    <h4 class="text-xs font-black text-yellow-400 uppercase">Analysis Results</h4>
-
-                    <button onclick="emailOffice()" class="bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px] px-2 py-1 rounded font-bold uppercase">📧 Email to Office</button>
-
-                </div>
-
-                <div id="output-text" class="text-xs text-zinc-300 space-y-2 leading-relaxed"></div>
-
-            </div>
-
-        </section>
-
-
-
-        <section id="tab-history" class="tab-content space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <div class="flex justify-between items-center mb-3">
-
-                    <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider">Device History Vault</h3>
-
-                    <button onclick="clearLogs()" class="text-[10px] text-red-400 underline font-mono">Wipe Vault</button>
-
-                </div>
-
-                <div id="history-list" class="space-y-2 text-xs">
-
-                    <p class="text-zinc-500 italic text-center py-4">No logged inspections in internal storage.</p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-    </main>
-
-
-
-    <script>
-
-        // ==========================================
-
-        // ⚠️ CRITICAL: PASTE YOUR GOOGLE STUDIO KEY HERE 
-
-        // ==========================================
-
-        const API_KEY = 'AIzaSyA8zg_QBZDsYSyVWwrq7mBdJx-yrK0Hl-w';
-
-        
-
-        let base64ImageData = "";
-
-
-
-        // SCREEN INTERFACE CONTROLLER
-
-        function switchTab(tabId) {
-
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('tab-' + tabId).classList.add('active');
-
-            
-
-            document.querySelectorAll('nav button').forEach(el => {
-
-                el.classList.remove('text-yellow-400', 'border-b-2', 'border-yellow-400');
-
-                el.classList.add('text-zinc-400');
-
-            });
-
-            document.getElementById('btn-' + tabId).classList.add('text-yellow-400', 'border-b-2', 'border-yellow-400');
-
-            document.getElementById('btn-' + tabId).classList.remove('text-zinc-400');
-
-        }
-
-
-
-        // PHOTO CONVERSION HUB
-
-        function previewImage(event) {
-
-            const file = event.target.files[0];
-
-            if (!file) return;
-
-            document.getElementById('file-name').innerText = file.name;
-
-            
-
-            const preview = document.getElementById('img-preview');
-
-            preview.src = URL.createObjectURL(file);
-
-            preview.classList.remove('hidden');
-
-
-
-            const reader = new FileReader();
-
-            reader.onloadend = function() {
-
-                base64ImageData = reader.result.split(',')[1];
-
-            }
-
-            reader.readAsDataURL(file);
-
-        }
-
-
-
-        // CHROMEBOOK / PHONE NATIVE VOICE TRANSLATION
-
-        function startVoice() {
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (!SpeechRecognition) { alert("Voice recording requires a Chromium browser."); return; }
-
-            const rec = new SpeechRecognition();
-
-            rec.start();
-
-            
-
-            const btn = document.getElementById('mic-btn');
-
-            const icon = document.getElementById('mic-icon');
-
-            btn.classList.add('animate-pulse', 'bg-red-400');
-
-            icon.innerText = "🛑";
-
-
-
-            rec.onresult = (e) => {
-
-                document.getElementById('diagnostic-input').value = e.results[0][0].transcript;
-
-                btn.classList.remove('animate-pulse', 'bg-red-400');
-
-                icon.innerText = "🎙️";
-
-            };
-
-            rec.onerror = () => {
-
-                btn.classList.remove('animate-pulse', 'bg-red-400');
-
-                icon.innerText = "🎙️";
-
-            };
-
-        }
-
-
-
-        // HARDWARE ACCESSED GPS LOCATOR
-
-        function getGPS(address) {
-
-            if (navigator.geolocation) {
-
-                navigator.geolocation.getCurrentPosition((pos) => {
-
-                    document.getElementById('gps-status').innerText = "GPS ACTIVE";
-
-                    document.getElementById('gps-status').classList.remove('text-red-500');
-
-                    document.getElementById('gps-status').classList.add('text-green-400');
-
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-
-                }, () => { alert("Turn on location services in device settings."); });
-
-            }
-
-        }
-
-
-
-        // LOCAL ROUTE OPTIMIZATION
-
-        function optimizeRoute() {
-
-            alert("Sequence optimized: Candor, NC -> Biscoe, NC sorting applied via geographic proximity logic.");
-
-        }
-
-
-
-        // DATABASE STORAGE SIMULATION (LOCAL DEVICE DISK SPACE)
-
-        function saveClient() {
-
-            const name = document.getElementById('c-name').value;
-
-            const addr = document.getElementById('c-addr').value;
-
-            if(!name || !addr) return alert("Fill in client parameters.");
-
-            
-
-            let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-            logs.push({ type: 'Client Account', title: name, details: addr, date: new Date().toLocaleDateString() });
-
-            localStorage.setItem('rhs_logs', JSON.stringify(logs));
-
-            
-
-            alert("Profile securely hosted in internal storage.");
-
-            document.getElementById('c-name').value = '';
-
-            document.getElementById('c-phone').value = '';
-
-            document.getElementById('c-addr').value = '';
-
-            loadLogs();
-
-        }
-
-
-
-        // NC CODE COMPLIANT MULTIMODAL ENGINE (LOW-TOKEN COST)
-
-        async function runDiagnostic() {
-
-            const textPrompt = document.getElementById('diagnostic-input').value;
-
-            if (!textPrompt && !base64ImageData) return alert("Input text description or upload inspection photo.");
-
-
-
-            const outputDiv = document.getElementById('diagnostic-output');
-
-            const textDiv = document.getElementById('output-text');
-
-            outputDiv.classList.remove('hidden');
-
-            textDiv.innerHTML = "<p class='animate-pulse text-yellow-400 uppercase font-mono text-[10px]'>Querying NCDOI Electrical Code Framework...</p>";
-
-
-
-            // Strict system rule packet engineered to use very short, low-token counts
-
-            const basePrompt = "Role: Master Electrician in NC. Analyze input (text/image) based on North Carolina Department of Insurance (NCDOI) amendments and NEC requirements. Output format exactly: 1) NC Code Chapter Fix, 2) Supplies, 3) Estimated Cost. Keep responses very short to save tokens.";
-
-            
-
-            let payloadContents = [];
-
-            let partsArray = [{ text: basePrompt + " Problem: " + textPrompt }];
-
-            
-
-            if (base64ImageData) {
-
-                partsArray.push({
-
-                    inlineData: { mimeType: "image/jpeg", data: base64ImageData }
-
-                });
-
-            }
-
-            payloadContents.push({ parts: partsArray });
-
-
-
-            try {
-
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-
-                    method: 'POST',
-
-                    headers: { 'Content-Type': 'application/json' },
-
-                    body: JSON.stringify({ contents: payloadContents })
-
-                });
-
-
-
-                const data = await res.json();
-
-                const cleanResult = data.candidates[0].content.parts[0].text;
-
-                textDiv.innerHTML = `<p class="font-mono bg-zinc-950 p-2 rounded border border-zinc-800 whitespace-pre-line">${cleanResult}</p>`;
-
-
-
-                // Automatically save result to device history log
-
-                let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-                logs.push({ type: 'AI Diagnosis', title: 'Inspection Diagnostic', details: cleanResult, date: new Date().toLocaleDateString() });
-
-                localStorage.setItem('rhs_logs', JSON.stringify(logs));
-
-                loadLogs();
-
-
-
-            } catch (err) {
-
-                textDiv.innerHTML = "<p class='text-red-500'>Transmission Failed. Confirm your AI Studio Key configuration.</p>";
-
-            }
-
-        }
-
-
-
-        // SYSTEM LOGS VAULT MANAGER
-
-        function loadLogs() {
-
-            const list = document.getElementById('history-list');
-
-            let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-            if(logs.length === 0) {
-
-                list.innerHTML = '<p class="text-zinc-500 italic text-center py-4">No logged inspections in internal storage.</p>';
-
-                return;
-
-            }
-
-            list.innerHTML = logs.map(l => `
-
-                <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-1">
-
-                    <div class="flex justify-between font-bold text-yellow-400 text-[10px] uppercase font-mono">
-
-                        <span>${l.type}</span>
-
-                        <span class="text-zinc-500">${l.date}</span>
-
-                    </div>
-
-                    <p class="font-bold text-white">${l.title}</p>
-
-                    <p class="text-zinc-400 text-[11px] whitespace-pre-line">${l.details}</p>
-
-                </div>
-
-            `).join('');
-
-        }
-
-
-
-        function clearLogs() {
-
-            if(confirm("Confirm deletion of all hosted records?")) {
-
-                localStorage.removeItem('rhs_logs');
-
-                loadLogs();
-
-            }
-
-        }
-
-
-
-        // ONE-CLICK EMAIL DISPATCHER
-
-        function emailOffice() {
-
-            const reportData = document.getElementById('output-text').innerText;
-
-            const mailUrl = `mailto:office@yourdomain.com?subject=RHS Field Inspection Report&body=${encodeURIComponent(reportData)}`;
-
-            window.location.href = mailUrl;
-
-        }
-
-
-
-        // INITIAL ONLOAD BOOT ENGINE
-
-        window.onload = loadLogs;
-
-    </script>
-
+<body class="flex flex-col min-h-screen bg-black text-zinc-100">
+
+<header id="app-header" class="bg-yellow-400 text-black p-4 shadow-xl border-b-4 border-yellow-600 sticky top-0 z-40" style="display: none;">
+<div class="flex justify-between items-center">
+<div>
+<h1 class="text-sm font-black uppercase tracking-wider">⚡ RHS ELECTRICAL OS</h1>
+<p class="text-[10px] font-bold tracking-tight bg-black text-yellow-400 px-1 py-0.5 rounded inline-block mt-0.5">NC STATE COMPLIANT</p>
+</div>
+<div class="text-right space-x-2">
+<span id="usage-pill" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded font-mono font-bold hidden"></span>
+<span id="gps-status" class="text-[10px] bg-zinc-900 text-yellow-400 px-2 py-1 rounded font-mono font-bold">GPS OFF</span>
+<button onclick="doLogout()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded uppercase font-bold hover:bg-yellow-600">Logout</button>
+</div>
+</div>
+</header>
+
+<nav id="main-nav" class="flex bg-zinc-900 text-xs font-bold uppercase border-b border-zinc-800" style="display: none;">
+<button onclick="switchTab('dispatch')" class="flex-1 py-3 text-center text-yellow-400 border-b-2 border-yellow-400">Dispatch</button>
+<button onclick="switchTab('diagnostic')" class="flex-1 py-3 text-center text-zinc-400">AI Diagnostic</button>
+<button onclick="switchTab('history')" class="flex-1 py-3 text-center text-zinc-400">Logs</button>
+<button onclick="switchTab('settings')" class="flex-1 py-3 text-center text-zinc-400">Settings</button>
+</nav>
+
+<main class="flex-1 p-3 space-y-3 overflow-y-auto">
+
+<section id="auth-gate" class="tab-content active space-y-3">
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+<h2 class="text-lg font-black text-yellow-400 mb-2">Authentication Required</h2>
+<p class="text-xs text-zinc-400 mb-4">Sign in with GitHub to access NC Sparky suite.</p>
+<div id="auth-errors" class="text-xs text-red-400 mb-2 hidden"></div>
+<button onclick="signInWithGitHub()" class="w-full bg-yellow-400 text-black font-black uppercase py-3 rounded hover:bg-yellow-500">Sign in with GitHub</button>
+<p class="text-[10px] text-zinc-500 mt-2">Auth via Supabase Auth · 5 free diagnostics/month.</p>
+</div>
+</section>
+
+<section id="tab-login" class="tab-content space-y-3">
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+<h2 class="text-lg font-black text-yellow-400 mb-2">Sign in</h2>
+<button onclick="signInWithGitHub()" class="w-full bg-yellow-400 text-black font-black uppercase py-3 rounded hover:bg-yellow-500">GitHub</button>
+</div>
+</section>
+
+<section id="tab-dispatch" class="tab-content space-y-3"></section>
+<section id="tab-diagnostic" class="tab-content space-y-3"></section>
+<section id="tab-history" class="tab-content space-y-3"></section>
+<section id="tab-settings" class="tab-content space-y-3"></section>
+
+</main>
+
+<script type="application/json" id="supabase-config">
+{
+  "SUPABASE_URL": "FILLME",
+  "SUPABASE_ANON_KEY": "FILLME"
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+"use strict";
+const cfg = JSON.parse(document.getElementById('supabase-config').textContent);
+if (cfg.SUPABASE_URL === "FILLME" || cfg.SUPABASE_ANON_KEY === "FILLME") {
+  console.error("Supabase config not filled in index.html");
+}
+const supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, { autoRefreshToken: true, persistSession: true });
+const state = { user: null, profile: null, usage: 0, usageLimit: 5, gpsWatching: false, gpsWatchId: null };
+const APP_URL = window.location.origin;
+const UP = process && process.env && process.env.API_URL ? process.env.API_URL : APP_URL;
+
+function qs(id) { return document.getElementById(id); }
+
+async function ensureProfile() {
+  if (state.profile) return;
+  const { data } = await supabase.from('user_profiles').select('*').eq('id', state.user.id).single();
+  state.profile = data || { id: state.user.id, tier: 'free' };
+}
+
+async function refreshUsage() {
+  if (!state.user) return;
+  const { row_count } = await supabase.rpc('count_user_usage_30d', { uid: state.user.id }).catch(() => ({ row_count: 0 }));
+  state.usage = row_count || 0;
+  state.usageLimit = state.profile?.tier === 'free' || !state.profile?.tier ? 5 : Infinity;
+  updateHeader();
+}
+
+async function loadLogs() {
+  if (!state.user) return;
+  const { data } = await supabase.from('diagnostic_logs').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(50);
+  setHTML(qs('tab-history'), '<div class="bg-zinc-900 p-3 rounded border border-zinc-800">' + (dataLength(data) ? data.map(r => `<div class="mb-3 border-b border-zinc-800 pb-2"><p class="text-[10px] text-zinc-500">${esc(r.prompt_preview)}</p><p class="text-xs text-yellow-400 mt-1">${esc(r.answer_preview)}</p><span class="text-[10px] text-zinc-500">${new Date(r.created_at).toLocaleString()}</span></div>`).join('') : '<p class="text-xs text-zinc-500">No logs yet.</p>') + '</div>');
+}
+
+async function loadClients() {
+  if (!state.user) return;
+  const { data } = await supabase.from('clients').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(50);
+  const wrap = qs('tab-dispatch');
+  wrap.innerHTML = dataLength(data) ? data.map(c => `<div class="bg-zinc-900 p-3 rounded border border-zinc-800"><div class="flex justify-between"><div><h3 class="text-xs font-bold text-yellow-400">${esc(c.name)}</h3><p class="text-[10px] text-zinc-400">${esc(c.address)}</p><p class="text-[10px] text-zinc-400">${esc(c.phone)}</p></div><button onclick="deleteClient(${c.id})" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded">DEL</button></div>${c.notes ? `<p class="text-[10px] text-zinc-500 mt-1">${esc(c.notes)}</p>` : ''}</div>`).join('') : '<p class="text-xs text-zinc-500">No clients. Add one below.</p>';
+}
+
+function updateHeader() {
+  const pill = qs('usage-pill');
+  pill.textContent = 'DIAG: ' + state.usage + '/' + (state.usageLimit === Infinity ? '∞' : state.usageLimit);
+  pill.classList.toggle('hidden', !state.user);
+}
+
+function setHTML(id, html) { if (id) id.innerHTML = html; }
+function esc(s) { if (typeof s !== 'string') return ''; return s.replace(/[&<>\\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\"':'&quot;'}[c])); }
+
+function switchTab(name) {
+  ['dispatch','diagnostic','history','settings'].forEach(t => { const el = qs('tab-' + t); if (el) el.classList.toggle('active', t === name); });
+  if (name === 'diagnostic') renderDiagnostic();
+  if (name === 'dispatch') drawDispatch();
+  if (name === 'history') loadLogs();
+}
+
+async function signInWithGitHub() {
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: APP_URL } });
+  if (error) console.error(error);
+}
+
+async function doLogout() {
+  stopGPS();
+  await supabase.auth.signOut();
+  state.user = null;
+  state.profile = null;
+  state.usage = 0;
+  postAuthUI();
+}
+
+async function handleAuth() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) { console.error(error); return; }
+  if (data?.session?.user) {
+    state.user = data.session.user;
+    await ensureProfile();
+    await refreshUsage();
+    postAuthUI();
+  }
+}
+
+function postAuthUI() {
+  const has = !!state.user;
+  qs('app-header').style.display = has ? '' : 'none';
+  qs('main-nav').style.display = has ? '' : 'none';
+  const gate = qs('auth-gate');
+  if (gate) gate.style.display = 'none';
+  const login = qs('tab-login');
+  if (login) login.style.display = 'none';
+  if (has) { switchTab('dispatch'); await loadClients(); }
+  else { qs('tab-dispatch') && (qs('tab-dispatch').innerHTML=''); qs('tab-diagnostic') && (qs('tab-diagnostic').innerHTML=''); qs('tab-history') && (qs('tab-history').innerHTML=''); switchTab('login'); }
+}
+
+async function startGPS() {
+  if (!('geolocation' in navigator)) return;
+  state.gpsWatchId = navigator.geolocation.watchPosition(
+    pos => {
+      if (state.gpsWatchId) qs('gps-status').textContent = 'GPS ON ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4);
+    },
+    () => { if (state.gpsWatchId) qs('gps-status').textContent = 'GPS OFF'; },
+    { enableHighAccuracy: true, timeout: 20000 }
+  );
+  state.gpsWatching = true;
+}
+function stopGPS() {
+  if (state.gpsWatchId && 'geolocation' in navigator && navigator.geolocation.clearWatch) {
+    navigator.geolocation.clearWatch(state.gpsWatchId);
+  }
+  state.gpsWatchId = null;
+  state.gpsWatching = false;
+}
+
+function drawDispatch() {
+  const title = 'DISPATCH · ' + (new Date()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const sm = '<div class="grid grid-cols-2 gap-2 mb-3">' +
+    '<div class="bg-zinc-900 p-2 rounded border-l-4 border-blue-500"><p class="text-[10px] text-zinc-500">ACTIVE ROUTE</p><p class="text-xs font-black text-yellow-400">Service Call #A7741</p></div>' +
+    '<div class="bg-zinc-900 p-2 rounded border-l-4 border-yellow-500"><p class="text-[10px] text-zinc-500">CURRENT JOB</p><p class="text-xs font-black text-yellow-400">Tier ' + state.profile?.tier + '</p></div>' +
+    '</div>';
+  const nav = '<button onclick="startGPS()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded border border-yellow-400">Start GPS</button>' +
+    '<button onclick="stopGPS()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded border border-yellow-400">Stop GPS</button>' +
+    '<button onclick="simulateDispatch()" class="text-[10px] bg-yellow-400 text-black px-2 py-1 rounded">Simulate Route</button>';
+  const form = '<div class="bg-zinc-900 p-3 rounded border border-zinc-800 space-y-2">' +
+    '<input id="client-name" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Client name" />' +
+    '<input id="client-address" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Address" />' +
+    '<input id="client-phone" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Phone" />' +
+    '<textarea id="client-notes" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800 h-16" placeholder="Notes"></textarea>' +
+    '<button onclick="addClient()" class="bg-yellow-400 text-black font-black uppercase text-xs py-2 w-full rounded">Save Client</button>' +
+    '</div>';
+  setHTML(qs('tab-dispatch'), `<div class="space-y-3"><div class="flex justify-between items-center"><h3 class="text-xs font-black text-yellow-400 uppercase">${title}</h3><div class="space-x-2">${nav}</div></div>${sm}${form}</div>`);
+}
+
+async function simulateDispatch() {
+  const coords = await new Promise(resolve => {
+    if ('geolocation' in navigator) navigator.geolocation.getCurrentPosition(p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }), () => resolve(null), { enableHighAccuracy: true, timeout: 10000 });
+    else resolve(null);
+  });
+  const marker = coords ? `<div class="bg-zinc-900 p-2 rounded border-l-4 border-yellow-500"><p class="text-[10px] text-zinc-500">CURRENT POS</p><p class="text-xs font-black text-yellow-400">${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}</p></div>` : '';
+  setHTML(qs('tab-dispatch')?.querySelector('.space-y-3'), qs('tab-dispatch').innerHTML + marker);
+}
+
+async function addClient() {
+  if (!state.user) return;
+  const { error } = await supabase.from('clients').insert({ user_id: state.user.id, name: qs('client-name')?.value || null, address: qs('client-address')?.value || null, phone: qs('client-phone')?.value || null, notes: qs('client-notes')?.value || null });
+  if (error) { alert('Failed to add client.'); return; }
+  await loadClients();
+  qs('client-name').value=''; qs('client-address').value=''; qs('client-phone').value=''; qs('client-notes').value='';
+  alert('Client saved.');
+}
+
+window.deleteClient = async function(id) {
+  if (!confirm('Delete?')) return;
+  await supabase.from('clients').delete().eq('id', id);
+  await loadClients();
+};
+
+async function renderDiagnostic() {
+  if (!state.user) return;
+  const panel = qs('tab-diagnostic');
+  if (!panel) return;
+  setHTML(panel, '<div class="space-y-3"><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-yellow-400 uppercase">NC Code Question</label><textarea id="diag-prompt" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800 h-24"></textarea></div><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-zinc-400 uppercase">Photo (optional)</label><input type="file" id="diag-photo" accept="image/*" class="text-xs bg-black text-zinc-100" /><button onclick="runDiagnose(\'photo\')" class="mt-2 bg-yellow-400 text-black font-black uppercase text-xs py-2 px-4 rounded">Diagnose with Photo</button></div><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-zinc-400 uppercase">Voice</label><button onclick="runVoice()" class="mt-2 bg-black text-yellow-400 font-black uppercase text-xs py-2 px-4 rounded border border-yellow-400">Start Voice</button><p id="voice-text" class="text-xs text-zinc-400 mt-1"></p></div><button onclick="runDiagnose(\'text\')" class="bg-yellow-400 text-black font-black uppercase py-3 w-full rounded">Run Diagnosis (Text)</button><p id="diag-result" class="text-xs text-zinc-400 mt-2"></p></div>');
+}
+
+async function runDiagnose(mode) {
+  const result = qs('diag-result');
+  result.textContent = 'Running...';
+  try {
+    let body = {};
+    if (mode === 'text') { body.prompt = qs('diag-prompt')?.value || ''; }
+    else {
+      const file = qs('diag-photo')?.files?.[0];
+      if (!file) { alert('Select a photo.'); return; }
+      body.photo_base64 = await toBase64(file);
+      body.prompt = qs('diag-prompt')?.value || 'Analyze this electrical installation.';
+    }
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) { result.textContent = 'Auth required. Refresh.'; return; }
+    const res = await fetch('/api/diagnose', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => ({ error: 'Invalid JSON' }));
+    if (res.status === 402) { result.textContent = json.error; qs('tab-diagnostic').innerHTML += '<div class="bg-red-900 p-2 rounded text-xs mt-2">Free limit reached. <button onclick="openUpgrade()" class="text-yellow-400 underline">Upgrade</button></div>'; return; }
+    if (!res.ok) { result.textContent = json.error || 'Error.'; return; }
+    result.innerHTML = '<div class="bg-zinc-900 p-3 rounded border border-yellow-600 mt-2"><p class="text-xs text-yellow-400 mb-1">Result:</p><p class="text-xs whitespace-pre-wrap">' + esc(json.answer) + '</p><p class="text-[10px] text-zinc-500 mt-1">Usage: ' + json.usage + '/' + (json.limit === Infinity ? '∞' : json.limit) + ' · Tier: ' + json.tier + '</p></div>';
+    await refreshUsage();
+    await loadLogs();
+  } catch (err) { result.textContent = 'Network error.'; console.error(err); }
+}
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = reject; reader.readAsDataURL(file); });
+}
+
+window.openUpgrade = async function() {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  const res = await fetch('/api/create-checkout', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tier: 'starter', priceId: 'FILLME' }),
+  });
+  const json = await res.json();
+  if (json.url) window.location.href = json.url;
+};
+
+async function runVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { alert('Speech not supported.'); return; }
+  const rec = new SpeechRecognition();
+  rec.lang = 'en-US';
+  rec.interimResults = false;
+  rec.onresult = ev => { const txt = ev.results[0][0].transcript; qs('voice-text').textContent = txt; qs('diag-prompt').value = txt; };
+  rec.onerror = () => qs('voice-text').textContent = 'Voice error.';
+  rec.start();
+  setTimeout(() => { try { rec.stop(); } catch(e){} }, 120000);
+}
+
+function dataLength(data) { return Array.isArray(data) ? data.length : 0; }
+
+supabase.auth.onAuthStateChange((ev, sess) => {
+  if (ev === 'SIGNED_IN' || ev === 'TOKEN_REFRESHED') {
+    if (sess?.user) { state.user = sess.user; ensureProfile().then(() => refreshUsage()).then(postAuthUI); }
+  }
+  if (ev === 'SIGNED_OUT') { state.user = null; postAuthUI(); }
+});
+
+if (new URLSearchParams(window.location.search).get('upgrade') === 'success') { switchTab('settings'); alert('Subscription active. Tier will update shortly.'); }
+
+handleAuth();
+})();
+</script>
 </body>
-
-</html>                <h1 class="text-xl font-black uppercase tracking-wider">⚡ RHS ELECTRICAL OS</h1>
-
-                <p class="text-[10px] font-bold tracking-tight bg-black text-yellow-400 px-1 py-0.5 rounded inline-block mt-0.5">NC STATE COMPLIANT SUITE</p>
-
-            </div>
-
-            <div class="text-right">
-
-                <span id="gps-status" class="text-[10px] bg-zinc-900 text-red-500 px-2 py-1 rounded font-mono font-bold block">GPS OFF</span>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <nav class="flex bg-zinc-900 text-xs font-bold uppercase border-b border-zinc-800 sticky top-[72px] z-40">
-
-        <button onclick="switchTab('dispatch')" id="btn-dispatch" class="flex-1 py-3 text-center text-yellow-400 border-b-2 border-yellow-400">Dispatch</button>
-
-        <button onclick="switchTab('diagnostic')" id="btn-diagnostic" class="flex-1 py-3 text-center text-zinc-400">AI Diagnostic</button>
-
-        <button onclick="switchTab('history')" id="btn-history" class="flex-1 py-3 text-center text-zinc-400">Logs</button>
-
-    </nav>
-
-
-
-    <main class="flex-1 p-4 space-y-4 overflow-y-auto pb-24">
-
-
-
-        <section id="tab-dispatch" class="tab-content active space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider mb-3">Active Service Route</h3>
-
-                <div class="space-y-2">
-
-                    <div class="bg-zinc-800 p-3 rounded-lg border-l-4 border-blue-500 flex justify-between items-center">
-
-                        <div>
-
-                            <p class="text-sm font-bold">Client: John Doe</p>
-
-                            <p class="text-xs text-zinc-400">123 Main St, Candor, NC</p>
-
-                        </div>
-
-                        <button onclick="getGPS('123 Main St, Candor, NC')" class="bg-blue-600 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Route</button>
-
-                    </div>
-
-                    <div class="bg-zinc-800 p-3 rounded-lg border-l-4 border-gray-500 flex justify-between items-center opacity-60">
-
-                        <div>
-
-                            <p class="text-sm font-bold">Client: Jane Smith</p>
-
-                            <p class="text-xs text-zinc-400">456 Pine Rd, Biscoe, NC</p>
-
-                        </div>
-
-                        <button onclick="getGPS('456 Pine Rd, Biscoe, NC')" class="bg-zinc-700 text-zinc-400 text-[10px] px-2 py-1 rounded font-bold uppercase">Route</button>
-
-                    </div>
-
-                </div>
-
-                <button onclick="optimizeRoute()" class="w-full mt-3 bg-zinc-800 border border-zinc-700 text-zinc-300 py-2 rounded-lg text-xs font-bold uppercase hover:bg-zinc-700 transition-all">⚡ Optimize Travel Sequence</button>
-
-            </div>
-
-
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider mb-3">Add New Client Account</h3>
-
-                <div class="space-y-2 text-xs">
-
-                    <input id="c-name" type="text" placeholder="Full Name / Business" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <input id="c-phone" type="text" placeholder="Phone Number" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <input id="c-addr" type="text" placeholder="Street Address, City, NC" class="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-white outline-none">
-
-                    <button onclick="saveClient()" class="w-full bg-yellow-400 text-black py-2 rounded font-black uppercase tracking-wide mt-1">Host Client Profile</button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <section id="tab-diagnostic" class="tab-content space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-
-                <div class="flex justify-between items-center">
-
-                    <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider">NC Code Circuit Analyzer</h3>
-
-                    <span class="text-[9px] bg-green-900/50 text-green-400 px-2 py-0.5 rounded border border-green-800 font-mono">LOW-TOKEN MODE</span>
-
-                </div>
-
-
-
-                <div class="bg-zinc-950 border border-dashed border-zinc-700 rounded-lg p-4 text-center relative">
-
-                    <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="previewImage(event)">
-
-                    <label for="photo-input" class="cursor-pointer flex flex-col items-center space-y-1">
-
-                        <span class="text-2xl">📸</span>
-
-                        <span class="text-xs font-bold text-zinc-400">Capture Field Photo (Breaker, Panel, Damage)</span>
-
-                        <span id="file-name" class="text-[10px] text-yellow-400 font-mono"></span>
-
-                    </label>
-
-                    <img id="img-preview" class="hidden mt-2 max-h-32 mx-auto rounded border border-zinc-700">
-
-                </div>
-
-
-
-                <div class="flex gap-2">
-
-                    <button id="mic-btn" onclick="startVoice()" class="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg border border-red-800 active:scale-95 transition-all">
-
-                        <span id="mic-icon" class="text-xl">🎙️</span>
-
-                    </button>
-
-                    <textarea id="diagnostic-input" placeholder="Describe the hazard or system layout..." class="flex-1 bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-white text-xs outline-none focus:border-yellow-400" rows="2"></textarea>
-
-                </div>
-
-
-
-                <button onclick="runDiagnostic()" class="w-full bg-yellow-400 text-black py-3 rounded-lg font-black uppercase text-xs tracking-wider">Execute System Analysis</button>
-
-            </div>
-
-
-
-            <div id="diagnostic-output" class="hidden bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-
-                <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-
-                    <h4 class="text-xs font-black text-yellow-400 uppercase">Analysis Results</h4>
-
-                    <button onclick="emailOffice()" class="bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px] px-2 py-1 rounded font-bold uppercase">📧 Email to Office</button>
-
-                </div>
-
-                <div id="output-text" class="text-xs text-zinc-300 space-y-2 leading-relaxed"></div>
-
-            </div>
-
-        </section>
-
-
-
-        <section id="tab-history" class="tab-content space-y-4">
-
-            <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-
-                <div class="flex justify-between items-center mb-3">
-
-                    <h3 class="text-xs font-black text-yellow-400 uppercase tracking-wider">Device History Vault</h3>
-
-                    <button onclick="clearLogs()" class="text-[10px] text-red-400 underline font-mono">Wipe Vault</button>
-
-                </div>
-
-                <div id="history-list" class="space-y-2 text-xs">
-
-                    <p class="text-zinc-500 italic text-center py-4">No logged inspections in internal storage.</p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-    </main>
-
-
-
-    <script>
-
-        const API_KEY = 'AIzaSyA8zg_QBZDsYSyVWwrq7mBdJx-yrK0Hl-w';
-
-        let base64ImageData = "";
-
-
-
-        // SCREEN INTERFACE CONTROLLER
-
-        function switchTab(tabId) {
-
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('tab-' + tabId).classList.add('active');
-
-            
-
-            document.querySelectorAll('nav button').forEach(el => {
-
-                el.classList.remove('text-yellow-400', 'border-b-2', 'border-yellow-400');
-
-                el.classList.add('text-zinc-400');
-
-            });
-
-            document.getElementById('btn-' + tabId).classList.add('text-yellow-400', 'border-b-2', 'border-yellow-400');
-
-            document.getElementById('btn-' + tabId).classList.remove('text-zinc-400');
-
-        }
-
-
-
-        // PHOTO CONVERSION HUB
-
-        function previewImage(event) {
-
-            const file = event.target.files[0];
-
-            if (!file) return;
-
-            document.getElementById('file-name').innerText = file.name;
-
-            
-
-            const preview = document.getElementById('img-preview');
-
-            preview.src = URL.createObjectURL(file);
-
-            preview.classList.remove('hidden');
-
-
-
-            const reader = new FileReader();
-
-            reader.onloadend = function() {
-
-                base64ImageData = reader.result.split(',')[1];
-
-            }
-
-            reader.readAsDataURL(file);
-
-        }
-
-
-
-        // CHROMEBOOK / PHONE NATIVE VOICE TRANSLATION
-
-        function startVoice() {
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (!SpeechRecognition) { alert("Voice recording requires a Chromium browser."); return; }
-
-            const rec = new SpeechRecognition();
-
-            rec.start();
-
-            
-
-            const btn = document.getElementById('mic-btn');
-
-            const icon = document.getElementById('mic-icon');
-
-            btn.classList.add('animate-pulse', 'bg-red-400');
-
-            icon.innerText = "🛑";
-
-
-
-            rec.onresult = (e) => {
-
-                document.getElementById('diagnostic-input').value = e.results[0][0].transcript;
-
-                btn.classList.remove('animate-pulse', 'bg-red-400');
-
-                icon.innerText = "🎙️";
-
-            };
-
-            rec.onerror = () => {
-
-                btn.classList.remove('animate-pulse', 'bg-red-400');
-
-                icon.innerText = "🎙️";
-
-            };
-
-        }
-
-
-
-        // HARDWARE ACCESSED GPS LOCATOR
-
-        function getGPS(address) {
-
-            if (navigator.geolocation) {
-
-                navigator.geolocation.getCurrentPosition((pos) => {
-
-                    document.getElementById('gps-status').innerText = "GPS ACTIVE";
-
-                    document.getElementById('gps-status').classList.remove('text-red-500');
-
-                    document.getElementById('gps-status').classList.add('text-green-400');
-
-                    // Opens device maps with precise routing coordinates
-
-                    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`, '_blank');
-
-                }, () => { alert("Turn on location services in Chrome settings."); });
-
-            }
-
-        }
-
-
-
-        // LOCAL ROUTE OPTIMIZATION
-
-        function optimizeRoute() {
-
-            alert("Sequence optimized: Candor, NC -> Biscoe, NC sorting applied via geographic proximity logic.");
-
-        }
-
-
-
-        // DATABASE STORAGE SIMULATION (LOCAL DEVICE DISK SPACE)
-
-        function saveClient() {
-
-            const name = document.getElementById('c-name').value;
-
-            const addr = document.getElementById('c-addr').value;
-
-            if(!name || !addr) return alert("Fill in client parameters.");
-
-            
-
-            let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-            logs.push({ type: 'Client Account', title: name, details: addr, date: new Date().toLocaleDateString() });
-
-            localStorage.setItem('rhs_logs', JSON.stringify(logs));
-
-            
-
-            alert("Profile securely hosted in internal storage.");
-
-            document.getElementById('c-name').value = '';
-
-            document.getElementById('c-phone').value = '';
-
-            document.getElementById('c-addr').value = '';
-
-            loadLogs();
-
-        }
-
-
-
-        // NC CODE COMPLIANT MULTIMODAL ENGINE (LOW-TOKEN COST)
-
-        async function runDiagnostic() {
-
-            const textPrompt = document.getElementById('diagnostic-input').value;
-
-            if (!textPrompt && !base64ImageData) return alert("Input text description or upload inspection photo.");
-
-
-
-            const outputDiv = document.getElementById('diagnostic-output');
-
-            const textDiv = document.getElementById('output-text');
-
-            outputDiv.classList.remove('hidden');
-
-            textDiv.innerHTML = "<p class='animate-pulse text-yellow-400 uppercase font-mono text-[10px]'>Querying NCDOI Electrical Code Framework...</p>";
-
-
-
-            // Strict system rule packet engineered to use very short, low-token counts
-
-            const basePrompt = "Role: Master Electrician in NC. Analyze input (text/image). Output format exactly: 1) NC Code Chapter Fix, 2) Supplies, 3) Estimated Cost. Keep responses short to save tokens.";
-
-            
-
-            let payloadContents = [];
-
-            let partsArray = [{ text: basePrompt + " Problem: " + textPrompt }];
-
-            
-
-            if (base64ImageData) {
-
-                partsArray.push({
-
-                    inlineData: { mimeType: "image/jpeg", data: base64ImageData }
-
-                });
-
-            }
-
-            payloadContents.push({ parts: partsArray });
-
-
-
-            try {
-
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-
-                    method: 'POST',
-
-                    headers: { 'Content-Type': 'application/json' },
-
-                    body: JSON.stringify({ contents: payloadContents })
-
-                });
-
-
-
-                const data = await res.json();
-
-                const cleanResult = data.candidates[0].content.parts[0].text;
-
-                textDiv.innerHTML = `<p class="font-mono bg-zinc-950 p-2 rounded border border-zinc-800 whitespace-pre-line">${cleanResult}</p>`;
-
-
-
-                // Automatically save result to device history log
-
-                let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-                logs.push({ type: 'AI Diagnosis', title: 'Inspection Diagnostic', details: cleanResult, date: new Date().toLocaleDateString() });
-
-                localStorage.setItem('rhs_logs', JSON.stringify(logs));
-
-                loadLogs();
-
-
-
-            } catch (err) {
-
-                textDiv.innerHTML = "<p class='text-red-500'>Transmission Failed. Confirm your AI Studio Key configuration.</p>";
-
-            }
-
-        }
-
-
-
-        // SYSTEM LOGS VAULT MANAGER
-
-        function loadLogs() {
-
-            const list = document.getElementById('history-list');
-
-            let logs = JSON.parse(localStorage.getItem('rhs_logs') || '[]');
-
-            if(logs.length === 0) {
-
-                list.innerHTML = '<p class="text-zinc-500 italic text-center py-4">No logged inspections in internal storage.</p>';
-
-                return;
-
-            }
-
-            list.innerHTML = logs.map(l => `
-
-                <div class="bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-1">
-
-                    <div class="flex justify-between font-bold text-yellow-400 text-[10px] uppercase font-mono">
-
-                        <span>${l.type}</span>
-
-                        <span class="text-zinc-500">${l.date}</span>
-
-                    </div>
-
-                    <p class="font-bold text-white">${l.title}</p>
-
-                    <p class="text-zinc-400 text-[11px] whitespace-pre-line">${l.details}</p>
-
-                </div>
-
-            `).join('');
-
-        }
-
-
-
-        function clearLogs() {
-
-            if(confirm("Confirm deletion of all hosted records?")) {
-
-                localStorage.removeItem('rhs_logs');
-
-                loadLogs();
-
-            }
-
-        }
-
-
-
-        // ONE-CLICK EMAIL DISPATCHER
-
-        function emailOffice() {
-
-            const reportData = document.getElementById('output-text').innerText;
-
-            const mailUrl = `mailto:office@yourdomain.com?subject=RHS Field Inspection Report&body=${encodeURIComponent(reportData)}`;
-
-            window.location.href = mailUrl;
-
-        }
-
-
-
-        // INITIAL ONLOAD BOOT ENGINE
-
-        window.onload = loadLogs;
-
-    </script>
-
-</body>
-
 </html>
