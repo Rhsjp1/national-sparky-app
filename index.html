@@ -1,281 +1,191 @@
+html
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>National Sparky – Field Buddy Solutions</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="National Sparky Field Buddy turns electrician service calls into clean work orders, parts lists, and customer‑ready summaries."
-    />
-    <style>
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        margin: 0;
-        padding: 0;
-        background: #0f172a;
-        color: #e5e7eb;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>National Sparky – Field Buddy Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="National Sparky Field Buddy turns electrician service calls into clean work orders, parts lists, and customer‑ready summaries." />
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #020617;
+      --border-color: #1f2937;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+    header {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+    }
+    .auth-badge-bar {
+      font-size: 0.85rem;
+      background: #1e293b;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    main {
+      padding: 3rem 1.5rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 2.5rem; margin-bottom: 0.75rem; line-height: 1.2; }
+    p.lead { font-size: 1.05rem; max-width: 40rem; color: var(--text-muted); margin-bottom: 1.75rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid #22c55e55;
+      color: #bbf7d0;
+      margin-bottom: 0.75rem;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .btn-primary { background: var(--accent-green); color: #022c22; border: none; border-radius: 999px; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+    .btn-secondary { background: transparent; color: var(--text-main); border-radius: 999px; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 500; border: 1px solid #4b5563; cursor: pointer; }
+    .btn-danger { background: #ef4444; color: #ffffff; border: none; border-radius: 6px; padding: 0.4rem 0.8rem; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
+    .card { border-radius: 0.9rem; border: 1px solid var(--border-color); padding: 1.5rem; background: var(--bg-card); height: fit-content; }
+    .card h2 { margin: 0 0 0.5rem; font-size: 1.2rem; color: var(--accent-blue); }
+    .card p { margin: 0 0 1rem; font-size: 0.9rem; color: var(--text-muted); }
+    ul.feature-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+    ul.feature-list li::before { content: "✓ "; color: var(--accent-green); font-weight: bold; }
+    .hidden { display: none !important; }
+    
+    /* Technical Workspace Dashboard UI Panels */
+    .dashboard-container { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    .workspace-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; }
+    textarea.field-input { width: 100%; height: 180px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; color: #fff; font-family: inherit; resize: vertical; box-sizing: border-box; font-size: 0.95rem; }
+    .panel-actions { margin-top: 1rem; display: flex; justify-content: flex-end; }
+    .terminal-window { background: #020617; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; min-height: 220px; font-family: monospace; font-size: 0.9rem; color: #34d399; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; }
+    .meter-bar { height: 10px; background: #1e293b; border-radius: 999px; overflow: hidden; margin: 0.75rem 0; border: 1px solid #334155; }
+    .meter-progress { height: 100%; background: var(--accent-blue); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
-      header {
-        padding: 1.5rem 1.25rem;
-        border-bottom: 1px solid #1f2937;
-        background: #020617;
-      }
+    @media (max-width: 768px) {
+      .grid, .workspace-layout { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
 
-      .logo {
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        color: #38bdf8;
-      }
+  <header>
+    <div class="logo">National Sparky · Field Buddy</div>
+    <div id="auth-status" class="auth-badge-bar hidden">
+      <span>Logged in: <span id="user-email" style="color:var(--accent-blue); font-weight:600;"></span></span>
+      <button class="btn-danger" onclick="executeLogout()">Sign Out</button>
+    </div>
+  </header>
 
-      main {
-        padding: 3rem 1.5rem 4rem;
-        max-width: 960px;
-        margin: 0 auto;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0.75rem;
-      }
-
-      p.lead {
-        font-size: 1.05rem;
-        max-width: 40rem;
-        color: #9ca3af;
-        margin-bottom: 1.75rem;
-      }
-
-      .badge {
-        display: inline-block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 0.25rem 0.6rem;
-        border-radius: 999px;
-        border: 1px solid #22c55e55;
-        color: #bbf7d0;
-        margin-bottom: 0.75rem;
-      }
-
-      .cta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-bottom: 2.5rem;
-      }
-
-      .btn-primary {
-        background: #22c55e;
-        color: #022c22;
-        border: none;
-        border-radius: 999px;
-        padding: 0.7rem 1.4rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .btn-secondary {
-        background: transparent;
-        color: #e5e7eb;
-        border-radius: 999px;
-        padding: 0.7rem 1.4rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border: 1px solid #4b5563;
-        cursor: pointer;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
-        gap: 2rem;
-      }
-
-      .card {
-        border-radius: 0.9rem;
-        border: 1px solid #1f2937;
-        padding: 1.25rem 1.4rem;
-        background: #020617;
-      }
-
-      .card h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1.1rem;
-      }
-
-      .card p {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #9ca3af;
-      }
-
-      ul.feature-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
-        gap: 0.75rem;
-        margin-top: 0.75rem;
-      }
-
-      ul.feature-list li::before {
-        content: "✓";
-        color: #22c55e;
-        margin-right: 0.4rem;
-      }
-
-      footer {
-        padding: 1rem 1.5rem 2.5rem;
-        max-width: 960px;
-        margin: 0 auto;
-        font-size: 0.8rem;
-        color: #6b7280;
-      }
-
-      @media (max-width: 768px) {
-        main {
-          padding-top: 2.5rem;
-        }
-
-        h1 {
-          font-size: 2rem;
-        }
-
-        .grid {
-          grid-template-columns: minmax(0, 1fr);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="logo">National Sparky · Field Buddy</div>
-    </header>
-
-    <main>
-      <span class="badge">Electrician & field service AI</span>
-
+  <main>
+    <!-- PUBLIC LANDING MARKETING SECTION -->
+    <div id="landing-view" class="hidden">
+      <span class="badge">Electrician & Field Service AI Engine</span>
       <h1>Turn every service call into a documented, billable job ticket.</h1>
-
       <p class="lead">
-        National Sparky Field Buddy turns your on‑site notes into clean work
-        orders, parts lists, and customer summaries — so you can spend more time
-        in the field and less time buried in paperwork.
+        National Sparky Field Buddy processes raw on‑site electrician notes into structured work orders, materials manifests, and clean customer briefings instantly.
       </p>
-
       <div class="cta-row">
-        <button class="btn-primary" onclick="signInWithGitHub()">
-          Request early access
-        </button>
-        <button class="btn-secondary">See how it works</button>
+        <button class="btn-primary" onclick="signInWithGitHub()">Sign In with GitHub</button>
+        <button class="btn-secondary" onclick="document.getElementById('features-anchor').scrollIntoView({behavior:'smooth'})">See Features</button>
       </div>
-
-      <div class="grid">
+      <div class="grid" id="features-anchor">
         <section class="card">
           <h2>Built for technicians, not paperwork.</h2>
-          <p>
-            Capture quick notes in the driveway and let Field Buddy structure
-            them into something your office, customers, and accounting team can
-            all use.
-          </p>
+          <p>Capture casual drive-way dictation and summaries and let the system standardize the formatting parameters.</p>
           <ul class="feature-list">
-            <li>Job summaries in plain language</li>
-            <li>Materials and parts pulled out automatically</li>
-            <li>Before / after notes saved with every visit</li>
+            <li>Plain text notes mapped into clean job invoices</li>
+            <li>Automated parsing of materials and parts counts</li>
+            <li>Consistent audit logging saved across every visit</li>
           </ul>
         </section>
-
         <section class="card">
-          <h2>What you get on day one</h2>
-          <p>
-            This simple National Sparky landing page is your first live version
-            — ready to connect to Supabase and Vercel so real customers can see
-            it.
-          </p>
+          <h2>Account Quota System</h2>
+          <p>Every account includes a zero-configuration testing sandbox directly enabled on setup.</p>
           <ul class="feature-list">
-            <li>Fast static hosting</li>
-            <li>Instant updates from GitHub pushes</li>
-            <li>Room to grow into a full app later</li>
+            <li>5 Free diagnostics operations processed per month</li>
+            <li>No payment configuration required for immediate trial</li>
+            <li>Direct Stripe payment pipeline links for Pro access upgrade</li>
           </ul>
         </section>
       </div>
-    </main>
+    </div>
 
-    <footer>
-      &copy; <span id="year"></span> National Sparky Field Buddy Solutions. All
-      rights reserved.
-      <script>
-        document.getElementById("year").textContent =
-          new Date().getFullYear();
-      </script>
-    </footer>
+    <!-- PRIVATE AUTHENTICATED WORKSPACE SECTION -->
+    <div id="dashboard-view" class="hidden">
+      <div class="dashboard-container">
+        <div class="workspace-layout">
+          <section class="card">
+            <h2>AI Diagnostic Core Workspace</h2>
+            <p>Input field updates, wiring observations, or customer system faults below to compile structured deployment logs.</p>
+            <textarea id="prompt-input" class="field-input" placeholder="Example: Replaced bad 30A dual pole breaker in main Square D panel. Customer reported occasional flickering on kitchen circuit branch. Found loose neutral wire on bus bar, cleaned and retorqued terminal to spec. Used one 30A breaker type HOM230..."></textarea>
+            <div class="panel-actions">
+              <button id="analyze-btn" class="btn-primary" onclick="runAnalysis()">Run Document Analysis</button>
+            </div>
+          </section>
+          
+          <section class="card">
+            <h2>Account Usage Telemetry</h2>
+            <p id="plan-badge" style="font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent-blue);">Plan: Free Tier</p>
+            <div class="meter-bar"><div id="meter-fill" class="meter-progress"></div></div>
+            <p style="font-size:0.9rem; margin-top:0.5rem;"><strong id="usage-count">5</strong> calculations remaining in active billing block.</p>
+            <p id="usage-status" style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Syncing user record context data streams...</p>
+          </section>
+        </div>
 
-    <!-- Supabase config -->
-    <script type="application/json" id="supabase-config">
-    {
-      "SUPABASE_URL": "https://dqyqlgnaawqnlxvxwcys.supabase.co",
-      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
-    }
-    </script>
+        <section class="card" style="width:100%; box-sizing:border-box;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+            <h2 style="margin:0;">Analysis Output Log Ledger</h2>
+            <div id="output-loader" class="hidden" style="font-size:0.85rem; color:var(--accent-blue); font-weight: 600;">Executing runtime proxy pipeline queries...</div>
+          </div>
+          <div id="output-block" class="terminal-window">Core module operational. Awaiting incoming prompt arrays...</div>
+        </section>
+      </div>
+    </div>
+  </main>
 
-    <!-- Supabase JS client CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <footer>
+    <div style="max-width:1100px; margin:0 auto; padding:0 1.5rem; font-size:0.8rem; color:#6b7280; display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+      <div>&copy; <span id="year"></span> National Sparky Field Buddy Solutions. All rights reserved.</div>
+      <div>Security Gateway Configuration Layer · Production Environment v1.0</div>
+    </div>
+  </footer>
 
-    <!-- Supabase + GitHub auth wiring -->
-    <script>
-      (function () {
-        "use strict";
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 
-        let supabase = null;
-        let cfg = null;
+  <!-- Complete Injected Production Configuration Metadata -->
+  <script type="application/json" id="supabase-config">
+  {
+    "SUPABASE_URL": "https://supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
+  }
+  </script>
 
-        try {
-          const configEl = document.getElementById("supabase-config");
-          cfg = JSON.parse(configEl.textContent);
-          supabase = window.supabase.createClient(
-            cfg.SUPABASE_URL,
-            cfg.SUPABASE_ANON_KEY,
-            { autoRefreshToken: true, persistSession: true }
-          );
-        } catch (e) {
-          console.error("Failed to initialize Supabase config:", e);
-          return;
-        }
-
-        const APP_URL = window.location.origin;
-
-        // GitHub sign-in handler for the CTA button
-        window.signInWithGitHub = async function signInWithGitHub() {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "github",
-            options: { redirectTo: APP_URL }
-          });
-          if (error) console.error(error);
-        };
-
-        // Optional: handle existing session
-        async function handleAuth() {
-          const { data, error } = await supabase.auth.getSession();
-          if (error) {
-            console.error(error);
-            return;
-          }
-          if (data?.session?.user) {
-            console.log(
-              "Signed in as:",
-              data.session.user.email || data.session.user.id
-            );
-          }
-        }
-
-        handleAuth();
-      })();
-    </script>
-  </body>
-</html>
+  <!-- Single Authorized Client CDN Driver Injection -->
+  <script src="https://jsdelivr.net"></script>
