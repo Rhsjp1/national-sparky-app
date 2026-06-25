@@ -61,241 +61,311 @@ body { background: #0f1117; }
 </main>
 
 <script type="application/json" id="supabase-config">
+<script type="application/json" id="supabase-config">
+<script type="application/json" id="supabase-config">
 {
   "SUPABASE_URL": "https://dqyqlgnaawqnlxvxwcys.supabase.co",
   "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
 }
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
-"use strict";
-const cfg = JSON.parse(document.getElementById('supabase-config').textContent);</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-(function() {
-"use strict";
-const cfg = JSON.parse(document.getElementById('supabase-config').textContent);
-if (cfg.SUPABASE_URL === "FILLME" || cfg.SUPABASE_ANON_KEY === "FILLME") {
-  console.error("Supabase config not filled in index.html");
-}
-const supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, { autoRefreshToken: true, persistSession: true });
-const state = { user: null, profile: null, usage: 0, usageLimit: 5, gpsWatching: false, gpsWatchId: null };
-const APP_URL = window.location.origin;
-const UP = APP_URL;
+  "use strict";
 
-function qs(id) { return document.getElementById(id); }
-
-async function ensureProfile() {
-  if (state.profile) return;
-  const { data } = await supabase.from('user_profiles').select('*').eq('id', state.user.id).single();
-  state.profile = data || { id: state.user.id, tier: 'free' };
-}
-
-async function refreshUsage() {
-  if (!state.user) return;
-  const { row_count } = await supabase.rpc('count_user_usage_30d', { uid: state.user.id }).catch(() => ({ row_count: 0 }));
-  state.usage = row_count || 0;
-  state.usageLimit = state.profile?.tier === 'free' || !state.profile?.tier ? 5 : Infinity;
-  updateHeader();
-}
-
-async function loadLogs() {
-  if (!state.user) return;
-  const { data } = await supabase.from('diagnostic_logs').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(50);
-  setHTML(qs('tab-history'), '<div class="bg-zinc-900 p-3 rounded border border-zinc-800">' + (dataLength(data) ? data.map(r => `<div class="mb-3 border-b border-zinc-800 pb-2"><p class="text-[10px] text-zinc-500">${esc(r.prompt_preview)}</p><p class="text-xs text-yellow-400 mt-1">${esc(r.answer_preview)}</p><span class="text-[10px] text-zinc-500">${new Date(r.created_at).toLocaleString()}</span></div>`).join('') : '<p class="text-xs text-zinc-500">No logs yet.</p>') + '</div>');
-}
-
-async function loadClients() {
-  if (!state.user) return;
-  const { data } = await supabase.from('clients').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(50);
-  const wrap = qs('tab-dispatch');
-  wrap.innerHTML = dataLength(data) ? data.map(c => `<div class="bg-zinc-900 p-3 rounded border border-zinc-800"><div class="flex justify-between"><div><h3 class="text-xs font-bold text-yellow-400">${esc(c.name)}</h3><p class="text-[10px] text-zinc-400">${esc(c.address)}</p><p class="text-[10px] text-zinc-400">${esc(c.phone)}</p></div><button onclick="deleteClient(${c.id})" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded">DEL</button></div>${c.notes ? `<p class="text-[10px] text-zinc-500 mt-1">${esc(c.notes)}</p>` : ''}</div>`).join('') : '<p class="text-xs text-zinc-500">No clients. Add one below.</p>';
-}
-
-function updateHeader() {
-  const pill = qs('usage-pill');
-  pill.textContent = 'DIAG: ' + state.usage + '/' + (state.usageLimit === Infinity ? '∞' : state.usageLimit);
-  pill.classList.toggle('hidden', !state.user);
-}
-
-function setHTML(id, html) { if (id) id.innerHTML = html; }
-function esc(s) { if (typeof s !== 'string') return ''; return s.replace(/[&<>\\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\\"':'&quot;'}[c])); }
-
-function switchTab(name) {
-  ['dispatch','diagnostic','history','settings'].forEach(t => { const el = qs('tab-' + t); if (el) el.classList.toggle('active', t === name); });
-  if (name === 'diagnostic') renderDiagnostic();
-  if (name === 'dispatch') drawDispatch();
-  if (name === 'history') loadLogs();
-}
-
-window.signInWithGitHub = async function signInWithGitHub() {
-  const { error } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: APP_URL } });
-  if (error) console.error(error);
-};
-window.doLogout = doLogout;
-
-async function handleAuth() {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) { console.error(error); return; }
-  if (data?.session?.user) {
-    state.user = data.session.user;
-    await ensureProfile();
-    await refreshUsage();
-    postAuthUI();
+  const cfg = JSON.parse(document.getElementById('supabase-config').textContent);
+  if (cfg.SUPABASE_URL === "FILLME" || cfg.SUPABASE_ANON_KEY === "FILLME") {
+    console.error("Supabase config not filled in index.html");
   }
-}
 
-function postAuthUI() {
-  const has = !!state.user;
-  qs('app-header').style.display = has ? '' : 'none';
-  qs('main-nav').style.display = has ? '' : 'none';
-  const gate = qs('auth-gate');
-  if (gate) gate.style.display = 'none';
-  const login = qs('tab-login');
-  if (login) login.style.display = 'none';
-  if (has) { switchTab('dispatch'); await loadClients(); }
-  else { qs('tab-dispatch') && (qs('tab-dispatch').innerHTML=''); qs('tab-diagnostic') && (qs('tab-diagnostic').innerHTML=''); qs('tab-history') && (qs('tab-history').innerHTML=''); switchTab('login'); }
-}
-
-async function startGPS() {
-  if (!('geolocation' in navigator)) return;
-  state.gpsWatchId = navigator.geolocation.watchPosition(
-    pos => {
-      if (state.gpsWatchId) qs('gps-status').textContent = 'GPS ON ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4);
-    },
-    () => { if (state.gpsWatchId) qs('gps-status').textContent = 'GPS OFF'; },
-    { enableHighAccuracy: true, timeout: 20000 }
+  const supabase = window.supabase.createClient(
+    cfg.SUPABASE_URL,
+    cfg.SUPABASE_ANON_KEY,
+    { autoRefreshToken: true, persistSession: true }
   );
-  state.gpsWatching = true;
-}
-function stopGPS() {
-  if (state.gpsWatchId && 'geolocation' in navigator && navigator.geolocation.clearWatch) {
-    navigator.geolocation.clearWatch(state.gpsWatchId);
+
+  const state = {
+    user: null,
+    profile: null,
+    usage: 0,
+    usageLimit: 5
+  };
+
+  const APP_URL = window.location.origin;
+  const UP = APP_URL;
+
+  function qs(id) {
+    return document.getElementById(id);
   }
-  state.gpsWatchId = null;
-  state.gpsWatching = false;
-}
 
-function drawDispatch() {
-  const title = 'DISPATCH · ' + (new Date()).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  const sm = '<div class="grid grid-cols-2 gap-2 mb-3">' +
-    '<div class="bg-zinc-900 p-2 rounded border-l-4 border-blue-500"><p class="text-[10px] text-zinc-500">ACTIVE ROUTE</p><p class="text-xs font-black text-yellow-400">Service Call #A7741</p></div>' +
-    '<div class="bg-zinc-900 p-2 rounded border-l-4 border-yellow-500"><p class="text-[10px] text-zinc-500">CURRENT JOB</p><p class="text-xs font-black text-yellow-400">Tier ' + state.profile?.tier + '</p></div>' +
-    '</div>';
-  const nav = '<button onclick="startGPS()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded border border-yellow-400">Start GPS</button>' +
-    '<button onclick="stopGPS()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded border border-yellow-400">Stop GPS</button>' +
-    '<button onclick="simulateDispatch()" class="text-[10px] bg-yellow-400 text-black px-2 py-1 rounded">Simulate Route</button>';
-  const form = '<div class="bg-zinc-900 p-3 rounded border border-zinc-800 space-y-2">' +
-    '<input id="client-name" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Client name" />' +
-    '<input id="client-address" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Address" />' +
-    '<input id="client-phone" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800" placeholder="Phone" />' +
-    '<textarea id="client-notes" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800 h-16" placeholder="Notes"></textarea>' +
-    '<button onclick="addClient()" class="bg-yellow-400 text-black font-black uppercase text-xs py-2 w-full rounded">Save Client</button>' +
-    '</div>';
-  setHTML(qs('tab-dispatch'), `<div class="space-y-3"><div class="flex justify-between items-center"><h3 class="text-xs font-black text-yellow-400 uppercase">${title}</h3><div class="space-x-2">${nav}</div></div>${sm}${form}</div>`);
-}
+  function dataLength(data) {
+    return Array.isArray(data) ? data.length : 0;
+  }
 
-async function simulateDispatch() {
-  const coords = await new Promise(resolve => {
-    if ('geolocation' in navigator) navigator.geolocation.getCurrentPosition(p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }), () => resolve(null), { enableHighAccuracy: true, timeout: 10000 });
-    else resolve(null);
-  });
-  const marker = coords ? `<div class="bg-zinc-900 p-2 rounded border-l-4 border-yellow-500"><p class="text-[10px] text-zinc-500">CURRENT POS</p><p class="text-xs font-black text-yellow-400">${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}</p></div>` : '';
-  setHTML(qs('tab-dispatch')?.querySelector('.space-y-3'), qs('tab-dispatch').innerHTML + marker);
-}
+  function setHTML(el, html) {
+    if (el) el.innerHTML = html;
+  }
 
-async function addClient() {
-  if (!state.user) return;
-  const { error } = await supabase.from('clients').insert({ user_id: state.user.id, name: qs('client-name')?.value || null, address: qs('client-address')?.value || null, phone: qs('client-phone')?.value || null, notes: qs('client-notes')?.value || null });
-  if (error) { alert('Failed to add client.'); return; }
-  await loadClients();
-  qs('client-name').value=''; qs('client-address').value=''; qs('client-phone').value=''; qs('client-notes').value='';
-  alert('Client saved.');
-}
+  function esc(s) {
+    if (typeof s !== "string") return "";
+    return s.replace(/[&<>\\"]/g, c => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\\"": "&quot;" }[c]
+    ));
+  }
 
-window.deleteClient = async function(id) {
-  if (!confirm('Delete?')) return;
-  await supabase.from('clients').delete().eq('id', id);
-  await loadClients();
-};
-
-async function renderDiagnostic() {
-  if (!state.user) return;
-  const panel = qs('tab-diagnostic');
-  if (!panel) return;
-  setHTML(panel, '<div class="space-y-3"><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-yellow-400 uppercase">NC Code Question</label><textarea id="diag-prompt" class="w-full bg-black text-zinc-100 text-xs p-2 rounded border border-zinc-800 h-24"></textarea></div><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-zinc-400 uppercase">Photo (optional)</label><input type="file" id="diag-photo" accept="image/*" class="text-xs bg-black text-zinc-100" /><button onclick="runDiagnose(\'photo\')" class="mt-2 bg-yellow-400 text-black font-black uppercase text-xs py-2 px-4 rounded">Diagnose with Photo</button></div><div class="bg-zinc-900 p-3 rounded border border-zinc-800"><label class="text-[10px] font-black text-zinc-400 uppercase">Voice</label><button onclick="runVoice()" class="mt-2 bg-black text-yellow-400 font-black uppercase text-xs py-2 px-4 rounded border border-yellow-400">Start Voice</button><p id="voice-text" class="text-xs text-zinc-400 mt-1"></p></div><button onclick="runDiagnose(\'text\')" class="bg-yellow-400 text-black font-black uppercase py-3 w-full rounded">Run Diagnosis (Text)</button><p id="diag-result" class="text-xs text-zinc-400 mt-2"></p></div>');
-}
-
-async function runDiagnose(mode) {
-  const result = qs('diag-result');
-  result.textContent = 'Running...';
-  try {
-    let body = {};
-    if (mode === 'text') { body.prompt = qs('diag-prompt')?.value || ''; }
-    else {
-      const file = qs('diag-photo')?.files?.[0];
-      if (!file) { alert('Select a photo.'); return; }
-      body.photo_base64 = await toBase64(file);
-      body.prompt = qs('diag-prompt')?.value || 'Analyze this electrical installation.';
-    }
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
-    if (!token) { result.textContent = 'Auth required. Refresh.'; return; }
-    const res = await fetch('/api/diagnose', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+  function switchTab(name) {
+    ["dispatch","diagnostic","history","settings"].forEach(t => {
+      const el = qs("tab-" + t);
+      if (el) el.classList.toggle("active", t === name);
     });
-    const json = await res.json().catch(() => ({ error: 'Invalid JSON' }));
-    if (res.status === 402) { result.textContent = json.error; qs('tab-diagnostic').innerHTML += '<div class="bg-red-900 p-2 rounded text-xs mt-2">Free limit reached. <button onclick="openUpgrade()" class="text-yellow-400 underline">Upgrade</button></div>'; return; }
-    if (!res.ok) { result.textContent = json.error || 'Error.'; return; }
-    result.innerHTML = '<div class="bg-zinc-900 p-3 rounded border border-yellow-600 mt-2"><p class="text-xs text-yellow-400 mb-1">Result:</p><p class="text-xs whitespace-pre-wrap">' + esc(json.answer) + '</p><p class="text-[10px] text-zinc-500 mt-1">Usage: ' + json.usage + '/' + (json.limit === Infinity ? '∞' : json.limit) + ' · Tier: ' + json.tier + '</p></div>';
-    await refreshUsage();
-    await loadLogs();
-  } catch (err) { result.textContent = 'Network error.'; console.error(err); }
-}
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = reject; reader.readAsDataURL(file); });
-}
-
-window.openUpgrade = async function() {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  const res = await fetch('/api/create-checkout', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tier: 'starter', priceId: process.env.STRIPE_STARTER_PRICE_ID || '' }),
-  });
-  const json = await res.json();
-  if (json.url) window.location.href = json.url;
-};
-
-async function runVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) { alert('Speech not supported.'); return; }
-  const rec = new SpeechRecognition();
-  rec.lang = 'en-US';
-  rec.interimResults = false;
-  rec.onresult = ev => { const txt = ev.results[0][0].transcript; qs('voice-text').textContent = txt; qs('diag-prompt').value = txt; };
-  rec.onerror = () => qs('voice-text').textContent = 'Voice error.';
-  rec.start();
-  setTimeout(() => { try { rec.stop(); } catch(e){} }, 120000);
-}
-
-function dataLength(data) { return Array.isArray(data) ? data.length : 0; }
-
-supabase.auth.onAuthStateChange((ev, sess) => {
-  if (ev === 'SIGNED_IN' || ev === 'TOKEN_REFRESHED') {
-    if (sess?.user) { state.user = sess.user; ensureProfile().then(() => refreshUsage()).then(postAuthUI); }
+    if (name === "diagnostic") renderDiagnostic();
+    if (name === "dispatch") drawDispatch();
+    if (name === "history") loadLogs();
   }
-  if (ev === 'SIGNED_OUT') { state.user = null; postAuthUI(); }
-});
 
-if (new URLSearchParams(window.location.search).get('upgrade') === 'success') { switchTab('settings'); alert('Subscription active. Tier will update shortly.'); }
+  function updateHeader() {
+    const pill = qs("usage-pill");
+    if (!pill) return;
+    pill.textContent = "DIAG: " + state.usage + "/" +
+      (state.usageLimit === Infinity ? "∞" : state.usageLimit);
+    pill.classList.toggle("hidden", !state.user);
+  }
 
-handleAuth();
+  async function ensureProfile() {
+    if (state.profile) return;
+    const { data } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .eq("id", state.user.id)
+      .single();
+    state.profile = data || { id: state.user.id, tier: "free" };
+  }
+
+  async function refreshUsage() {
+    if (!state.user) return;
+    const { row_count } = await supabase
+      .rpc("count_user_usage_30d", { uid: state.user.id })
+      .catch(() => ({ row_count: 0 }));
+    state.usage = row_count || 0;
+    state.usageLimit =
+      state.profile?.tier === "free" || !state.profile?.tier ? 5 : Infinity;
+    updateHeader();
+  }
+
+  async function loadLogs() {
+    if (!state.user) return;
+    const { data } = await supabase
+      .from("diagnostic_logs")
+      .select("*")
+      .eq("user_id", state.user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    const html = dataLength(data)
+      ? data.map(r => `
+        <div class="mb-3 border-b border-zinc-800 pb-2">
+          <p class="text-xs text-yellow-400 font-bold">
+            ${esc(r.title || "Diagnostic")}
+          </p>
+          <p class="text-[10px] text-zinc-400">
+            ${esc(r.summary || "")}
+          </p>
+        </div>
+      `).join("")
+      : '<p class="text-[10px] text-zinc-500">No diagnostics yet.</p>';
+    setHTML(qs("tab-history"), `
+      <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
+        ${html}
+      </div>
+    `);
+  }
+
+  async function loadClients() {
+    if (!state.user) return;
+    const { data } = await supabase
+      .from("clients")
+      .select("*")
+      .eq("user_id", state.user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    const wrap = qs("tab-dispatch");
+    if (!wrap) return;
+    wrap.innerHTML = dataLength(data)
+      ? data.map(c => `
+        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
+          <div class="flex justify-between">
+            <div>
+              <h3 class="text-xs font-bold text-yellow-400">
+                ${esc(c.name || "Client")}
+              </h3>
+              <p class="text-[10px] text-zinc-400">
+                ${esc(c.address || "")}
+              </p>
+            </div>
+            <button class="text-[10px] text-red-400"
+                    onclick="deleteClient(${c.id})">
+              Delete
+            </button>
+          </div>
+        </div>
+      `).join("")
+      : '<p class="text-[10px] text-zinc-500">No clients yet.</p>';
+  }
+
+  async function postAuthUI() {
+    const has = !!state.user;
+    qs("app-header").style.display = has ? "" : "none";
+    qs("main-nav").style.display = has ? "" : "none";
+
+    const gate = qs("auth-gate");
+    if (gate) gate.style.display = has ? "none" : "";
+
+    const login = qs("tab-login");
+    if (login) login.style.display = has ? "none" : "";
+
+    if (has) {
+      switchTab("dispatch");
+      await loadClients();
+    } else {
+      ["dispatch","diagnostic","history"].forEach(t => {
+        const el = qs("tab-" + t);
+        if (el) el.innerHTML = "";
+      });
+      switchTab("login");
+    }
+  }
+
+  window.signInWithGitHub = async function signInWithGitHub() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: APP_URL }
+    });
+    if (error) console.error(error);
+  };
+
+  window.doLogout = async function doLogout() {
+    await supabase.auth.signOut();
+  };
+
+  window.deleteClient = async function(id) {
+    if (!confirm("Delete?")) return;
+    await supabase.from("clients").delete().eq("id", id);
+    await loadClients();
+  };
+
+  async function renderDiagnostic() {
+    if (!state.user) return;
+    const panel = qs("tab-diagnostic");
+    if (!panel) return;
+    setHTML(panel, `
+      <div class="space-y-3">
+        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
+          <label class="text-[10px] font-black text-yellow-400 uppercase">
+            NC Code Question
+          </label>
+          <textarea id="diag-prompt"
+                    class="w-full bg-black text-xs text-zinc-100 mt-2 p-2 rounded border border-zinc-800"
+                    rows="4"></textarea>
+          <div class="flex space-x-2 mt-2">
+            <button onclick="runDiagnose('text')"
+                    class="flex-1 bg-yellow-400 text-black text-[11px] font-black py-2 rounded">
+              Text Only
+            </button>
+          </div>
+          <p id="diag-result"
+             class="text-[10px] text-zinc-400 mt-2 whitespace-pre-wrap"></p>
+        </div>
+      </div>
+    `);
+  }
+
+  async function runDiagnose(mode) {
+    const result = qs("diag-result");
+    if (!result) return;
+    result.textContent = "Running...";
+
+    try {
+      let body = {};
+      if (mode === "text") {
+        body.prompt = qs("diag-prompt")?.value || "";
+      }
+
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        result.textContent = "Auth required. Refresh.";
+        return;
+      }
+
+      const res = await fetch("/api/diagnose", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      const json = await res.json().catch(() => ({ error: "Invalid JSON" }));
+      if (res.status === 402) {
+        result.textContent = json.error;
+        return;
+      }
+      if (!res.ok) {
+        result.textContent = json.error || "Error.";
+        return;
+      }
+
+      result.innerHTML =
+        '<div class="bg-zinc-900 p-3 rounded border border-yellow-600 mt-2">' +
+        '<p class="text-xs text-yellow-400 mb-1">Result:</p>' +
+        '<p class="text-xs whitespace-pre-wrap">' +
+        esc(json.result || JSON.stringify(json, null, 2)) +
+        "</p></div>";
+
+      await refreshUsage();
+      await loadLogs();
+    } catch (err) {
+      result.textContent = "Network error.";
+      console.error(err);
+    }
+  }
+
+  supabase.auth.onAuthStateChange((ev, sess) => {
+    if (ev === "SIGNED_IN" || ev === "TOKEN_REFRESHED") {
+      if (sess?.user) {
+        state.user = sess.user;
+        ensureProfile()
+          .then(() => refreshUsage())
+          .then(() => postAuthUI());
+      }
+    }
+    if (ev === "SIGNED_OUT") {
+      state.user = null;
+      postAuthUI();
+    }
+  });
+
+  if (new URLSearchParams(window.location.search).get("upgrade") === "success") {
+    switchTab("settings");
+    alert("Subscription active. Tier will update shortly.");
+  }
+
+  async function handleAuth() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error(error);
+      return;
+    }
+    if (data?.session?.user) {
+      state.user = data.session.user;
+      await ensureProfile();
+      await refreshUsage();
+      await postAuthUI();
+    }
+  }
+
+  handleAuth();
 })();
 </script>
 </body>
