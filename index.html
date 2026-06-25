@@ -1,389 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>RHS Electrical OS</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body { background: #0f1117; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-</style>
-</head>
-<body class="flex flex-col min-h-screen bg-black text-zinc-100">
+  <head>
+    <meta charset="UTF-8" />
+    <title>National Sparky – Field Buddy Solutions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="National Sparky Field Buddy turns electrician service calls into clean work orders, parts lists, and customer‑ready summaries."
+    />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
 
-<header id="app-header" class="bg-yellow-400 text-black p-4 shadow-xl border-b-4 border-yellow-600 sticky top-0 z-40" style="display: none;">
-<div class="flex justify-between items-center">
-<div>
-<h1 class="text-sm font-black uppercase tracking-wider">⚡ RHS ELECTRICAL OS</h1>
-<p class="text-[10px] font-bold tracking-tight bg-black text-yellow-400 px-1 py-0.5 rounded inline-block mt-0.5">NC STATE COMPLIANT</p>
-</div>
-<div class="text-right space-x-2">
-<span id="usage-pill" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded font-mono font-bold hidden"></span>
-<span id="gps-status" class="text-[10px] bg-zinc-900 text-yellow-400 px-2 py-1 rounded font-mono font-bold">GPS OFF</span>
-<button onclick="doLogout()" class="text-[10px] bg-black text-yellow-400 px-2 py-1 rounded uppercase font-bold hover:bg-yellow-600">Logout</button>
-</div>
-</div>
-</header>
+      header {
+        padding: 1.5rem 1.25rem;
+        border-bottom: 1px solid #1f2937;
+        background: #020617;
+      }
 
-<nav id="main-nav" class="flex bg-zinc-900 text-xs font-bold uppercase border-b border-zinc-800" style="display: none;">
-<button onclick="switchTab('dispatch')" class="flex-1 py-3 text-center text-yellow-400 border-b-2 border-yellow-400">Dispatch</button>
-<button onclick="switchTab('diagnostic')" class="flex-1 py-3 text-center text-zinc-400">AI Diagnostic</button>
-<button onclick="switchTab('history')" class="flex-1 py-3 text-center text-zinc-400">Logs</button>
-<button onclick="switchTab('settings')" class="flex-1 py-3 text-center text-zinc-400">Settings</button>
-</nav>
+      .logo {
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #38bdf8;
+      }
 
-<main class="flex-1 p-3 space-y-3 overflow-y-auto">
+      main {
+        padding: 3rem 1.5rem 4rem;
+        max-width: 960px;
+        margin: 0 auto;
+      }
 
-<section id="auth-gate" class="tab-content active space-y-3">
-<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-<h2 class="text-lg font-black text-yellow-400 mb-2">Authentication Required</h2>
-<p class="text-xs text-zinc-400 mb-4">Sign in with GitHub to access NC Sparky suite.</p>
-<div id="auth-errors" class="text-xs text-red-400 mb-2 hidden"></div>
-<button onclick="signInWithGitHub()" class="w-full bg-yellow-400 text-black font-black uppercase py-3 rounded hover:bg-yellow-500">Sign in with GitHub</button>
-<p class="text-[10px] text-zinc-500 mt-2">Auth via Supabase Auth · 5 free diagnostics/month.</p>
-</div>
-</section>
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
 
-<section id="tab-login" class="tab-content space-y-3">
-<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-<h2 class="text-lg font-black text-yellow-400 mb-2">Sign in</h2>
-<button onclick="signInWithGitHub()" class="w-full bg-yellow-400 text-black font-black uppercase py-3 rounded hover:bg-yellow-500">GitHub</button>
-</div>
-</section>
+      p.lead {
+        font-size: 1.05rem;
+        max-width: 40rem;
+        color: #9ca3af;
+        margin-bottom: 1.75rem;
+      }
 
-<section id="tab-dispatch" class="tab-content space-y-3"></section>
-<section id="tab-diagnostic" class="tab-content space-y-3"></section>
-<section id="tab-history" class="tab-content space-y-3"></section>
-<section id="tab-settings" class="tab-content space-y-3"></section>
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid #22c55e55;
+        color: #bbf7d0;
+        margin-bottom: 0.75rem;
+      }
 
-</main>
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 2.5rem;
+      }
 
-      const res = await fetch("/api/diagnose", { 
-        method: "POST", headers: {
-<script>
-(function() {
-  "use strict";
+      .btn-primary {
+        background: #22c55e;
+        color: #022c22;
+        border: none;
+        border-radius: 999px;
+        padding: 0.7rem 1.4rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
 
-  // Read Supabase config JSON
-  const cfgEl = document.getElementById("supabase-config");
-  const cfg = JSON.parse(cfgEl.textContent);
+      .btn-secondary {
+        background: transparent;
+        color: #e5e7eb;
+        border-radius: 999px;
+        padding: 0.7rem 1.4rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border: 1px solid #4b5563;
+        cursor: pointer;
+      }
 
-  const supabase = window.supabase.createClient(
-    cfg.SUPABASE_URL,
-    cfg.SUPABASE_ANON_KEY,
-    { autoRefreshToken: true, persistSession: true }
-  );
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
+        gap: 2rem;
+      }
 
-  const state = {
-    user: null,
-    profile: null,
-    usage: 0,
-    usageLimit: 5,
-    gpsWatching: false,
-    gpsWatchId: null
-  };
+      .card {
+        border-radius: 0.9rem;
+        border: 1px solid #1f2937;
+        padding: 1.25rem 1.4rem;
+        background: #020617;
+      }
 
-  const APP_URL = window.location.origin;
+      .card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+      }
 
-  function qs(id) {
-    return document.getElementById(id);
-  }
+      .card p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #9ca3af;
+      }
 
-  function dataLength(data) {
-    return Array.isArray(data) ? data.length : 0;
-  }
+      ul.feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+      }
 
-  function esc(s) {
-    if (typeof s !== "string") return "";
-    return s.replace(/[&<>\\"]/g, c => (
-      { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\\"": "&quot;" }[c]
-    ));
-  }
+      ul.feature-list li::before {
+        content: "✓";
+        color: #22c55e;
+        margin-right: 0.4rem;
+      }
 
-  function updateHeader() {
-    const pill = qs("usage-pill");
-    if (!pill) return;
-    pill.textContent = "DIAG: " + state.usage + "/" +
-      (state.usageLimit === Infinity ? "∞" : state.usageLimit);
-    pill.classList.toggle("hidden", !state.user);
-  }
+      footer {
+        padding: 1rem 1.5rem 2.5rem;
+        max-width: 960px;
+        margin: 0 auto;
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
 
-  function switchTab(name) {
-    ["dispatch","diagnostic","history","settings"].forEach(t => {
-      const el = qs("tab-" + t);
-      if (el) el.classList.toggle("active", t === name);
-    });
-    if (name === "diagnostic") renderDiagnostic();
-    if (name === "dispatch") drawDispatch();
-    if (name === "history") loadLogs();
-  }
+      @media (max-width: 768px) {
+        main {
+          padding-top: 2.5rem;
+        }
 
-  async function ensureProfile() {
-    if (state.profile) return;
-    const { data } = await supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("id", state.user.id)
-      .single();
-    state.profile = data || { id: state.user.id, tier: "free" };
-  }
+        h1 {
+          font-size: 2rem;
+        }
 
-  async function refreshUsage() {
-    if (!state.user) return;
-    const { row_count } = await supabase
-      .rpc("count_user_usage_30d", { uid: state.user.id })
-      .catch(() => ({ row_count: 0 }));
-    state.usage = row_count || 0;
-    state.usageLimit =
-      state.profile?.tier === "free" || !state.profile?.tier ? 5 : Infinity;
-    updateHeader();
-  }
+        .grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">National Sparky · Field Buddy</div>
+    </header>
 
-  async function loadLogs() {
-    if (!state.user) return;
-    const { data } = await supabase
-      .from("diagnostic_logs")
-      .select("*")
-      .eq("user_id", state.user.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    const inner = dataLength(data)
-      ? data.map(r => `
-        <div class="mb-3 border-b border-zinc-800 pb-2">
-          <p class="text-xs text-yellow-400 font-bold">
-            ${esc(r.title || "Diagnostic")}
-          </p>
-          <p class="text-[10px] text-zinc-400">
-            ${esc(r.summary || "")}
-          </p>
-        </div>
-      `).join("")
-      : '<p class="text-[10px] text-zinc-500">No diagnostics yet.</p>';
-    const wrap = qs("tab-history");
-    if (wrap) {
-      wrap.innerHTML = `
-        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
-          ${inner}
-        </div>
-      `;
-    }
-  }
+    <main>
+      <span class="badge">Electrician & field service AI</span>
 
-  async function loadClients() {
-    if (!state.user) return;
-    const { data } = await supabase
-      .from("clients")
-      .select("*")
-      .eq("user_id", state.user.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
-    const wrap = qs("tab-dispatch");
-    if (!wrap) return;
-    wrap.innerHTML = dataLength(data)
-      ? data.map(c => `
-        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
-          <div class="flex justify-between">
-            <div>
-              <h3 class="text-xs font-bold text-yellow-400">
-                ${esc(c.name || "Client")}
-              </h3>
-              <p class="text-[10px] text-zinc-400">
-                ${esc(c.address || "")}
-              </p>
-            </div>
-            <button class="text-[10px] text-red-400"
-                    onclick="deleteClient(${c.id})">
-              Delete
-            </button>
-          </div>
-        </div>
-      `).join("")
-      : '<p class="text-[10px] text-zinc-500">No clients yet.</p>';
-  }
+      <h1>Turn every service call into a documented, billable job ticket.</h1>
 
-  async function postAuthUI() {
-    const has = !!state.user;
+      <p class="lead">
+        National Sparky Field Buddy turns your on‑site notes into clean work
+        orders, parts lists, and customer summaries — so you can spend more time
+        in the field and less time buried in paperwork.
+      </p>
 
-    const header = qs("app-header");
-    const nav = qs("main-nav");
-    if (header) header.style.display = has ? "" : "none";
-    if (nav) nav.style.display = has ? "" : "none";
-
-    const gate = qs("auth-gate");
-    if (gate) gate.style.display = has ? "none" : "";
-
-    const login = qs("tab-login");
-    if (login) login.style.display = has ? "none" : "";
-
-    if (has) {
-      switchTab("dispatch");
-      await loadClients();
-    } else {
-      ["dispatch","diagnostic","history"].forEach(t => {
-        const el = qs("tab-" + t);
-        if (el) el.innerHTML = "";
-      });
-      switchTab("login");
-    }
-  }
-
-  // GitHub sign-in handler used by the button
-  window.signInWithGitHub = async function signInWithGitHub() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: APP_URL }
-    });
-    if (error) console.error(error);
-  };
-
-  // Logout handler
-  window.doLogout = async function doLogout() {
-    await supabase.auth.signOut();
-  };
-
-  // Client creation
-  window.addClient = async function addClient() {
-    if (!state.user) return;
-    const name = qs("client-name")?.value || null;
-    const address = qs("client-address")?.value || null;
-    const phone = qs("client-phone")?.value || null;
-    const notes = qs("client-notes")?.value || null;
-    const { error } = await supabase
-      .from("clients")
-      .insert({ user_id: state.user.id, name, address, phone, notes });
-    if (error) {
-      alert("Failed to add client.");
-      return;
-    }
-    await loadClients();
-    if (qs("client-name")) qs("client-name").value = "";
-    if (qs("client-address")) qs("client-address").value = "";
-    if (qs("client-phone")) qs("client-phone").value = "";
-    if (qs("client-notes")) qs("client-notes").value = "";
-    alert("Client saved.");
-  };
-
-  // Client deletion handler
-  window.deleteClient = async function(id) {
-    if (!confirm("Delete?")) return;
-    await supabase.from("clients").delete().eq("id", id);
-    await loadClients();
-  };
-
-  async function renderDiagnostic() {
-    if (!state.user) return;
-    const panel = qs("tab-diagnostic");
-    if (!panel) return;
-    panel.innerHTML = `
-      <div class="space-y-3">
-        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
-          <label class="text-[10px] font-black text-yellow-400 uppercase">
-            NC Code Question
-          </label>
-          <textarea id="diag-prompt"
-                    class="w-full bg-black text-xs text-zinc-100 mt-2 p-2 rounded border border-zinc-800"
-                    rows="4"></textarea>
-          <div class="flex space-x-2 mt-2">
-            <button onclick="runDiagnose('text')"
-                    class="flex-1 bg-yellow-400 text-black text-[11px] font-black py-2 rounded">
-              Text Only
-            </button>
-          </div>
-          <p id="diag-result"
-             class="text-[10px] text-zinc-400 mt-2 whitespace-pre-wrap"></p>
-        </div>
+      <div class="cta-row">
+        <button class="btn-primary" onclick="signInWithGitHub()">
+          Request early access
+        </button>
+        <button class="btn-secondary">See how it works</button>
       </div>
-    `;
-  }
 
-  window.runDiagnose = async function(mode) {
-    const result = qs("diag-result");
-    if (!result) return;
-    result.textContent = "Running...";
+      <div class="grid">
+        <section class="card">
+          <h2>Built for technicians, not paperwork.</h2>
+          <p>
+            Capture quick notes in the driveway and let Field Buddy structure
+            them into something your office, customers, and accounting team can
+            all use.
+          </p>
+          <ul class="feature-list">
+            <li>Job summaries in plain language</li>
+            <li>Materials and parts pulled out automatically</li>
+            <li>Before / after notes saved with every visit</li>
+          </ul>
+        </section>
 
-    try {
-      let body = {};
-      if (mode === "text") {
-        body.prompt = qs("diag-prompt")?.value || "";
-      }
+        <section class="card">
+          <h2>What you get on day one</h2>
+          <p>
+            This simple National Sparky landing page is your first live version
+            — ready to connect to Supabase and Vercel so real customers can see
+            it.
+          </p>
+          <ul class="feature-list">
+            <li>Fast static hosting</li>
+            <li>Instant updates from GitHub pushes</li>
+            <li>Room to grow into a full app later</li>
+          </ul>
+        </section>
+      </div>
+    </main>
 
-      const { data } = await supabase.auth.getSession();
-      const token = data.session?.access_token;
-      if (!token) {
-        result.textContent = "Auth required. Refresh.";
-        return;
-      }
+    <footer>
+      &copy; <span id="year"></span> National Sparky Field Buddy Solutions. All
+      rights reserved.
+      <script>
+        document.getElementById("year").textContent =
+          new Date().getFullYear();
+      </script>
+    </footer>
 
-      const res = await fetch("/api/diagnose", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + token,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-
-      const json = await res.json().catch(() => ({ error: "Invalid JSON" }));
-      if (res.status === 402) {
-        result.textContent = json.error;
-        return;
-      }
-      if (!res.ok) {
-        result.textContent = json.error || "Error.";
-        return;
-      }
-
-      result.innerHTML =
-        '<div class="bg-zinc-900 p-3 rounded border border-yellow-600 mt-2">' +
-        '<p class="text-xs text-yellow-400 mb-1">Result:</p>' +
-        '<p class="text-xs whitespace-pre-wrap">' +
-        esc(json.result || JSON.stringify(json, null, 2)) +
-        "</p></div>";
-
-      await refreshUsage();
-      await loadLogs();
-    } catch (err) {
-      result.textContent = "Network error.";
-      console.error(err);
+    <!-- Supabase config -->
+    <script type="application/json" id="supabase-config">
+    {
+      "SUPABASE_URL": "https://dqyqlgnaawqnlxvxwcys.supabase.co",
+      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
     }
-  };
+    </script>
 
-  supabase.auth.onAuthStateChange((ev, sess) => {
-    if (ev === "SIGNED_IN" || ev === "TOKEN_REFRESHED") {
-      if (sess?.user) {
-        state.user = sess.user;
-        ensureProfile()
-          .then(() => refreshUsage())
-          .then(() => postAuthUI());
-      }
-    }
-    if (ev === "SIGNED_OUT") {
-      state.user = null;
-      postAuthUI();
-    }
-  });
+    <!-- Supabase JS client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-  if (new URLSearchParams(window.location.search).get("upgrade") === "success") {
-    switchTab("settings");
-    alert("Subscription active. Tier will update shortly.");
-  }
+    <!-- Supabase + GitHub auth wiring -->
+    <script>
+      (function () {
+        "use strict";
 
-  async function handleAuth() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error(error);
-      return;
-    }
-    if (data?.session?.user) {
-      state.user = data.session.user;
-      await ensureProfile();
-      await refreshUsage();
-      await postAuthUI();
-    }
-  }
+        let supabase = null;
+        let cfg = null;
 
-  handleAuth();
-})();
-</script>
+        try {
+          const configEl = document.getElementById("supabase-config");
+          cfg = JSON.parse(configEl.textContent);
+          supabase = window.supabase.createClient(
+            cfg.SUPABASE_URL,
+            cfg.SUPABASE_ANON_KEY,
+            { autoRefreshToken: true, persistSession: true }
+          );
+        } catch (e) {
+          console.error("Failed to initialize Supabase config:", e);
+          return;
+        }
+
+        const APP_URL = window.location.origin;
+
+        // GitHub sign-in handler for the CTA button
+        window.signInWithGitHub = async function signInWithGitHub() {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "github",
+            options: { redirectTo: APP_URL }
+          });
+          if (error) console.error(error);
+        };
+
+        // Optional: handle existing session
+        async function handleAuth() {
+          const { data, error } = await supabase.auth.getSession();
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (data?.session?.user) {
+            console.log(
+              "Signed in as:",
+              data.session.user.email || data.session.user.id
+            );
+          }
+        }
+
+        handleAuth();
+      })();
+    </script>
+  </body>
+</html>
