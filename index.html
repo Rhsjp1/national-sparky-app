@@ -62,22 +62,13 @@ body { background: #0f1117; }
 
       const res = await fetch("/api/diagnose", { 
         method: "POST", headers: {
-<script type="application/json" id="supabase-config">
-{
-  "SUPABASE_URL": "https://dqyqlgnaawqnlxvxwcys.supabase.co",
-  "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
-}
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
   "use strict";
 
-  const cfg = JSON.parse(document.getElementById('supabase-config').textContent);
-  if (cfg.SUPABASE_URL === "FILLME" || cfg.SUPABASE_ANON_KEY === "FILLME") {
-    console.error("Supabase config not filled in index.html");
-  }
+  // Read Supabase config JSON
+  const cfgEl = document.getElementById("supabase-config");
+  const cfg = JSON.parse(cfgEl.textContent);
 
   const supabase = window.supabase.createClient(
     cfg.SUPABASE_URL,
@@ -89,11 +80,12 @@ body { background: #0f1117; }
     user: null,
     profile: null,
     usage: 0,
-    usageLimit: 5
+    usageLimit: 5,
+    gpsWatching: false,
+    gpsWatchId: null
   };
 
   const APP_URL = window.location.origin;
-  const UP = APP_URL;
 
   function qs(id) {
     return document.getElementById(id);
@@ -103,15 +95,19 @@ body { background: #0f1117; }
     return Array.isArray(data) ? data.length : 0;
   }
 
-  function setHTML(el, html) {
-    if (el) el.innerHTML = html;
-  }
-
   function esc(s) {
     if (typeof s !== "string") return "";
     return s.replace(/[&<>\\"]/g, c => (
       { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\\\"": "&quot;" }[c]
     ));
+  }
+
+  function updateHeader() {
+    const pill = qs("usage-pill");
+    if (!pill) return;
+    pill.textContent = "DIAG: " + state.usage + "/" +
+      (state.usageLimit === Infinity ? "∞" : state.usageLimit);
+    pill.classList.toggle("hidden", !state.user);
   }
 
   function switchTab(name) {
@@ -122,14 +118,6 @@ body { background: #0f1117; }
     if (name === "diagnostic") renderDiagnostic();
     if (name === "dispatch") drawDispatch();
     if (name === "history") loadLogs();
-  }
-
-  function updateHeader() {
-    const pill = qs("usage-pill");
-    if (!pill) return;
-    pill.textContent = "DIAG: " + state.usage + "/" +
-      (state.usageLimit === Infinity ? "∞" : state.usageLimit);
-    pill.classList.toggle("hidden", !state.user);
   }
 
   async function ensureProfile() {
@@ -161,7 +149,7 @@ body { background: #0f1117; }
       .eq("user_id", state.user.id)
       .order("created_at", { ascending: false })
       .limit(50);
-    const html = dataLength(data)
+    const inner = dataLength(data)
       ? data.map(r => `
         <div class="mb-3 border-b border-zinc-800 pb-2">
           <p class="text-xs text-yellow-400 font-bold">
@@ -173,11 +161,14 @@ body { background: #0f1117; }
         </div>
       `).join("")
       : '<p class="text-[10px] text-zinc-500">No diagnostics yet.</p>';
-    setHTML(qs("tab-history"), `
-      <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
-        ${html}
-      </div>
-    `);
+    const wrap = qs("tab-history");
+    if (wrap) {
+      wrap.innerHTML = `
+        <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
+          ${inner}
+        </div>
+      `;
+    }
   }
 
   async function loadClients() {
@@ -214,8 +205,11 @@ body { background: #0f1117; }
 
   async function postAuthUI() {
     const has = !!state.user;
-    qs("app-header").style.display = has ? "" : "none";
-    qs("main-nav").style.display = has ? "" : "none";
+
+    const header = qs("app-header");
+    const nav = qs("main-nav");
+    if (header) header.style.display = has ? "" : "none";
+    if (nav) nav.style.display = has ? "" : "none";
 
     const gate = qs("auth-gate");
     if (gate) gate.style.display = has ? "none" : "";
@@ -235,6 +229,7 @@ body { background: #0f1117; }
     }
   }
 
+  // GitHub sign-in handler used by the button
   window.signInWithGitHub = async function signInWithGitHub() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
@@ -243,10 +238,34 @@ body { background: #0f1117; }
     if (error) console.error(error);
   };
 
+  // Logout handler
   window.doLogout = async function doLogout() {
     await supabase.auth.signOut();
   };
 
+  // Client creation
+  window.addClient = async function addClient() {
+    if (!state.user) return;
+    const name = qs("client-name")?.value || null;
+    const address = qs("client-address")?.value || null;
+    const phone = qs("client-phone")?.value || null;
+    const notes = qs("client-notes")?.value || null;
+    const { error } = await supabase
+      .from("clients")
+      .insert({ user_id: state.user.id, name, address, phone, notes });
+    if (error) {
+      alert("Failed to add client.");
+      return;
+    }
+    await loadClients();
+    if (qs("client-name")) qs("client-name").value = "";
+    if (qs("client-address")) qs("client-address").value = "";
+    if (qs("client-phone")) qs("client-phone").value = "";
+    if (qs("client-notes")) qs("client-notes").value = "";
+    alert("Client saved.");
+  };
+
+  // Client deletion handler
   window.deleteClient = async function(id) {
     if (!confirm("Delete?")) return;
     await supabase.from("clients").delete().eq("id", id);
@@ -257,7 +276,7 @@ body { background: #0f1117; }
     if (!state.user) return;
     const panel = qs("tab-diagnostic");
     if (!panel) return;
-    setHTML(panel, `
+    panel.innerHTML = `
       <div class="space-y-3">
         <div class="bg-zinc-900 p-3 rounded border border-zinc-800">
           <label class="text-[10px] font-black text-yellow-400 uppercase">
@@ -276,10 +295,10 @@ body { background: #0f1117; }
              class="text-[10px] text-zinc-400 mt-2 whitespace-pre-wrap"></p>
         </div>
       </div>
-    `);
+    `;
   }
 
-  async function runDiagnose(mode) {
+  window.runDiagnose = async function(mode) {
     const result = qs("diag-result");
     if (!result) return;
     result.textContent = "Running...";
@@ -329,7 +348,7 @@ body { background: #0f1117; }
       result.textContent = "Network error.";
       console.error(err);
     }
-  }
+  };
 
   supabase.auth.onAuthStateChange((ev, sess) => {
     if (ev === "SIGNED_IN" || ev === "TOKEN_REFRESHED") {
@@ -368,7 +387,3 @@ body { background: #0f1117; }
   handleAuth();
 })();
 </script>
-</body>
-</html>
-
-
