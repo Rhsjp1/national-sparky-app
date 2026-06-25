@@ -183,9 +183,230 @@ html
   <script type="application/json" id="supabase-config">
   {
     "SUPABASE_URL": "https://supabase.co",
-    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"
-  }
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"  }
   </script>
 
   <!-- Single Authorized Client CDN Driver Injection -->
   <script src="https://jsdelivr.net"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  let supabaseClientInstance = null;
+  let appEnvironmentConfig = null;
+  let signedInAccessToken = null;
+
+  // 1. Initialize Supabase Connection Safely
+  try {
+    const configurationTarget = document.getElementById("supabase-config");
+    appEnvironmentConfig = JSON.parse(configurationTarget.textContent);
+
+    supabaseClientInstance = window.supabase.createClient(
+      appEnvironmentConfig.SUPABASE_URL,
+      appEnvironmentConfig.SUPABASE_ANON_KEY,
+      {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true
+        }
+      }
+    );
+  } catch (err) {
+    console.error("Framework initialization fatal break:", err);
+    return;
+  }
+
+  // 2. Authentication Lifecycle Evaluators
+  async function syncSessionState() {
+    const { data } = await supabaseClientInstance.auth.getSession();
+
+    if (!data?.session) {
+      signedInAccessToken = null;
+      renderActiveView("landing");
+      return;
+    }
+
+    const authenticatedUser = data.session.user;
+    signedInAccessToken = data.session.access_token;
+
+    const emailEl = document.getElementById("user-email");
+    if (emailEl) {
+      const shortId = authenticatedUser.id
+        ? authenticatedUser.id.substring(0, 8)
+        : "";
+      emailEl.textContent =
+        authenticatedUser.email || (shortId ? `ID: ${shortId}` : "Signed in");
+    }
+
+    renderActiveView("dashboard");
+    pullUsageMetrics();
+  }
+
+  function renderActiveView(targetLayoutView) {
+    const publicLandingLayout = document.getElementById("landing-view");
+    const internalDashboardLayout = document.getElementById("dashboard-view");
+    const interfaceHeaderAuthBadge = document.getElementById("auth-status");
+
+    if (!publicLandingLayout || !internalDashboardLayout || !interfaceHeaderAuthBadge) {
+      return;
+    }
+
+    if (targetLayoutView === "dashboard") {
+      publicLandingLayout.classList.add("hidden");
+      internalDashboardLayout.classList.remove("hidden");
+      interfaceHeaderAuthBadge.classList.remove("hidden");
+    } else {
+      internalDashboardLayout.classList.add("hidden");
+      publicLandingLayout.classList.remove("hidden");
+      interfaceHeaderAuthBadge.classList.add("hidden");
+    }
+  }
+
+  // 3. User Authorization Operations
+  window.signInWithGitHub = async function () {
+    const { error } = await supabaseClientInstance.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: window.location.origin }
+    });
+
+    if (error) {
+      console.error("OAuth pipeline operational failure:", error.message);
+    }
+  };
+
+  window.executeLogout = async function () {
+    const { error } = await supabaseClientInstance.auth.signOut();
+    if (error) {
+      console.error("Logout failed:", error.message);
+    }
+    renderActiveView("landing");
+  };
+
+  // 4. Remote Serverless Edge Endpoint Access Connectors
+  async function pullUsageMetrics() {
+    const countEl = document.getElementById("usage-count");
+    const statusEl = document.getElementById("usage-status");
+    const planBadgeEl = document.getElementById("plan-badge");
+    const meterFillEl = document.getElementById("meter-fill");
+
+    try {
+      const connectionResult = await fetch(
+        `${appEnvironmentConfig.SUPABASE_URL}/functions/v1/check-usage`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${signedInAccessToken}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!connectionResult.ok) {
+        throw new Error("Database context parsing error");
+      }
+
+      const telemetryOutput = await connectionResult.json();
+
+      if (planBadgeEl) {
+        planBadgeEl.textContent =
+          `Plan: ${telemetryOutput.plan?.toUpperCase() || "UNKNOWN"}`;
+      }
+      if (countEl) {
+        countEl.textContent = telemetryOutput.remaining ?? "0";
+      }
+      if (statusEl) {
+        statusEl.textContent =
+          `Logged operations: ${telemetryOutput.used ?? 0} system transactions completed.`;
+      }
+
+      if (meterFillEl) {
+        const used = telemetryOutput.used ?? 0;
+        const fillRatio =
+          telemetryOutput.plan === "free" ? (used / 5) * 100 : 0;
+        meterFillEl.style.width = `${Math.min(100, fillRatio)}%`;
+      }
+    } catch (err) {
+      console.error("Usage metrics sync failed:", err);
+      if (countEl) countEl.textContent = "ERR";
+      if (statusEl) {
+        statusEl.textContent =
+          "Failed to sync transaction counters with cloud cluster nodes.";
+      }
+    }
+  }
+
+  window.runAnalysis = async function () {
+    const userPromptInput = document.getElementById("prompt-input");
+    const displayTerminalBlock = document.getElementById("output-block");
+    const operationalSpinnerElement = document.getElementById("output-loader");
+    const contextSubmissionButton = document.getElementById("analyze-btn");
+
+    if (!userPromptInput || !displayTerminalBlock || !operationalSpinnerElement || !contextSubmissionButton) {
+      console.error("Diagnostic UI elements missing.");
+      return;
+    }
+
+    const userPromptString = userPromptInput.value.trim();
+    if (!userPromptString) {
+      alert("Field parameter note buffer empty. Please provide text inputs.");
+      return;
+    }
+
+    operationalSpinnerElement.classList.remove("hidden");
+    displayTerminalBlock.textContent =
+      "Negotiating secure crypto-handshake parameters with processing array nodes...";
+    contextSubmissionButton.disabled = true;
+
+    try {
+      const actionResponse = await fetch(
+        `${appEnvironmentConfig.SUPABASE_URL}/functions/v1/analyze`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${signedInAccessToken}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ prompt: userPromptString })
+        }
+      );
+
+      if (actionResponse.status === 403) {
+        displayTerminalBlock.textContent =
+          "SECURITY EXCEPTION ALERT: Account operation capability suspended. Free tier usage matrix threshold (5/5) exceeded.";
+        return;
+      }
+
+      if (!actionResponse.ok) {
+        throw new Error("Upstream serverless engine returned processing exceptions.");
+      }
+
+      const queryJSONResult = await actionResponse.json();
+
+      const cleanMarkdownResponseText =
+        queryJSONResult.candidates?.[0]?.content?.parts?.[0]?.text ??
+        JSON.stringify(queryJSONResult, null, 2);
+
+      displayTerminalBlock.textContent = cleanMarkdownResponseText;
+      pullUsageMetrics();
+    } catch (error) {
+      console.error("Analysis run failed:", error);
+      displayTerminalBlock.textContent =
+        `SYSTEM EXCEPTION ROUTINE INTERRUPT: ${error.message}. ` +
+        "Ensure your cloud environment parameters match production configurations and that edge router functions are fully deployed via the Supabase CLI.";
+    } finally {
+      operationalSpinnerElement.classList.add("hidden");
+      contextSubmissionButton.disabled = false;
+    }
+  };
+
+  // 5. Initialize Continuous Event State Monitors
+  supabaseClientInstance.auth.onAuthStateChange((stateNotificationType) => {
+    if (stateNotificationType === "SIGNED_IN" || stateNotificationType === "SIGNED_OUT") {
+      syncSessionState();
+    }
+  });
+
+  syncSessionState();
+})();
+</script>
