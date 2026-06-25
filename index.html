@@ -124,19 +124,11 @@ function switchTab(name) {
   if (name === 'history') loadLogs();
 }
 
-async function signInWithGitHub() {
+window.signInWithGitHub = async function signInWithGitHub() {
   const { error } = await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: APP_URL } });
   if (error) console.error(error);
-}
-
-async function doLogout() {
-  stopGPS();
-  await supabase.auth.signOut();
-  state.user = null;
-  state.profile = null;
-  state.usage = 0;
-  postAuthUI();
-}
+};
+window.doLogout = doLogout;
 
 async function handleAuth() {
   const { data, error } = await supabase.auth.getSession();
