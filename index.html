@@ -1,412 +1,386 @@
-html
+sh
+
+cat > /mnt/user-data/outputs/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>National Sparky – Field Buddy Solutions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="National Sparky Field Buddy turns electrician service calls into clean work orders, parts lists, and customer‑ready summaries." />
-  <style>
-    :root {
-      --bg-main: #0f172a;
-      --bg-card: #020617;
-      --border-color: #1f2937;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --accent-blue: #38bdf8;
-      --accent-green: #22c55e;
-    }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 0;
-      background: var(--bg-main);
-      color: var(--text-main);
-    }
-    header {
-      padding: 1.5rem 1.25rem;
-      border-bottom: 1px solid var(--border-color);
-      background: var(--bg-card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      color: var(--accent-blue);
-    }
-    .auth-badge-bar {
-      font-size: 0.85rem;
-      background: #1e293b;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    main {
-      padding: 3rem 1.5rem 4rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    h1 { font-size: 2.5rem; margin-bottom: 0.75rem; line-height: 1.2; }
-    p.lead { font-size: 1.05rem; max-width: 40rem; color: var(--text-muted); margin-bottom: 1.75rem; }
-    .badge {
-      display: inline-block;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid #22c55e55;
-      color: #bbf7d0;
-      margin-bottom: 0.75rem;
-    }
-    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2.5rem; }
-    .btn-primary { background: var(--accent-green); color: #022c22; border: none; border-radius: 999px; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-    .btn-secondary { background: transparent; color: var(--text-main); border-radius: 999px; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 500; border: 1px solid #4b5563; cursor: pointer; }
-    .btn-danger { background: #ef4444; color: #ffffff; border: none; border-radius: 6px; padding: 0.4rem 0.8rem; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
-    .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; }
-    .card { border-radius: 0.9rem; border: 1px solid var(--border-color); padding: 1.5rem; background: var(--bg-card); height: fit-content; }
-    .card h2 { margin: 0 0 0.5rem; font-size: 1.2rem; color: var(--accent-blue); }
-    .card p { margin: 0 0 1rem; font-size: 0.9rem; color: var(--text-muted); }
-    ul.feature-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
-    ul.feature-list li::before { content: "✓ "; color: var(--accent-green); font-weight: bold; }
-    .hidden { display: none !important; }
-    
-    /* Technical Workspace Dashboard UI Panels */
-    .dashboard-container { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-    .workspace-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; }
-    textarea.field-input { width: 100%; height: 180px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; color: #fff; font-family: inherit; resize: vertical; box-sizing: border-box; font-size: 0.95rem; }
-    .panel-actions { margin-top: 1rem; display: flex; justify-content: flex-end; }
-    .terminal-window { background: #020617; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; min-height: 220px; font-family: monospace; font-size: 0.9rem; color: #34d399; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; }
-    .meter-bar { height: 10px; background: #1e293b; border-radius: 999px; overflow: hidden; margin: 0.75rem 0; border: 1px solid #334155; }
-    .meter-progress { height: 100%; background: var(--accent-blue); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-    @media (max-width: 768px) {
-      .grid, .workspace-layout { grid-template-columns: 1fr; }
-      h1 { font-size: 2rem; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>⚡ SparkySolve — National Sparky</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+.card{background:#15151d;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.25rem;margin-bottom:.75rem}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:8px;font-size:.875rem;font-weight:500;cursor:pointer;padding:.7rem 1rem;width:100%;transition:opacity .15s}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-gold{background:#f4a100;color:#0b0b0f}.btn-gold:hover:not(:disabled){opacity:.88}
+.btn-dim{background:#1c1c27;color:#eeeef2;border:1px solid rgba(255,255,255,.08)}.btn-dim:hover:not(:disabled){border-color:rgba(244,161,0,.4)}
+.btn-sm{padding:.35rem .75rem;width:auto;font-size:.78rem}
+.inp{width:100%;background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#eeeef2;font-size:.875rem;padding:.6rem .75rem;outline:none;font-family:inherit}
+.inp:focus{border-color:rgba(244,161,0,.4)}
+.tx{min-height:96px;resize:vertical}
+.muted{color:#8888a2}.dim{color:#44445a}
+.hidden{display:none!important}
+.tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:.65rem .5rem;font-size:.78rem;font-weight:500;color:#44445a;cursor:pointer}
+.tab-btn.on{color:#f4a100;border-bottom-color:#f4a100}
+#result-pre{background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:1rem;font-size:.8rem;line-height:1.65;white-space:pre-wrap;font-family:monospace;max-height:360px;overflow-y:auto}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.55rem 1rem;font-size:.82rem;z-index:999;transition:transform .25s;pointer-events:none;white-space:nowrap}
+</style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">National Sparky · Field Buddy</div>
-    <div id="auth-status" class="auth-badge-bar hidden">
-      <span>Logged in: <span id="user-email" style="color:var(--accent-blue); font-weight:600;"></span></span>
-      <button class="btn-danger" onclick="executeLogout()">Sign Out</button>
+<!-- LOGIN -->
+<div id="pg-login" class="min-h-screen flex flex-col items-center justify-center px-4 py-10 gap-5">
+  <div style="font-size:3rem">⚡</div>
+  <div style="text-align:center">
+    <h1 style="font-size:1.5rem;font-weight:600;letter-spacing:-.02em">SparkySolve</h1>
+    <p class="muted" style="font-size:.85rem;margin-top:3px">National Sparky — NC Electrician Field OS</p>
+  </div>
+
+  <div class="card" style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:.9rem">
+    <button class="btn btn-gold" id="btn-github">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      Sign in with GitHub
+    </button>
+    <div style="display:flex;align-items:center;gap:.5rem;font-size:.75rem" class="dim">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,.07)"></div>or<div style="flex:1;height:1px;background:rgba(255,255,255,.07)"></div>
     </div>
+    <input class="inp" type="email" id="inp-email" placeholder="Email — magic link"/>
+    <button class="btn btn-dim" id="btn-magic">Send magic link</button>
+    <p id="login-msg" style="font-size:.8rem;text-align:center;min-height:1.1em" class="muted"></p>
+  </div>
+
+  <div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+    <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+    <span>🗺️ GPS dispatch + client routing</span>
+    <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+    <span>🔒 5 free AI diagnostics / month</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="pg-app" class="hidden" style="max-width:480px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh">
+
+  <!-- header -->
+  <header style="background:#15151d;border-bottom:1px solid rgba(255,255,255,.08);padding:.65rem 1rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:50">
+    <span style="font-size:.95rem;font-weight:600;flex:1">⚡ SparkySolve</span>
+    <span id="hdr-usage" style="font-size:.72rem;background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:3px 10px" class="muted">—</span>
+    <button class="btn btn-dim btn-sm" id="btn-logout" style="width:auto">↪</button>
   </header>
 
-  <main>
-    <!-- PUBLIC LANDING MARKETING SECTION -->
-    <div id="landing-view" class="hidden">
-      <span class="badge">Electrician & Field Service AI Engine</span>
-      <h1>Turn every service call into a documented, billable job ticket.</h1>
-      <p class="lead">
-        National Sparky Field Buddy processes raw on‑site electrician notes into structured work orders, materials manifests, and clean customer briefings instantly.
-      </p>
-      <div class="cta-row">
-        <button class="btn-primary" onclick="signInWithGitHub()">Sign In with GitHub</button>
-        <button class="btn-secondary" onclick="document.getElementById('features-anchor').scrollIntoView({behavior:'smooth'})">See Features</button>
-      </div>
-      <div class="grid" id="features-anchor">
-        <section class="card">
-          <h2>Built for technicians, not paperwork.</h2>
-          <p>Capture casual drive-way dictation and summaries and let the system standardize the formatting parameters.</p>
-          <ul class="feature-list">
-            <li>Plain text notes mapped into clean job invoices</li>
-            <li>Automated parsing of materials and parts counts</li>
-            <li>Consistent audit logging saved across every visit</li>
-          </ul>
-        </section>
-        <section class="card">
-          <h2>Account Quota System</h2>
-          <p>Every account includes a zero-configuration testing sandbox directly enabled on setup.</p>
-          <ul class="feature-list">
-            <li>5 Free diagnostics operations processed per month</li>
-            <li>No payment configuration required for immediate trial</li>
-            <li>Direct Stripe payment pipeline links for Pro access upgrade</li>
-          </ul>
-        </section>
-      </div>
-    </div>
+  <!-- user strip -->
+  <div style="background:#101016;padding:.5rem 1rem;font-size:.75rem;display:flex;align-items:center;gap:.5rem" class="muted">
+    <span id="hdr-email">—</span>
+    <span id="hdr-plan" style="background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:1px 8px;font-size:.68rem;font-weight:500">FREE</span>
+  </div>
 
-    <!-- PRIVATE AUTHENTICATED WORKSPACE SECTION -->
-    <div id="dashboard-view" class="hidden">
-      <div class="dashboard-container">
-        <div class="workspace-layout">
-          <section class="card">
-            <h2>AI Diagnostic Core Workspace</h2>
-            <p>Input field updates, wiring observations, or customer system faults below to compile structured deployment logs.</p>
-            <textarea id="prompt-input" class="field-input" placeholder="Example: Replaced bad 30A dual pole breaker in main Square D panel. Customer reported occasional flickering on kitchen circuit branch. Found loose neutral wire on bus bar, cleaned and retorqued terminal to spec. Used one 30A breaker type HOM230..."></textarea>
-            <div class="panel-actions">
-              <button id="analyze-btn" class="btn-primary" onclick="runAnalysis()">Run Document Analysis</button>
-            </div>
-          </section>
-          
-          <section class="card">
-            <h2>Account Usage Telemetry</h2>
-            <p id="plan-badge" style="font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent-blue);">Plan: Free Tier</p>
-            <div class="meter-bar"><div id="meter-fill" class="meter-progress"></div></div>
-            <p style="font-size:0.9rem; margin-top:0.5rem;"><strong id="usage-count">5</strong> calculations remaining in active billing block.</p>
-            <p id="usage-status" style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Syncing user record context data streams...</p>
-          </section>
+  <!-- tabs -->
+  <nav style="background:#101016;border-bottom:1px solid rgba(255,255,255,.08);display:flex">
+    <button class="tab-btn on" data-tab="diagnose">⚡ Diagnose</button>
+    <button class="tab-btn" data-tab="dispatch">🗺️ Dispatch</button>
+    <button class="tab-btn" data-tab="logs">📋 Logs</button>
+  </nav>
+
+  <main style="flex:1;overflow-y:auto;padding:1rem">
+
+    <!-- DIAGNOSE -->
+    <div id="tab-diagnose">
+      <div class="card">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem" class="dim">NC Code Circuit Analyzer</div>
+
+        <!-- usage bar -->
+        <div id="usage-bar-wrap" style="margin-bottom:.75rem">
+          <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:4px">
+            <span class="muted" id="usage-label">Monthly diagnostics</span>
+            <button class="btn btn-dim btn-sm" id="btn-upgrade" style="width:auto">Upgrade</button>
+          </div>
+          <div style="height:5px;background:#1c1c27;border-radius:3px;overflow:hidden">
+            <div id="usage-fill" style="height:100%;width:0%;background:#f4a100;border-radius:3px;transition:width .4s"></div>
+          </div>
+          <p id="usage-sub" style="font-size:.72rem;margin-top:3px" class="muted"></p>
         </div>
 
-        <section class="card" style="width:100%; box-sizing:border-box;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-            <h2 style="margin:0;">Analysis Output Log Ledger</h2>
-            <div id="output-loader" class="hidden" style="font-size:0.85rem; color:var(--accent-blue); font-weight: 600;">Executing runtime proxy pipeline queries...</div>
-          </div>
-          <div id="output-block" class="terminal-window">Core module operational. Awaiting incoming prompt arrays...</div>
-        </section>
+        <textarea class="inp tx" id="prompt" placeholder="Describe the circuit issue or code question…&#10;e.g. Kitchen GFCI tripping — 20A, NM-B 12/2"></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-gold" id="btn-analyze" style="flex:1">⚡ Analyze</button>
+          <button class="btn btn-dim btn-sm" id="btn-clear" style="width:auto;padding:0 1rem">Clear</button>
+        </div>
+        <p id="diag-status" style="font-size:.78rem;text-align:center;margin-top:.4rem;min-height:1.1em" class="muted"></p>
+      </div>
+      <div id="result-wrap" class="hidden card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+          <span style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Analysis</span>
+          <button class="btn btn-dim btn-sm" id="btn-copy" style="width:auto">Copy</button>
+        </div>
+        <pre id="result-pre"></pre>
       </div>
     </div>
-  </main>
 
-  <footer>
-    <div style="max-width:1100px; margin:0 auto; padding:0 1.5rem; font-size:0.8rem; color:#6b7280; display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-      <div>&copy; <span id="year"></span> National Sparky Field Buddy Solutions. All rights reserved.</div>
-      <div>Security Gateway Configuration Layer · Production Environment v1.0</div>
+    <!-- DISPATCH -->
+    <div id="tab-dispatch" class="hidden">
+      <div class="card">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem" class="dim">Add Client</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input class="inp" id="c-name" placeholder="Client name *"/>
+          <input class="inp" id="c-address" placeholder="Address"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <input class="inp" id="c-phone" placeholder="Phone" type="tel"/>
+            <input class="inp" id="c-notes" placeholder="Notes"/>
+          </div>
+          <button class="btn btn-gold" id="btn-add-client">Add to route</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+          <span style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Route — <span id="client-count">0</span> stops</span>
+        </div>
+        <div id="client-list"><p class="dim" style="font-size:.85rem;text-align:center;padding:1rem">No clients yet.</p></div>
+      </div>
     </div>
-  </footer>
 
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+    <!-- LOGS -->
+    <div id="tab-logs" class="hidden">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+          <span style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">History Vault</span>
+          <button class="btn btn-dim btn-sm" id="btn-clear-logs" style="width:auto;color:#ff4f57">Clear all</button>
+        </div>
+        <div id="log-list"><p class="dim" style="font-size:.85rem;text-align:center;padding:1rem">No diagnostics yet.</p></div>
+      </div>
+    </div>
 
-  <!-- Complete Injected Production Configuration Metadata -->
-  <script type="application/json" id="supabase-config">
-  {
-    "SUPABASE_URL": "https://supabase.co",
-    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI"  }
-  </script>
+  </main>
+</div>
 
-  <!-- Single Authorized Client CDN Driver Injection -->
-  <script src="https://jsdelivr.net"></script>
+<div id="toast"></div>
 
 <script>
-(function () {
-  "use strict";
+(function(){
+'use strict';
 
-  let supabaseClientInstance = null;
-  let appEnvironmentConfig = null;
-  let signedInAccessToken = null;
+/* ── config ── */
+var SB_URL  = 'https://dqyqlgnaawqnlxvxwcys.supabase.co';
+var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI';
+var FREE_LIM = 5;
+var sb, _sess, _tier='free', _used=0, _tt;
 
-  // 1. Initialize Supabase Connection Safely
-  try {
-    const configurationTarget = document.getElementById("supabase-config");
-    appEnvironmentConfig = JSON.parse(configurationTarget.textContent);
+/* ── init ── */
+sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-    supabaseClientInstance = window.supabase.createClient(
-      appEnvironmentConfig.SUPABASE_URL,
-      appEnvironmentConfig.SUPABASE_ANON_KEY,
-      {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true
-        }
-      }
-    );
-  } catch (err) {
-    console.error("Framework initialization fatal break:", err);
-    return;
-  }
+/* ── auth state ── */
+sb.auth.onAuthStateChange(function(_e, sess){
+  _sess = sess;
+  if(sess){ showApp(); }
+  else { showLogin(); }
+});
 
-  // 2. Authentication Lifecycle Evaluators
-  async function syncSessionState() {
-    const { data } = await supabaseClientInstance.auth.getSession();
+/* ── login page wiring ── */
+id('btn-github').onclick = function(){
+  setMsg('Redirecting to GitHub…');
+  sb.auth.signInWithOAuth({
+    provider:'github',
+    options:{ redirectTo: location.origin }
+  }).then(function(r){ if(r.error) setMsg(r.error.message, 1); });
+};
 
-    if (!data?.session) {
-      signedInAccessToken = null;
-      renderActiveView("landing");
-      return;
-    }
-
-    const authenticatedUser = data.session.user;
-    signedInAccessToken = data.session.access_token;
-
-    const emailEl = document.getElementById("user-email");
-    if (emailEl) {
-      const shortId = authenticatedUser.id
-        ? authenticatedUser.id.substring(0, 8)
-        : "";
-      emailEl.textContent =
-        authenticatedUser.email || (shortId ? `ID: ${shortId}` : "Signed in");
-    }
-
-    renderActiveView("dashboard");
-    pullUsageMetrics();
-  }
-
-  function renderActiveView(targetLayoutView) {
-    const publicLandingLayout = document.getElementById("landing-view");
-    const internalDashboardLayout = document.getElementById("dashboard-view");
-    const interfaceHeaderAuthBadge = document.getElementById("auth-status");
-
-    if (!publicLandingLayout || !internalDashboardLayout || !interfaceHeaderAuthBadge) {
-      return;
-    }
-
-    if (targetLayoutView === "dashboard") {
-      publicLandingLayout.classList.add("hidden");
-      internalDashboardLayout.classList.remove("hidden");
-      interfaceHeaderAuthBadge.classList.remove("hidden");
-    } else {
-      internalDashboardLayout.classList.add("hidden");
-      publicLandingLayout.classList.remove("hidden");
-      interfaceHeaderAuthBadge.classList.add("hidden");
-    }
-  }
-
-  // 3. User Authorization Operations
-  window.signInWithGitHub = async function () {
-    const { error } = await supabaseClientInstance.auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: window.location.origin }
-    });
-
-    if (error) {
-      console.error("OAuth pipeline operational failure:", error.message);
-    }
-  };
-
-  window.executeLogout = async function () {
-    const { error } = await supabaseClientInstance.auth.signOut();
-    if (error) {
-      console.error("Logout failed:", error.message);
-    }
-    renderActiveView("landing");
-  };
-
-  // 4. Remote Serverless Edge Endpoint Access Connectors
-  async function pullUsageMetrics() {
-    const countEl = document.getElementById("usage-count");
-    const statusEl = document.getElementById("usage-status");
-    const planBadgeEl = document.getElementById("plan-badge");
-    const meterFillEl = document.getElementById("meter-fill");
-
-    try {
-      const connectionResult = await fetch(
-        `${appEnvironmentConfig.SUPABASE_URL}/functions/v1/check-usage`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${signedInAccessToken}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      if (!connectionResult.ok) {
-        throw new Error("Database context parsing error");
-      }
-
-      const telemetryOutput = await connectionResult.json();
-
-      if (planBadgeEl) {
-        planBadgeEl.textContent =
-          `Plan: ${telemetryOutput.plan?.toUpperCase() || "UNKNOWN"}`;
-      }
-      if (countEl) {
-        countEl.textContent = telemetryOutput.remaining ?? "0";
-      }
-      if (statusEl) {
-        statusEl.textContent =
-          `Logged operations: ${telemetryOutput.used ?? 0} system transactions completed.`;
-      }
-
-      if (meterFillEl) {
-        const used = telemetryOutput.used ?? 0;
-        const fillRatio =
-          telemetryOutput.plan === "free" ? (used / 5) * 100 : 0;
-        meterFillEl.style.width = `${Math.min(100, fillRatio)}%`;
-      }
-    } catch (err) {
-      console.error("Usage metrics sync failed:", err);
-      if (countEl) countEl.textContent = "ERR";
-      if (statusEl) {
-        statusEl.textContent =
-          "Failed to sync transaction counters with cloud cluster nodes.";
-      }
-    }
-  }
-
-  window.runAnalysis = async function () {
-    const userPromptInput = document.getElementById("prompt-input");
-    const displayTerminalBlock = document.getElementById("output-block");
-    const operationalSpinnerElement = document.getElementById("output-loader");
-    const contextSubmissionButton = document.getElementById("analyze-btn");
-
-    if (!userPromptInput || !displayTerminalBlock || !operationalSpinnerElement || !contextSubmissionButton) {
-      console.error("Diagnostic UI elements missing.");
-      return;
-    }
-
-    const userPromptString = userPromptInput.value.trim();
-    if (!userPromptString) {
-      alert("Field parameter note buffer empty. Please provide text inputs.");
-      return;
-    }
-
-    operationalSpinnerElement.classList.remove("hidden");
-    displayTerminalBlock.textContent =
-      "Negotiating secure crypto-handshake parameters with processing array nodes...";
-    contextSubmissionButton.disabled = true;
-
-    try {
-      const actionResponse = await fetch(
-        `${appEnvironmentConfig.SUPABASE_URL}/functions/v1/analyze`,
-        {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${signedInAccessToken}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ prompt: userPromptString })
-        }
-      );
-
-      if (actionResponse.status === 403) {
-        displayTerminalBlock.textContent =
-          "SECURITY EXCEPTION ALERT: Account operation capability suspended. Free tier usage matrix threshold (5/5) exceeded.";
-        return;
-      }
-
-      if (!actionResponse.ok) {
-        throw new Error("Upstream serverless engine returned processing exceptions.");
-      }
-
-      const queryJSONResult = await actionResponse.json();
-
-      const cleanMarkdownResponseText =
-        queryJSONResult.candidates?.[0]?.content?.parts?.[0]?.text ??
-        JSON.stringify(queryJSONResult, null, 2);
-
-      displayTerminalBlock.textContent = cleanMarkdownResponseText;
-      pullUsageMetrics();
-    } catch (error) {
-      console.error("Analysis run failed:", error);
-      displayTerminalBlock.textContent =
-        `SYSTEM EXCEPTION ROUTINE INTERRUPT: ${error.message}. ` +
-        "Ensure your cloud environment parameters match production configurations and that edge router functions are fully deployed via the Supabase CLI.";
-    } finally {
-      operationalSpinnerElement.classList.add("hidden");
-      contextSubmissionButton.disabled = false;
-    }
-  };
-
-  // 5. Initialize Continuous Event State Monitors
-  supabaseClientInstance.auth.onAuthStateChange((stateNotificationType) => {
-    if (stateNotificationType === "SIGNED_IN" || stateNotificationType === "SIGNED_OUT") {
-      syncSessionState();
-    }
+id('btn-magic').onclick = function(){
+  var email = id('inp-email').value.trim();
+  if(!email){ return setMsg('Enter your email',1); }
+  setMsg('Sending…');
+  sb.auth.signInWithOtp({
+    email: email,
+    options:{ emailRedirectTo: location.origin }
+  }).then(function(r){
+    if(r.error) setMsg(r.error.message,1);
+    else setMsg('Magic link sent — check your inbox ✓');
   });
+};
 
-  syncSessionState();
+/* ── show/hide pages ── */
+function showLogin(){
+  id('pg-login').classList.remove('hidden');
+  id('pg-app').classList.add('hidden');
+  id('pg-app').style.display='';
+}
+function showApp(){
+  id('pg-login').classList.add('hidden');
+  id('pg-app').classList.remove('hidden');
+  id('pg-app').style.display='flex';
+  var u = _sess.user;
+  id('hdr-email').textContent = u.email || u.user_metadata && u.user_metadata.user_name || '—';
+  Promise.all([loadUsage(), loadClients(), loadLogs()]);
+}
+
+/* ── logout ── */
+id('btn-logout').onclick = function(){ sb.auth.signOut(); };
+
+/* ── tabs ── */
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.onclick = function(){
+    var tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(function(b){
+      b.classList.toggle('on', b.dataset.tab===tab);
+    });
+    ['diagnose','dispatch','logs'].forEach(function(t){
+      id('tab-'+t).classList.toggle('hidden', t!==tab);
+    });
+    if(tab==='logs') loadLogs();
+  };
+});
+
+/* ── usage ── */
+function loadUsage(){
+  var uid = _sess && _sess.user.id;
+  if(!uid) return;
+  sb.from('user_profiles').select('tier').eq('id',uid).maybeSingle().then(function(r){
+    _tier = (r.data && r.data.tier) || 'free';
+    id('hdr-plan').textContent = _tier.toUpperCase();
+    if(_tier!=='free'){
+      id('usage-fill').style.width='100%';
+      id('usage-fill').style.background='#1adb8f';
+      id('hdr-usage').textContent='Unlimited';
+      id('usage-label').textContent='Unlimited diagnostics';
+      id('usage-sub').textContent=_tier+' plan active';
+      return;
+    }
+    var cut = new Date(); cut.setDate(cut.getDate()-30);
+    sb.from('usage_events').select('*',{count:'exact',head:true})
+      .eq('user_id',uid).eq('event_type','diagnostic')
+      .gte('created_at',cut.toISOString())
+      .then(function(r2){
+        _used = r2.count||0;
+        var pct = Math.min(100,Math.round((_used/FREE_LIM)*100));
+        id('usage-fill').style.width=pct+'%';
+        id('usage-fill').style.background=pct>=80?'#ff4f57':'#f4a100';
+        id('hdr-usage').textContent=_used+'/'+FREE_LIM;
+        id('usage-sub').textContent=(_used>=FREE_LIM)?'Limit reached — upgrade':(FREE_LIM-_used)+' remaining this month';
+      });
+  });
+}
+
+/* ── diagnose ── */
+id('btn-analyze').onclick = function(){
+  if(_tier==='free'&&_used>=FREE_LIM){ return toast('Upgrade for unlimited diagnostics','err'); }
+  var prompt = id('prompt').value.trim();
+  if(!prompt){ return toast('Enter a question first','err'); }
+  var btn=id('btn-analyze');
+  btn.disabled=true; btn.textContent='Analyzing…';
+  id('diag-status').textContent='Running…';
+  id('result-wrap').classList.add('hidden');
+  fetch('/api/diagnose',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+_sess.access_token},
+    body:JSON.stringify({prompt:prompt})
+  }).then(function(r){ return r.json().then(function(d){ return {ok:r.ok,s:r.status,d:d}; }); })
+  .then(function(r){
+    if(r.s===402){ toast('Free limit reached — upgrade','err'); return; }
+    if(!r.ok){ throw new Error(r.d.error||'Server error'); }
+    id('result-pre').textContent=r.d.result;
+    id('result-wrap').classList.remove('hidden');
+    id('diag-status').textContent='';
+    if(r.d.usage){ _used=(r.d.usage.used||_used+1); loadUsage(); }
+  }).catch(function(e){ toast(e.message,'err'); id('diag-status').textContent=''; })
+  .finally(function(){ btn.disabled=false; btn.textContent='⚡ Analyze'; });
+};
+
+id('btn-clear').onclick = function(){
+  id('prompt').value='';
+  id('result-wrap').classList.add('hidden');
+  id('diag-status').textContent='';
+};
+
+id('btn-copy').onclick = function(){
+  navigator.clipboard.writeText(id('result-pre').textContent).then(function(){ toast('Copied ✓'); });
+};
+
+id('btn-upgrade').onclick = function(){
+  fetch('/api/create-checkout',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+_sess.access_token},
+    body:JSON.stringify({tier:'starter'})
+  }).then(function(r){ return r.json(); }).then(function(d){ if(d.url) location.href=d.url; });
+};
+
+/* ── clients ── */
+function loadClients(){
+  var uid=_sess&&_sess.user.id; if(!uid) return;
+  sb.from('clients').select('*').eq('user_id',uid).order('created_at',{ascending:false}).then(function(r){
+    renderClients(r.data||[]);
+  });
+}
+function renderClients(list){
+  id('client-count').textContent=list.length;
+  if(!list.length){ id('client-list').innerHTML='<p class="dim" style="font-size:.85rem;text-align:center;padding:1rem">No clients yet.</p>'; return; }
+  id('client-list').innerHTML=list.map(function(c){
+    return '<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.07)">'+
+      '<div style="width:34px;height:34px;border-radius:50%;background:rgba(244,161,0,.1);color:#f4a100;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0">'+esc(c.name).charAt(0).toUpperCase()+'</div>'+
+      '<div style="flex:1;min-width:0"><div style="font-size:.9rem;font-weight:500">'+esc(c.name)+'</div><div style="font-size:.75rem;color:#8888a2">'+esc(c.address||c.phone||'—')+'</div></div>'+
+      '<div style="display:flex;gap:4px">'+
+      (c.address?'<button onclick="openGPS(\''+esc(c.address)+'\')" style="background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.75rem">🗺️</button>':'')+
+      '<button onclick="delClient(\''+c.id+'\')" style="background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.75rem;color:#ff4f57">✕</button>'+
+      '</div></div>';
+  }).join('');
+}
+id('btn-add-client').onclick = function(){
+  var uid=_sess&&_sess.user.id;
+  var name=id('c-name').value.trim();
+  if(!name){ return toast('Name required','err'); }
+  sb.from('clients').insert({user_id:uid,name:name,address:id('c-address').value.trim(),phone:id('c-phone').value.trim(),notes:id('c-notes').value.trim()}).select().single()
+  .then(function(r){
+    if(r.error){ return toast(r.error.message,'err'); }
+    toast(name+' added ✓','ok');
+    ['c-name','c-address','c-phone','c-notes'].forEach(function(i){ id(i).value=''; });
+    loadClients();
+  });
+};
+window.delClient=function(cid){ sb.from('clients').delete().eq('id',cid).then(loadClients); };
+window.openGPS=function(addr){ window.open('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(addr),'_blank'); };
+
+/* ── logs ── */
+function loadLogs(){
+  var uid=_sess&&_sess.user.id; if(!uid) return;
+  sb.from('diagnostic_logs').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(50).then(function(r){
+    var data=r.data||[];
+    if(!data.length){ id('log-list').innerHTML='<p class="dim" style="font-size:.85rem;text-align:center;padding:1rem">No diagnostics yet.</p>'; return; }
+    id('log-list').innerHTML=data.map(function(l){
+      return '<div style="padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.07)">'+
+        '<div style="font-size:.72rem;color:#44445a;margin-bottom:3px">'+new Date(l.created_at).toLocaleString()+'</div>'+
+        '<div style="font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(l.request_text||'')+'</div>'+
+        '<div style="font-size:.78rem;color:#8888a2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px">'+esc(l.response_text||'')+'</div>'+
+        '</div>';
+    }).join('');
+  });
+}
+id('btn-clear-logs').onclick=function(){
+  if(!confirm('Clear all history?')) return;
+  sb.from('diagnostic_logs').delete().eq('user_id',_sess.user.id).then(function(){ loadLogs(); toast('History cleared'); });
+};
+
+/* ── helpers ── */
+function id(i){ return document.getElementById(i); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function setMsg(m,e){ var el=id('login-msg'); el.textContent=m; el.style.color=e?'#ff4f57':'#8888a2'; }
+function toast(m,t){
+  var el=id('toast'); clearTimeout(_tt);
+  el.textContent=m;
+  el.style.color=t==='err'?'#ff4f57':t==='ok'?'#1adb8f':'#eeeef2';
+  el.style.transform='translateX(-50%) translateY(0)';
+  _tt=setTimeout(function(){ el.style.transform='translateX(-50%) translateY(100px)'; },3000);
+}
 })();
 </script>
+</body>
+</html>
+EOF
+wc -l /mnt/user-data/outputs/index.html
+echo "✓ done"
+Output
+
+373 /mnt/user-data/outputs/index.html
+✓ done
+Done
+
+You are out of free messages until 7:10 AM
