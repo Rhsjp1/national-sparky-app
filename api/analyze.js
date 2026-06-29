@@ -5,28 +5,50 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not permitted' });
-    const { text, tone } = req.body;
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ success: false, error: 'GEMINI_API_KEY missing.' });
-    const systemPrompt = `You are Electrical OS AI. Tone: ${tone}. Safety first. Reference NEC sections.`;
+
+    const { text, tone } = req.body || {};
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return res.status(500).json({ success: false, error: 'OPENROUTER_API_KEY missing.' });
+
+    const tonePrompt = tone === 'concise'
+        ? 'Respond in exactly one or two concise sentences.'
+        : tone === 'instructive'
+        ? 'Respond as an instructor with step-by-step checklists.'
+        : tone === 'diagnostic'
+        ? 'Analyze like a master electrician: cite NEC articles, flag safety-critical items, and propose root causes.'
+        : 'Respond as an expert electrical engineer with professional code references.';
+
+    const systemPrompt = `You are Electrical OS AI. Tone: ${tonePrompt} Always prioritize safety and reference NEC sections.`;
+
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`, {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': process.env.APP_URL || 'https://national-sparky-app.vercel.app',
+                'X-Title': 'SparkySolve'
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `${systemPrompt}\n\nUser: ${text}` }] }]
+                model: 'openai/gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: text }
+                ],
+                temperature: 0.4,
+                max_tokens: 1200
             })
         });
+
         const data = await response.json();
         if (!response.ok) {
-          console.error('[analyze] Gemini error:', response.status, JSON.stringify(data));
-          return res.status(502).json({ success: false, error: 'AI service error: ' + (data?.error?.message || response.statusText) });
+            const errMsg = data?.error?.message || response.statusText;
+            return res.status(502).json({ success: false, error: 'AI service error: ' + errMsg });
         }
-        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received from Gemini engine.";
-        console.log('[analyze] Gemini response length:', responseText.length);
-        return res.status(200).json({ success: true, payload: responseText });
+
+        const reply = data?.choices?.[0]?.message?.content || 'No response.';
+        return res.status(200).json({ success: true, payload: reply });
     } catch (err) {
-        console.error('[analyze] fetch failed:', err.message);
-        return res.status(502).json({ success: false, error: 'Could not reach AI service: ' + err.message });
+        return res.status(500).json({ success: false, error: err.message });
     }
 }

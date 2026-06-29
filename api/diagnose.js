@@ -2,15 +2,13 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const FREE_TIER_LIMIT    = 5;
-const MAX_PROMPT_CHARS   = 4000;
-const MAX_IMAGE_B64_BYTES = 4 * 1024 * 1024; // 4 MB in base64
-const GEMINI_MODEL       = 'gemini-1.5-flash-001';
-const USAGE_WINDOW_DAYS  = 30;
+const FREE_TIER_LIMIT = 5;
+const MAX_PROMPT_CHARS = 4000;
+const MAX_IMAGE_B64_BYTES = 4 * 1024 * 1024;
 
-const SPARKY_SYSTEM = `You are SparkySolve, an expert AI assistant for licensed electricians \
-working in North Carolina. Your core competencies:
+const SPARKY_SYSTEM = `You are SparkySolve, an expert AI assistant for licensed electricians working in North Carolina.
+
+Core competencies:
 • North Carolina Electrical Code (NEC 2023 as adopted by NC Building Code Council)
 • Circuit analysis, fault diagnosis, and root-cause identification
 • NEC article citations — always reference the specific article and section
@@ -18,14 +16,14 @@ working in North Carolina. Your core competencies:
 • Load calculations, service sizing, panel scheduling
 • GFCI/AFCI placement requirements per NEC 210.8 and 210.12
 • Job-site safety protocols (OSHA 29 CFR 1910.333, NFPA 70E)
+
 Be concise, cite code, and flag any safety-critical findings prominently.`;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const readRawBody = (req) =>
   new Promise((resolve, reject) => {
     const chunks = [];
     req.on('data', (c) => chunks.push(c));
-    req.on('end',  () => resolve(Buffer.concat(chunks)));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
 
@@ -35,19 +33,17 @@ const parseJSON = (buf) => {
 };
 
 const cors = (res) => {
-  res.setHeader('Access-Control-Allow-Origin',  '*');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 };
 
-// ─── Handler ──────────────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')
     return res.status(405).json({ error: 'Method not allowed' });
 
-  // ── 1. Validate JWT ────────────────────────────────────────────────────────
   const authHeader = req.headers['authorization'] || '';
   if (!authHeader.startsWith('Bearer '))
     return res.status(401).json({ error: 'Missing Authorization header' });
@@ -64,7 +60,6 @@ module.exports = async function handler(req, res) {
   if (authErr || !user)
     return res.status(401).json({ error: 'Invalid or expired session' });
 
-  // ── 2. Resolve tier ────────────────────────────────────────────────────────
   const { data: profile } = await supabase
     .from('user_profiles')
     .select('tier')
@@ -73,16 +68,15 @@ module.exports = async function handler(req, res) {
 
   const tier = profile?.tier || 'free';
 
-  // ── 3. Free-tier gate ──────────────────────────────────────────────────────
   let currentUsage = 0;
   if (tier === 'free') {
     const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - USAGE_WINDOW_DAYS);
+    cutoff.setDate(cutoff.getDate() - 30);
 
     const { count, error: countErr } = await supabase
       .from('usage_events')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id',    user.id)
+      .eq('user_id', user.id)
       .eq('event_type', 'diagnostic')
       .gte('created_at', cutoff.toISOString());
 
@@ -95,17 +89,16 @@ module.exports = async function handler(req, res) {
 
     if (currentUsage >= FREE_TIER_LIMIT) {
       return res.status(402).json({
-        error:   'free_tier_limit',
+        error: 'free_tier_limit',
         message: `You have used all ${FREE_TIER_LIMIT} free diagnostics this month.`,
-        used:    currentUsage,
-        limit:   FREE_TIER_LIMIT,
-        tier:    'free'
+        used: currentUsage,
+        limit: FREE_TIER_LIMIT,
+        tier: 'free'
       });
     }
   }
 
-  // ── 4. Parse body ──────────────────────────────────────────────────────────
-  const raw  = await readRawBody(req);
+  const raw = await readRawBody(req);
   const body = parseJSON(raw);
 
   if (!body)
@@ -117,97 +110,88 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'prompt is required' });
 
   if (prompt.length > MAX_PROMPT_CHARS)
-    return res.status(400).json({
-      error: `Prompt exceeds ${MAX_PROMPT_CHARS} character limit`
-    });
+    return res.status(400).json({ error: `Prompt exceeds ${MAX_PROMPT_CHARS} character limit` });
 
   if (imageData && imageData.length > MAX_IMAGE_B64_BYTES)
-    return res.status(400).json({ error: 'Image too large — 3 MB max' });
+    return res.status(400).json({ error: 'Image too large — 4 MB max' });
 
-  // ── 5. Build Gemini request ────────────────────────────────────────────────
-  const parts = [];
-  if (imageData) {
-    parts.push({
-      inline_data: {
-        mime_type: mimeType || 'image/jpeg',
-        data:      imageData
-      }
-    });
-  }
-  parts.push({ text: `${SPARKY_SYSTEM}\n\n${prompt.trim()}` });
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'OPENROUTER_API_KEY missing.' });
 
-  // ── 6. Call Gemini ─────────────────────────────────────────────────────────
-  let geminiResult;
   try {
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          contents: [{ role: 'user', parts }],
-          generationConfig: {
-            temperature:     0.65,
-            maxOutputTokens: 2048,
-            topP:            0.9
-          }
-        })
-      }
-    );
+    const messages = [{ role: 'system', content: SPARKY_SYSTEM }];
 
-    if (!geminiRes.ok) {
-      const errBody = await geminiRes.json().catch(() => ({}));
-      console.error('[diagnose] Gemini error:', geminiRes.status, errBody);
-      return res.status(502).json({ error: 'AI service unavailable — try again shortly' });
+    if (imageData) {
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageData}` } }
+        ]
+      });
+    } else {
+      messages.push({ role: 'user', content: prompt });
     }
 
-    const geminiData = await geminiRes.json();
-    geminiResult = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': process.env.APP_URL || 'https://national-sparky-app.vercel.app',
+        'X-Title': 'SparkySolve'
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-4o-mini',
+        messages,
+        temperature: 0.4,
+        max_tokens: 2048
+      })
+    });
 
-    if (!geminiResult) {
-      console.error('[diagnose] Empty Gemini response:', JSON.stringify(geminiData));
-      return res.status(502).json({ error: 'AI returned an empty response' });
+    const data = await response.json();
+    if (!response.ok) {
+      const errMsg = data?.error?.message || response.statusText;
+      console.error('[diagnose] OpenRouter error:', response.status, data);
+      return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
     }
+
+    const textOut = data?.choices?.[0]?.message?.content || '';
+
+    const logPromises = [
+      supabase.from('usage_events').insert({
+        user_id: user.id,
+        event_type: 'diagnostic',
+        metadata: {
+          has_image: !!imageData,
+          prompt_chars: prompt.length
+        }
+      }),
+      supabase.from('diagnostic_logs').insert({
+        user_id: user.id,
+        request_text: prompt.substring(0, 2000),
+        response_text: textOut,
+        has_image: !!imageData,
+        tier_at_time: tier
+      })
+    ];
+
+    Promise.all(logPromises).catch((e) => console.error('[diagnose] log error:', e.message));
+
+    let usage = { tier };
+    if (tier === 'free') {
+      const newUsed = currentUsage + 1;
+      usage = {
+        tier: 'free',
+        used: newUsed,
+        limit: FREE_TIER_LIMIT,
+        remaining: Math.max(0, FREE_TIER_LIMIT - newUsed)
+      };
+    }
+
+    return res.status(200).json({ result: textOut, usage });
   } catch (fetchErr) {
-    console.error('[diagnose] Gemini fetch failed:', fetchErr.message);
+    console.error('[diagnose] fetch failed:', fetchErr.message);
     return res.status(502).json({ error: 'Could not reach AI service' });
   }
-
-  // ── 7. Log usage event (non-blocking) ─────────────────────────────────────
-  const logPromises = [
-    supabase.from('usage_events').insert({
-      user_id:    user.id,
-      event_type: 'diagnostic',
-      metadata: {
-        has_image:    !!imageData,
-        prompt_chars: prompt.length
-      }
-    }),
-    supabase.from('diagnostic_logs').insert({
-      user_id:       user.id,
-      request_text:  prompt.substring(0, 2000),
-      response_text: geminiResult,
-      has_image:     !!imageData,
-      tier_at_time:  tier
-    })
-  ];
-
-  // Fire-and-forget — don't block the response
-  Promise.all(logPromises).catch((e) =>
-    console.error('[diagnose] log error:', e.message)
-  );
-
-  // ── 8. Compute refreshed usage for free tier ───────────────────────────────
-  let usage = { tier };
-  if (tier === 'free') {
-    const newUsed = currentUsage + 1;
-    usage = {
-      tier:      'free',
-      used:      newUsed,
-      limit:     FREE_TIER_LIMIT,
-      remaining: Math.max(0, FREE_TIER_LIMIT - newUsed)
-    };
-  }
-
-  return res.status(200).json({ result: geminiResult, usage });
 };
