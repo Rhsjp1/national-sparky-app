@@ -140,7 +140,7 @@ module.exports = async function handler(req, res) {
   let geminiResult;
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
