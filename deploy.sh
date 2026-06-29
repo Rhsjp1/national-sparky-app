@@ -1,3 +1,16 @@
+#!/bin/bash
+# Step 1: Ensure directory exists
+cd ~/national-sparky-app || {
+    echo "ERROR: Directory ~/national-sparky-app not found."
+    exit 1
+}
+
+echo "=== 1. Cleaning up old fragments ==="
+rm -f vercel.json api/analyze.js push.sh
+mkdir -p api
+
+echo "=== 2. Creating secure API proxy (api/analyze.js) ==="
+cat << 'INNER_EOF' > api/analyze.js
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,15 +32,21 @@ export default async function handler(req, res) {
             })
         });
         const data = await response.json();
-        if (!response.ok) {
-          console.error('[analyze] Gemini error:', response.status, JSON.stringify(data));
-          return res.status(502).json({ success: false, error: 'AI service error: ' + (data?.error?.message || response.statusText) });
-        }
-        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received from Gemini engine.";
-        console.log('[analyze] Gemini response length:', responseText.length);
-        return res.status(200).json({ success: true, payload: responseText });
-    } catch (err) {
-        console.error('[analyze] fetch failed:', err.message);
-        return res.status(502).json({ success: false, error: 'Could not reach AI service: ' + err.message });
-    }
+        return res.status(200).json({ success: true, payload: data.candidates?.[0]?.content?.parts?.[0]?.text || "No response." });
+    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
 }
+INNER_EOF
+
+echo "=== 3. Writing vercel.json ==="
+cat << 'INNER_EOF' > vercel.json
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/analyze", "destination": "/api/analyze.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+INNER_EOF
+
+echo "=== 4. Starting Vercel Direct Deploy ==="
+npx vercel

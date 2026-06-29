@@ -6,7 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 const FREE_TIER_LIMIT    = 5;
 const MAX_PROMPT_CHARS   = 4000;
 const MAX_IMAGE_B64_BYTES = 4 * 1024 * 1024; // 4 MB in base64
-const GEMINI_MODEL       = 'gemini-1.5-flash-latest';
+const GEMINI_MODEL       = 'gemini-1.5-flash';
 const USAGE_WINDOW_DAYS  = 30;
 
 const SPARKY_SYSTEM = `You are SparkySolve, an expert AI assistant for licensed electricians \
