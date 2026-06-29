@@ -4,7 +4,7 @@
   "private": true,
   "description": "SparkySolve — AI-powered field tool for licensed electricians",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
