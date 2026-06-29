@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (!apiKey) return res.status(500).json({ success: false, error: 'GEMINI_API_KEY missing.' });
     const systemPrompt = `You are Electrical OS AI. Tone: ${tone}. Safety first. Reference NEC sections.`;
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
