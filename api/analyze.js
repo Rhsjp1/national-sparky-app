@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     if (!apiKey) return res.status(500).json({ success: false, error: 'GEMINI_API_KEY missing.' });
     const systemPrompt = `You are Electrical OS AI. Tone: ${tone}. Safety first. Reference NEC sections.`;
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -19,6 +19,15 @@ export default async function handler(req, res) {
             })
         });
         const data = await response.json();
-        return res.status(200).json({ success: true, payload: data.candidates?.[0]?.content?.parts?.[0]?.text || "No response." });
-    } catch (err) { return res.status(500).json({ success: false, error: err.message }); }
+        if (!response.ok) {
+          console.error('[analyze] Gemini error:', response.status, JSON.stringify(data));
+          return res.status(502).json({ success: false, error: 'AI service error: ' + (data?.error?.message || response.statusText) });
+        }
+        const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received from Gemini engine.";
+        console.log('[analyze] Gemini response length:', responseText.length);
+        return res.status(200).json({ success: true, payload: responseText });
+    } catch (err) {
+        console.error('[analyze] fetch failed:', err.message);
+        return res.status(502).json({ success: false, error: 'Could not reach AI service: ' + err.message });
+    }
 }
