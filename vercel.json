@@ -3,6 +3,7 @@
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/faq", "destination": "/faq/index.html" },
     { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/googleef78fb3cfca50d1f.html", "destination": "/googleef78fb3cfca50d1f.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
