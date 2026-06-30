@@ -1,0 +1,151 @@
+{
+  "schema": "workbook.v1",
+  "id": "k12/virginia_sol_grade5_electricity_and_magnetism",
+  "title": "Virginia SOL — Grade 5: Electricity and Magnetism",
+  "author": "Hermes MoA",
+  "tier": "k12",
+  "framework": "Virginia Department of Education",
+  "subject": "Science",
+  "grade": 5,
+  "units": ["Scientific Investigation", "Force, Motion, and Energy"],
+  "strands": ["1. Force, Motion, and Energy"],
+  "preparedness_label": "investigation and experimentation",
+  "access_levels": ["instructor", "active_learner", "recount_kit", "direct_use", "deep_years"],
+  "manifest_preset": "k12/virginia_sol_grade5_electricity_and_magnetism",
+  "spec": {
+    "goal": "Assess and extend student understanding of electricity and magnetism using hands-on and reasoning-first tasks.",
+    "deliverable": "workbook PDF + JSON artifact",
+    "materials": ["battery", "wire", "magnets", "bulbs", "compass"],
+    "dependencies": ["#1 starter preset — locked at instructional-sequential ordering"],
+    "primitives": ["additive", "resistive", "magnetic field observation", "circuit completion"]
+  },
+  "instructional_sequence": [
+    {
+      "step": 1,
+      "label": "Activate Prior Knowledge",
+      "subtitle": "What do we already know?",
+      "activity": "Student inventories all experiences of electrical devices in 1 page.",
+      "success_criteria": ["List ≥ 5 devices", "State 2 things electricity needs to work", "Share 1 question"],
+      "accommodations": ["verbal only", "sketch option", "prefilled sentence frame"]
+    },
+    {
+      "step": 2,
+      "label": "Concepts with Visuals",
+      "subtitle": "Drawing circuits and fields",
+      "activity": "Draw a working circuit using symbols. Predict then trace a magnetic field with iron filings.",
+      "success_criteria": ["Correct symbol set", "Prediction recorded before evidence taken", "Field pattern explained"],
+      "accommodations": ["line weight reduction", "high-contrast print", "audio narration"]
+    },
+    {
+      "step": 3,
+      "label": "Guided Application",
+      "subtitle": "Try it, touch it, explain it",
+      "activity": "Complete a circuit. Add a second bulb. Measure brightness change. Explain using 'path', 'flow', 'resistance'.",
+      "success_criteria": ["Circuit works", "Second bulb recorded", "Comparison sentence produced"],
+      "accommodations": ["step cards", "partner record", "timer assist"]
+    },
+    {
+      "step": 4,
+      "label": "Independent Task",
+      "subtitle": "Your design challenge",
+      "activity": "Design a simple circuit that lights a bulb and runs a small brief experiment. Write 3 claims with evidence and reasoning.",
+      "success_criteria": ["Design functional", "3 CERs", "Data table or sketch present"],
+      "accommodations": ["choice of output", "technological assist allowed", "word bank"]
+    },
+    {
+      "step": 5,
+      "label": "Structured Reflection",
+      "subtitle": "What changed today?",
+      "activity": "Rate confidence on SOL-aligned items, explain change over 1 week, add 1 next question.",
+      "success_criteria": ["Rating provided", "Change documented", "Next question added"],
+      "accommodations": ["interview option", "peer discussion", "template prompt"]
+    }
+  ],
+  "rubric": {
+    "dimensions": [
+      {
+        "name": "vocabulary",
+        "weight": 0.25,
+        "levels": [
+          {"label": "evolving", "criteria": "Uses everyday terms"},
+          {"label": "developing", "criteria": "Uses ≥2 SOL terms correctly"},
+          {"label": "proficient", "criteria": "Uses ≥4 terms across work"},
+          {"label": "advanced", "criteria": "Terms used with caveats and definitions"}
+        ]
+      },
+      {
+        "name": "conceptual model fidelity",
+        "weight": 0.25,
+        "levels": [
+          {"label": "evolving", "criteria": "Misconceptions present but named"},
+          {"label": "developing", "criteria": "Path and loop logic mostly correct with minor error"},
+          {"label": "proficient", "criteria": "Clear model consistent with evidence"},
+          {"label": "advanced", "criteria": "Model revised based on contradictory evidence"}
+        ]
+      },
+      {
+        "name": "application accuracy",
+        "weight": 0.25,
+        "levels": [
+          {"label": "evolving", "criteria": "Correct outcome with unclear reasoning"},
+          {"label": "developing", "criteria": "Correct outcome + simple explanation"},
+          {"label": "proficient", "criteria": "Correct outcome + evidence linked to claim"},
+          {"label": "advanced", "criteria": "Generalizes to new circuit configuration"}
+        ]
+      },
+      {
+        "name": "justification quality",
+        "weight": 0.15,
+        "levels": [
+          {"label": "emerging", "criteria": "Statement of belief"},
+          {"label": "developing", "criteria": "Reason given with invented cause"},
+          {"label": "proficient", "criteria": "Logical explanation with supporting detail"},
+          {"label": "advanced", "criteria": "Counterfactual reasoning considered"}
+        ]
+      },
+      {
+        "name": "aesthetic and accessibility",
+        "weight": 0.10,
+        "levels": [
+          {"label": "incomplete", "criteria": "Hard to read, contrast low"},
+          {"label": "complete", "criteria": "Readable with minor issues"},
+          {"label": "refined", "criteria": "WCAG 2.1 AA informed"},
+          {"label": "exemplary", "criteria": "Motion/sound equivalents added"}
+        ]
+      }
+    ]
+  },
+  "working_room": {
+    "purpose": "Build key/c3 for workbook without breaking public vars. Use virtuoso skill.",
+    "prompt": "Write like an educator who respects kids as young theoreticians. Keep rigorous accuracy and promote agency. Maintain NOAA-tier NGC framing.",
+    "builders": [
+      "electrician_reviewer",
+      "instructional_minimalist"
+    ],
+    "debrief_lines": [
+      "Check for safety-critical phrasing and its accessibility.",
+      "Ensure 'fighting smoking' framing is humane and linguistically disambiguated from physical fighting.",
+      "Preserve scientific authenticity and avoid cartoonizing children."
+    ],
+    "render_steps": [
+      "Apply workbook spec in order.",
+      "Insert non-fiction exposure stream aligned to WCAG 2.1 AA.",
+      "Add references to SOL 2018 curriculum framework.",
+      "Insert credit and recommend jurisdiction-specific inspection term."
+    ]
+  },
+  "artifacts": {
+    "pdf": "workbook.pdf",
+    "json": "workbook.json",
+    "instructional_map": "instructional_map.md",
+    "rubric": "rubric.md",
+    "working_room": "working_room.md",
+    "edit_log": "edit_log.json"
+  },
+  "sensitivity_flags": {
+    "violence_adjacent_language": true,
+    "safety_critical": true,
+    "humane_framing": true,
+    "non_fiction_exposure_stream": true
+  }
+}

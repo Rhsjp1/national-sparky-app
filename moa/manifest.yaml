@@ -1,0 +1,90 @@
+schema: moa.manifest/v1
+name: national-sparky-app
+description: Virginia SOL K-12 workbook + PDF kitchen + visual analysis
+hooks:
+  vercel: true
+  netlify: false
+  deploy_default: vercel
+presets:
+  - id: k12/virginia_sol_grade5_electricity_and_magnetism
+    title: "Virginia SOL: Grade 5 Electrical Focus"
+    kind: workbook
+    access: k12
+    spec: workbooks/spec.yaml
+    instructional_sequence:
+      - Activate prior knowledge
+      - Concepts with visuals
+      - Guided application
+      - Independent task
+      - Structured reflection
+    rubric_dimensions:
+      - vocabulary
+      - conceptual model fidelity
+      - application accuracy
+      - justification quality
+      - aesthetic and accessibility
+    working_room:
+      prompt: "Write like an experienced educator who respects kids as young theoreticians."
+      builders:
+        - electrician_reviewer
+        - instructional_minimalist
+      debrief_lines:
+        - "Check for safety-critical phrasing and its accessibility."
+        - "Preserve NOAA-tier NGC framing."
+      render_steps:
+        - Apply STEM rubric with full sensitivity flags.
+        - Insert non-fiction exposure stream aligned to WCAG 2.1 AA.
+    artifacts:
+      - workbook.pdf
+      - workbook.json
+  - id: pdf-kitchen
+    title: "PDF Kitchen"
+    kind: system
+    pipeline:
+      parse: "PyMuPDF"
+      structure: "LayoutLMv3"
+      serialize: "JSON"
+      verify: "MCP cube"
+    outputs:
+      - structured_json
+      - extract_manifest
+    hooks:
+      - read ./hubs/pdf-kitchen/manifest.json
+  - id: glyph-pai
+    title: "Visual Breakdown — Glyph / Gemini PAI"
+    kind: imaging
+    outputs:
+      - entity_lock_diagram
+      - state_transition_chart
+      - label_capture_map
+    hooks:
+      - read ./hubs/glyph/manifest.json
+  - id: imager
+    title: "Imager Lock/Entity Diagram Pack"
+    kind: imaging
+    outputs:
+      - cut_diagram
+      - crop_map
+      - crop_callouts
+  - id: video
+    title: "Video Walkthrough Screenplay"
+    kind: video
+    outputs:
+      - screenplay.md
+      - shotlist.json
+      - storyboard_prompts.md
+  - id: system_trades_pack
+    title: "System / Trades Direct-Use Kit"
+    kind: system
+    outputs:
+      - statepool.json
+      - tldr.md
+      - runbook.md
+troubleshooting_hooks:
+  - preset_neoplasm
+  - scoping_profile_regeneration
+review_points:
+  - credential_scan
+  - deploy_manifest_audit
+  - workbook_alt_text_check
+  - rubric_sensitivity_audit

@@ -1,0 +1,26 @@
+schema: workbook.spec/v1
+kind: workbook
+name: workbook_template
+title: "Workbook Template"
+description: "Instructional companion with fully reproducible, ordered artifacts."
+
+sections:
+  - id: spec
+    title: Spec
+    kind: spec
+  - id: instructional_sequence
+    title: Instructional Sequence
+    kind: sequence
+  - id: rubric
+    title: Rubric
+    kind: rubric
+  - id: working_room
+    title: Working Room
+    kind: working_room
+  - id: artifacts
+    title: Artifacts
+    kind: artifacts
+
+meta:
+  access_levels: [k12, active_learner, recount_kit, direct_use, deep_years]
+  honor_system: true

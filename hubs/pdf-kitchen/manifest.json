@@ -1,0 +1,27 @@
+{
+  "schema": "pdf_kitchen/v1",
+  "name": "National Sparky — PDF Kitchen",
+  "engine": "LayoutLMv3 style extractor",
+  "validator": "MCP cube",
+  "modes": [
+    "extract",
+    "structure",
+    "normalize",
+    "validate",
+    "emit"
+  ],
+  "input": {
+    "formats": ["pdf", "application/pdf"],
+    "max_pages": 150,
+    "ocr_fallback": true
+  },
+  "output": {
+    "format": "json",
+    "schema": "pdf_kitchen/sheet/v1"
+  },
+  "hooks": {
+    "vercel": true,
+    "stripe_webhook": false,
+    "supabase": true
+  }
+}
