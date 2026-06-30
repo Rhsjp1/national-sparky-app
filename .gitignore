@@ -1,2 +1,24 @@
-.vercel
+# Build/output
+dist/
+build/
+out/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node modules
+node_modules/
+
+# Env/vault files
 .env*
+.vercel/
+
+# Large local media/experiments
+*.mp4
+Verify/
+LOGO--Sparky/
+
+# Misc scratch
+index1.html
