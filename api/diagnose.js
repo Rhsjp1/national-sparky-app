@@ -39,15 +39,26 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  const { data: profile, error: profileError } = await supabase
+  let { data: profile, error: profileError } = await supabase
     .from('user_profiles')
     .select('tier, id')
     .eq('id', user.id)
     .single();
 
   if (profileError || !profile) {
-    console.log('profile missing', profileError);
-    return res.status(403).json({ error: 'User profile not found' });
+    console.log('profile missing, creating', profileError);
+    const { data: created, error: createError } = await supabase
+      .from('user_profiles')
+      .insert({ id: user.id, tier: 'free' })
+      .select('tier, id')
+      .single();
+
+    if (createError || !created) {
+      console.log('profile create failed', createError);
+      return res.status(403).json({ error: 'User profile not found' });
+    }
+
+    profile = created;
   }
 
   const { row_count: usageCount } = await supabase.rpc('count_user_usage_30d', { uid: user.id });
