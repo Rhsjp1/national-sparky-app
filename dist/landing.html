@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚡ SparkySolve — NEC 2023 AI for North Carolina Electricians</title>
+  <meta name="description" content="SparkySolve is the AI-powered field assistant for NC electricians. Get NEC 2023 code lookups, circuit diagnostics, GFCI/AFCI checks, and inspection-ready answers in seconds." />
+  <link rel="icon" type="image/png" href="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            navy: { DEFAULT: '#0b1220', alt: '#0d1525' },
+            spark: { DEFAULT: '#f4a100', dim: 'rgba(244,161,0,0.12)' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-navy text-slate-100 antialiased">
+
+  <!-- Hero -->
+  <header class="border-b border-white/5 bg-navy-alt">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-spark/10 border border-spark/20 flex items-center justify-center text-spark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+        </div>
+        <div>
+          <div class="font-bold tracking-tight">SparkySolve</div>
+          <div class="text-xs text-slate-400 -mt-0.5">National Sparky App</div>
+        </div>
+      </div>
+      <a class="text-sm font-semibold px-4 py-2 rounded-xl bg-spark text-navy hover:brightness-110 transition" href="#features">Get Started</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4">
+    <!-- Hero unit -->
+    <section class="py-16 sm:py-24 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spark/10 border border-spark/20 text-spark text-xs font-semibold mb-5">
+          <span class="h-1.5 w-1.5 rounded-full bg-spark animate-pulse" />
+          NEC 2023 AI for electricians
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1]">
+          NEC 2023 answers, on every job site
+        </h1>
+        <p class="mt-5 text-slate-300 text-lg leading-relaxed max-w-xl">
+          SparkySolve is the AI assistant for North Carolina electricians. Get code-backed answers for circuits, GFCI/AFCI placement, loads, and inspections — faster than flipping through a PDF.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a class="px-5 py-3 rounded-2xl bg-spark text-navy font-bold hover:brightness-110 transition" href="#features">Get Started</a>
+          <a class="px-5 py-3 rounded-2xl border border-white/10 hover:border-white/20 transition" href="#features">See features</a>
+        </div>
+        <p class="mt-3 text-xs text-slate-400">No credit card required · 5 free diagnostics per month</p>
+      </div>
+      <div class="rounded-3xl border border-white/5 bg-navy-alt p-2 shadow-2xl">
+        <img src="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" alt="SparkySolve — NEC 2023 AI for electricians" class="rounded-2xl w-full" />
+      </div>
+    </section>
+
+    <!-- Credibility / proof -->
+    <section class="py-10 border-y border-white/5">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div>
+          <div class="text-2xl font-bold text-spark">NEC 2023</div>
+          <div class="text-xs text-slate-400 mt-1">Code cycle ready</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-spark">NC focused</div>
+          <div class="text-xs text-slate-400 mt-1">North Carolina electricians</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-spark">AI assisted</div>
+          <div class="text-xs text-slate-400 mt-1">Citation-backed answers</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-spark">Field ready</div>
+          <div class="text-xs text-slate-400 mt-1">Mobile-first workflow</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-16 sm:py-24">
+      <h2 class="text-3xl font-extrabold tracking-tight">Built for electrical work, not generic chat</h2>
+      <p class="mt-3 text-slate-300 max-w-2xl">SparkySolve is tuned for electricians: safety-first responses, NEC article references, and field workflows you actually use.</p>
+      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Circuit Diagnostics</div>
+          <p class="mt-2 text-sm text-slate-300">Root-cause fault isolation with NEC-backed guidance for breakers, loads, and intermittent issues.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Code Compliance</div>
+          <p class="mt-2 text-sm text-slate-300">GFCI/AFCI placement, receptacle spacing, grounding, and inspection readiness checks.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Load Calculations</div>
+          <p class="mt-2 text-sm text-slate-300">Service sizing, feeder design, and panel scheduling guidance with code-backed inputs.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Job-Site Safety</div>
+          <p class="mt-2 text-sm text-slate-300">OSHA and NFPA 70E aligned safety protocols for lockout/tagout and arc-flash readiness.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Inspection Prep</div>
+          <p class="mt-2 text-sm text-slate-300">Find inspector flags early, prepare documentation, and reduce callback risk before inspection day.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-spark font-bold text-sm">Voice & Photo Analysis</div>
+          <p class="mt-2 text-sm text-slate-300">Hands-free questions and photo-based diagnostics for panels, labels, and site conditions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Use cases -->
+    <section class="pb-16 sm:pb-24">
+      <h2 class="text-3xl font-extrabold tracking-tight">Who uses SparkySolve</h2>
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-sm font-bold">Residential electricians</div>
+          <p class="mt-2 text-xs text-slate-300">Troubleshoot faults, verify spacing, and check GFCI/AFCI placement.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-sm font-bold">Commercial contractors</div>
+          <p class="mt-2 text-xs text-slate-300">Run load calculations, size services, verify panel schedules.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-sm font-bold">Master electricians</div>
+          <p class="mt-2 text-xs text-slate-300">Secondary reference during plan review and field inspection.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="text-sm font-bold">Apprentices & students</div>
+          <p class="mt-2 text-xs text-slate-300">Study NEC articles and practice code scenarios with inspector-grade context.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="pb-16 sm:pb-24">
+      <h2 class="text-3xl font-extrabold tracking-tight">Frequently asked questions</h2>
+      <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="font-bold text-sm">Is SparkySolve only for North Carolina?</div>
+          <p class="mt-2 text-sm text-slate-300">It is optimized for NEC 2023 adoption in North Carolina, but the code references apply across NEC-jurisdiction states.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="font-bold text-sm">Can it do commercial design work?</div>
+          <p class="mt-2 text-sm text-slate-300">Yes. Use it for panel scheduling, service sizing, load calculations, and circuit questions with NEC references.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="font-bold text-sm">Does it replace my code book?</div>
+          <p class="mt-2 text-sm text-slate-300">It supplements it. Think of it as instant lookup and first-pass review, not a substitute for official code authority.</p>
+        </div>
+        <div class="rounded-2xl border border-white/5 bg-navy-alt p-5">
+          <div class="font-bold text-sm">How is it different from generic AI?</div>
+          <p class="mt-2 text-sm text-slate-300">SparkySolve is domain-specific: it prioritizes safety, cites NEC articles, and avoids guesses on compliance questions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="pb-20">
+      <div class="rounded-3xl border border-spark/20 bg-spark/5 p-8 sm:p-12 text-center">
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Add an AI assistant to your truck</h2>
+        <p class="mt-3 text-slate-300 max-w-2xl mx-auto">Faster diagnosis, better code compliance, and fewer inspection surprises in 2025.</p>
+        <a class="mt-6 inline-block px-6 py-3 rounded-2xl bg-spark text-navy font-bold hover:brightness-110 transition" href="#features">Get Started</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/5 py-8">
+    <div class="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+      <div>SparkySolve — National Sparky App</div>
+      <div class="flex gap-4">
+        <a href="/" class="hover:text-white transition">Home</a>
+        <a href="/api/health" class="hover:text-white transition">Status</a>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto px-4 mt-4 text-xs text-slate-500">Share the link <strong class="text-slate-200">https://national-sparky-app.vercel.app</strong> — it opens the same experience for every viewer.</div>
+  </footer>
+</body>
+</html>

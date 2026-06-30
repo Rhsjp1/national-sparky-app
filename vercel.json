@@ -4,6 +4,7 @@
     { "source": "/faq", "destination": "/faq/index.html" },
     { "source": "/blog", "destination": "/blog/index.html" },
     { "source": "/googleef78fb3cfca50d1f.html", "destination": "/googleef78fb3cfca50d1f.html" },
+    { "source": "/google-site-verification-meta", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
