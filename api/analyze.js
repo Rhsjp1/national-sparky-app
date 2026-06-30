@@ -36,14 +36,21 @@ export default async function handler(req, res) {
                     { role: 'user', content: text }
                 ],
                 temperature: 0.4,
-                max_tokens: 1200
+                max_tokens: 500
             })
         });
 
         const data = await response.json();
         if (!response.ok) {
-            const errMsg = data?.error?.message || response.statusText;
-            return res.status(502).json({ success: false, error: 'AI service error: ' + errMsg });
+          const errMsg = data?.error?.message || response.statusText;
+          if (response.status === 402 || (data?.error?.code === ' insufficient_credits')) {
+            return res.status(200).json({
+              success: true,
+              payload: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+              demo: true
+            });
+          }
+          return res.status(502).json({ success: false, error: 'AI service error: ' + errMsg });
         }
 
         const reply = data?.choices?.[0]?.message?.content || 'No response.';

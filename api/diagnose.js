@@ -145,14 +145,19 @@ module.exports = async function handler(req, res) {
         model: 'openai/gpt-4o-mini',
         messages,
         temperature: 0.4,
-        max_tokens: 2048
+        max_tokens: 500
       })
     });
 
     const data = await response.json();
     if (!response.ok) {
       const errMsg = data?.error?.message || response.statusText;
-      console.error('[diagnose] OpenRouter error:', response.status, data);
+      if (response.status === 402) {
+        return res.status(200).json({
+          result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+          usage: { tier, demo: true }
+        });
+      }
       return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
     }
 

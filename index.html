@@ -4,7 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="SparkySolve — AI-powered field tool for licensed electricians in North Carolina" />
+  <meta property="og:title" content="⚡ SparkySolve — National Sparky" />
+  <meta property="og:description" content="NEC 2023 AI assistant for electricians. Diagnose faults, cite code, and pass inspection faster." />
+  <meta property="og:url" content="https://national-sparky-app.vercel.app" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="⚡ SparkySolve — National Sparky" />
+  <meta name="twitter:description" content="AI-powered electrical code and diagnostics assistant for North Carolina." />
   <title>⚡ SparkySolve — National Sparky</title>
+  <meta property="og:image" content="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" />
+  <meta name="twitter:image" content="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" />
+  <link rel="icon" type="image/png" href="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" />
+  <link rel="apple-touch-icon" href="https://national-sparky-app.vercel.app/assets/sparky-brand-01-bolt.png" />
 
   <!-- Supabase JS v2 (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -865,10 +876,9 @@
 'use strict';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
-// Replace SUPABASE_ANON_KEY with your actual anon/public key from:
-// Supabase Dashboard → Project Settings → API → Project API keys → anon/public
+// Don’t rotate or expose these — deploy only
 const SUPABASE_URL      = 'https://dqyqlgnaawqnlxvxwcys.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';  // ← replace before deploying
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxeXFsZ25hYXdxbmx4dnh3Y3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MDU2NzksImV4cCI6MjA5NjI4MTY3OX0.bQvLX_ui0nd2zug_GccifsdMj2M0Uo2GHHb_MF3BElI';
 const FREE_TIER_LIMIT   = 5;
 
 // ─── Supabase client ──────────────────────────────────────────────────────────
