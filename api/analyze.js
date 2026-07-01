@@ -39,7 +39,7 @@ export default async function handler(req, res) {
                     { role: 'user', content: text }
                 ],
                 temperature: 0.4,
-                max_tokens: 500
+                max_tokens: 400
             })
         });
 
@@ -64,13 +64,17 @@ export default async function handler(req, res) {
         }
 
         if (!result.ok) {
+          if (result.reason === 'credits_exhausted') {
+            const errMsg = result.data?.error?.message || 'AI request failed';
+            return res.status(200).json({
+              success: true,
+              payload: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+              demo: true,
+              error: errMsg
+            });
+          }
           const errMsg = result.data?.error?.message || 'AI request failed';
-          return res.status(200).json({
-            success: true,
-            payload: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
-            demo: true,
-            error: errMsg
-          });
+          return res.status(502).json({ success: false, error: 'AI service error: ' + errMsg });
         }
 
         return res.status(200).json({ success: true, payload: result.reply });
