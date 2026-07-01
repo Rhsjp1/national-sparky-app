@@ -165,21 +165,19 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    const primaryModel = 'openai/gpt-4o-mini';
-    const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || 'google/gemini-2.0-flash-exp:free';
-    let result = await callOpenRouter(primaryModel);
-
-    if (!result.ok && result.reason === 'credits_exhausted' && fallbackModel && fallbackModel !== primaryModel) {
-      result = await callOpenRouter(fallbackModel);
-    }
+    const result = await callOpenRouter('openai/gpt-4o-mini');
 
     if (!result.ok) {
+      if (result.reason === 'credits_exhausted') {
+        const errMsg = result.data?.error?.message || 'AI request failed';
+        return res.status(200).json({
+          result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+          usage: { tier, demo: true },
+          error: errMsg
+        });
+      }
       const errMsg = result.data?.error?.message || 'AI request failed';
-      return res.status(200).json({
-        result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
-        usage: { tier, demo: true },
-        error: errMsg
-      });
+      return res.status(502).json({ error: 'AI service error: ' + errMsg });
     }
 
     const textOut = result.reply;
