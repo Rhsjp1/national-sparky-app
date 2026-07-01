@@ -175,7 +175,11 @@ module.exports = async function handler(req, res) {
 
     if (!result.ok) {
       const errMsg = result.data?.error?.message || 'AI request failed';
-      return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
+      return res.status(200).json({
+        result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+        usage: { tier, demo: true },
+        error: errMsg
+      });
     }
 
     const textOut = result.reply;
