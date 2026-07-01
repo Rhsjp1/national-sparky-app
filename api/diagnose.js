@@ -1,6 +1,7 @@
 'use strict';
 
 const { createClient } = require('@supabase/supabase-js');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const FREE_TIER_LIMIT = 5;
 const MAX_PROMPT_CHARS = 4000;
@@ -115,53 +116,84 @@ module.exports = async function handler(req, res) {
   if (imageData && imageData.length > MAX_IMAGE_B64_BYTES)
     return res.status(400).json({ error: 'Image too large — 4 MB max' });
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'OPENROUTER_API_KEY missing.' });
+  const googleKey = process.env.GOOGLE_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+
+  let textOut = '';
+  let provider = '';
 
   try {
-    const messages = [{ role: 'system', content: SPARKY_SYSTEM }];
-
-    if (imageData) {
-      messages.push({
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageData}` } }
-        ]
+    if (googleKey) {
+      provider = 'google';
+      const genAI = new GoogleGenerativeAI(googleKey);
+      const model = genAI.getGenerativeModel({ 
+        model: 'gemini-1.5-flash',
+        systemInstruction: SPARKY_SYSTEM
       });
-    } else {
-      messages.push({ role: 'user', content: prompt });
-    }
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': process.env.APP_URL || 'https://national-sparky-app.vercel.app',
-        'X-Title': 'SparkySolve'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
-        messages,
-        temperature: 0.4,
-        max_tokens: 500
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      const errMsg = data?.error?.message || response.statusText;
-      if (response.status === 402) {
-        return res.status(200).json({
-          result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
-          usage: { tier, demo: true }
+      const parts = [prompt];
+      if (imageData) {
+        parts.unshift({
+          inline_data: {
+            mime_type: mimeType || 'image/jpeg',
+            data: imageData
+          }
         });
       }
-      return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
-    }
 
-    const textOut = data?.choices?.[0]?.message?.content || '';
+      const result = await model.generateContent(parts);
+      const response = await result.response;
+      textOut = response.text().trim();
+    } else if (openRouterKey) {
+      provider = 'openrouter';
+      const messages = [{ role: 'system', content: SPARKY_SYSTEM }];
+      
+      if (imageData) {
+        messages.push({
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageData}` } }
+          ]
+        });
+      } else {
+        messages.push({ role: 'user', content: prompt });
+      }
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openRouterKey}`,
+          'HTTP-Referer': process.env.APP_URL || 'https://national-sparky-app.vercel.app',
+          'X-Title': 'SparkySolve'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o-mini',
+          messages,
+          temperature: 0.4,
+          max_tokens: 500
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        const errMsg = data?.error?.message || response.statusText;
+        if (response.status === 402) {
+          return res.status(200).json({
+            result: "Demo mode: AI service credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+            usage: { tier, demo: true }
+          });
+        }
+        return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
+      }
+
+      textOut = data?.choices?.[0]?.message?.content || '';
+    } else {
+      return res.status(500).json({ 
+        error: 'No AI provider configured. Add GOOGLE_API_KEY or OPENROUTER_API_KEY.' 
+      });
+    }
 
     const logPromises = [
       supabase.from('usage_events').insert({
@@ -169,7 +201,8 @@ module.exports = async function handler(req, res) {
         event_type: 'diagnostic',
         metadata: {
           has_image: !!imageData,
-          prompt_chars: prompt.length
+          prompt_chars: prompt.length,
+          provider
         }
       }),
       supabase.from('diagnostic_logs').insert({
@@ -177,7 +210,8 @@ module.exports = async function handler(req, res) {
         request_text: prompt.substring(0, 2000),
         response_text: textOut,
         has_image: !!imageData,
-        tier_at_time: tier
+        tier_at_time: tier,
+        provider
       })
     ];
 
@@ -195,8 +229,8 @@ module.exports = async function handler(req, res) {
     }
 
     return res.status(200).json({ result: textOut, usage });
-  } catch (fetchErr) {
-    console.error('[diagnose] fetch failed:', fetchErr.message);
+  } catch (err) {
+    console.error('[diagnose] provider error:', err.message);
     return res.status(502).json({ error: 'Could not reach AI service' });
   }
 };
