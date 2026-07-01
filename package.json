@@ -9,6 +9,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "@supabase/supabase-js": "^2.39.0",
-    "stripe": "^14.25.0"
+    "stripe": "^14.25.0",
+    "tailwindcss": "^4.3.2"
   }
 }

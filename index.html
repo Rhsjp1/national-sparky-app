@@ -101,6 +101,7 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
         <textarea class="inp tx" id="prompt" placeholder="Describe the circuit issue or code question…&#10;e.g. Kitchen GFCI tripping — 20A, NM-B 12/2"></textarea>
 
         <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-dim btn-sm" id="btn-voice" style="width:auto" title="Voice input">🎙️</button>
           <button class="btn btn-gold" id="btn-analyze" style="flex:1">⚡ Analyze</button>
           <button class="btn btn-dim btn-sm" id="btn-clear" style="width:auto;padding:0 1rem">Clear</button>
         </div>
@@ -328,6 +329,66 @@ id('btn-clear').onclick = function(){
   id('prompt').value='';
   id('result-wrap').classList.add('hidden');
   id('diag-status').textContent='';
+};
+
+/* ── voice ── */
+var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+var _rec = null;
+var _voiceSupported = false;
+var _voiceListening = false;
+if(SpeechRecognition){
+  _voiceSupported = true;
+  _rec = new SpeechRecognition();
+  _rec.continuous = false;
+  _rec.interimResults = false;
+  _rec.lang = 'en-US';
+  _rec.onresult = function(e){
+    _voiceListening = false;
+    var t = (e.results && e.results[0] && e.results[0][0] && e.results[0][0].transcript) || '';
+    if(t){ id('prompt').value = (id('prompt').value ? id('prompt').value + ' ' : '') + t; }
+    id('btn-voice').disabled = false;
+    id('btn-voice').textContent = '🎙️';
+    toast('Voice captured', 'ok');
+  };
+  _rec.onerror = function(evt){
+    _voiceListening = false;
+    id('btn-voice').disabled = false;
+    id('btn-voice').textContent = '🎙️';
+    if(evt.error === 'not-allowed') toast('Microphone permission denied','err');
+    else if(evt.error === 'no-speech') toast('No speech detected — try again','err');
+    else toast('Microphone error: ' + evt.error,'err');
+  };
+  _rec.onend = function(){
+    _voiceListening = false;
+    id('btn-voice').disabled = false;
+    id('btn-voice').textContent = '🎙️';
+  };
+} else {
+  id('btn-voice').style.display = 'none';
+}
+
+id('btn-voice').onclick = function(){
+  if(!_voiceSupported){ toast('Speech recognition not supported in this browser','err'); return; }
+  if(_voiceListening){
+    try{ _rec.stop(); } catch(e){}
+    _voiceListening = false;
+    id('btn-voice').textContent = '🎙️';
+    id('btn-voice').disabled = false;
+    toast('Stopped listening','ok');
+    return;
+  }
+  try{
+    _voiceListening = true;
+    _rec.start();
+    id('btn-voice').textContent = '⏺';
+    id('btn-voice').disabled = true;
+    toast('Listening…','ok');
+  } catch(e){
+    _voiceListening = false;
+    id('btn-voice').disabled = false;
+    id('btn-voice').textContent = '🎙️';
+    toast('Could not start microphone','err');
+  }
 };
 
 id('btn-copy').onclick = function(){
