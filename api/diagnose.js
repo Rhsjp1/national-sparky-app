@@ -44,6 +44,9 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST')
     return res.status(405).json({ error: 'Method not allowed' });
 
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return res.status(500).json({ success: false, error: 'OPENROUTER_API_KEY missing.' });
+
   const authHeader = req.headers['authorization'] || '';
   if (!authHeader.startsWith('Bearer '))
     return res.status(401).json({ error: 'Missing Authorization header' });
@@ -115,10 +118,9 @@ module.exports = async function handler(req, res) {
   if (imageData && imageData.length > MAX_IMAGE_B64_BYTES)
     return res.status(400).json({ error: 'Image too large — 4 MB max' });
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'OPENROUTER_API_KEY missing.' });
 
-  try {
+  const callOpenRouter = async (model) => {
     const messages = [{ role: 'system', content: SPARKY_SYSTEM }];
 
     if (imageData) {
@@ -142,7 +144,7 @@ module.exports = async function handler(req, res) {
         'X-Title': 'SparkySolve'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
+        model,
         messages,
         temperature: 0.4,
         max_tokens: 500
@@ -152,17 +154,31 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
     if (!response.ok) {
       const errMsg = data?.error?.message || response.statusText;
-      if (response.status === 402) {
-        return res.status(200).json({
-          result: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
-          usage: { tier, demo: true }
-        });
+      if (response.status === 402 || (data?.error?.code && String(data.error.code).includes('insufficient_credits'))) {
+        return { ok: false, reason: 'credits_exhausted', data };
       }
+      return { ok: false, reason: 'upstream_error', data};
+    }
+
+    const reply = data?.choices?.[0]?.message?.content || '';
+    return { ok: true, reply };
+  };
+
+  try {
+    const primaryModel = 'openai/gpt-4o-mini';
+    const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || 'google/gemini-2.0-flash-exp:free';
+    let result = await callOpenRouter(primaryModel);
+
+    if (!result.ok && result.reason === 'credits_exhausted' && fallbackModel && fallbackModel !== primaryModel) {
+      result = await callOpenRouter(fallbackModel);
+    }
+
+    if (!result.ok) {
+      const errMsg = result.data?.error?.message || 'AI request failed';
       return res.status(502).json({ error: 'AI service unavailable: ' + errMsg });
     }
 
-    const textOut = data?.choices?.[0]?.message?.content || '';
-
+    const textOut = result.reply;
     const logPromises = [
       supabase.from('usage_events').insert({
         user_id: user.id,

@@ -20,7 +20,10 @@ export default async function handler(req, res) {
 
     const systemPrompt = `You are Electrical OS AI. Tone: ${tonePrompt} Always prioritize safety and reference NEC sections.`;
 
-    try {
+    const primaryModel = 'openai/gpt-4o-mini';
+    const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || 'google/gemini-2.0-flash-exp:free';
+
+    const callOpenRouter = async (model) => {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -30,7 +33,7 @@ export default async function handler(req, res) {
                 'X-Title': 'SparkySolve'
             },
             body: JSON.stringify({
-                model: 'openai/gpt-4o-mini',
+                model,
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: text }
@@ -42,19 +45,35 @@ export default async function handler(req, res) {
 
         const data = await response.json();
         if (!response.ok) {
-          const errMsg = data?.error?.message || response.statusText;
-          if (response.status === 402 || (data?.error?.code === ' insufficient_credits')) {
-            return res.status(200).json({
-              success: true,
-              payload: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
-              demo: true
-            });
-          }
-          return res.status(502).json({ success: false, error: 'AI service error: ' + errMsg });
+            const errMsg = data?.error?.message || response.statusText;
+            if (response.status === 402 || (data?.error?.code && String(data.error.code).includes('insufficient_credits'))) {
+                return { ok: false, reason: 'credits_exhausted', data };
+            }
+            return { ok: false, reason: 'upstream_error', data };
         }
 
         const reply = data?.choices?.[0]?.message?.content || 'No response.';
-        return res.status(200).json({ success: true, payload: reply });
+        return { ok: true, reply };
+    };
+
+    try {
+        let result = await callOpenRouter(primaryModel);
+
+        if (!result.ok && result.reason === 'credits_exhausted' && fallbackModel && fallbackModel !== primaryModel) {
+            result = await callOpenRouter(fallbackModel);
+        }
+
+        if (!result.ok) {
+          const errMsg = result.data?.error?.message || 'AI request failed';
+          return res.status(200).json({
+            success: true,
+            payload: "Demo mode: OpenRouter credits exhausted. Refill to enable live AI responses. This endpoint and app are working correctly.",
+            demo: true,
+            error: errMsg
+          });
+        }
+
+        return res.status(200).json({ success: true, payload: result.reply });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
