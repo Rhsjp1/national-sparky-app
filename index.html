@@ -175,6 +175,17 @@ sb.auth.onAuthStateChange(function(_e, sess){
 });
 
 /* ── login page wiring ── */
+function id(i){ return document.getElementById(i); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
+function setMsg(m,e){ var el=id('login-msg'); el.textContent=m; el.style.color=e?'#ff4f57':'#8888a2'; }
+function toast(m,t){
+  var el=id('toast'); clearTimeout(_tt);
+  el.textContent=m;
+  el.style.color=t==='err'?'#ff4f57':t==='ok'?'#1adb8f':'#eeeef2';
+  el.style.transform='translateX(-50%) translateY(0)';
+  _tt=setTimeout(function(){ el.style.transform='translateX(-50%) translateY(100px)'; },3000);
+}
+
 id('btn-github').onclick = function(){
   setMsg('Redirecting to GitHub…');
   sb.auth.signInWithOAuth({
@@ -212,7 +223,39 @@ function showApp(){
 }
 
 /* ── logout ── */
-id('btn-logout').onclick = function(){ sb.auth.signOut(); };
+id('btn-logout').onclick = function(){ logout(); };
+
+function logout(){ sb.auth.signOut(); }
+
+/* ── auth wrapper ── */
+function withAuth(init) {
+  return sb.auth.getSession().then(function(s){
+    var sess = s.data.session;
+    if (!sess || !sess.access_token) {
+      showLogin();
+      return Promise.reject(new Error('No session'));
+    }
+    var opts = Object.assign({}, init, {
+      headers: Object.assign({}, init.headers, {
+        'Content-Type': (init.headers && init.headers['Content-Type']) || 'application/json',
+        'Authorization': 'Bearer ' + sess.access_token
+      })
+    });
+    return fetch(init.url || '/', opts).then(function(r){
+      if (r.status === 401) {
+        sb.auth.signOut();
+        showLogin();
+        return Promise.reject(new Error('Session expired'));
+      }
+      var clone = r.clone();
+      return clone.json().then(function(d){ return { ok: r.ok, s: r.status, d: d }; });
+    });
+  }).catch(function(e){
+    if (e.message !== 'No session' && e.message !== 'Session expired') {
+      console.error('[withAuth]', e.message);
+    }
+  });
+}
 
 /* ── tabs ── */
 document.querySelectorAll('.tab-btn').forEach(function(btn){
@@ -261,24 +304,6 @@ function loadUsage(){
 /* ── diagnose ── */
 id('btn-analyze').onclick = function(){
   if(_tier==='free'&&_used>=FREE_LIM){ return toast('Upgrade for unlimited diagnostics','err'); }
-  function withAuth(init) {
-    return sb.auth.getSession().then(function(s) {
-      var sess = s.data.session;
-      if (!sess) { location.reload(); return Promise.reject(new Error('No session')); }
-      var opts = Object.assign({}, init, {
-        headers: Object.assign({}, init.headers, {
-          'Content-Type': (init.headers && init.headers['Content-Type']) || 'application/json',
-          'Authorization': 'Bearer ' + sess.access_token
-        })
-      });
-      return fetch(init.url || '/', opts).then(function(r) {
-        if (r.status === 401) { location.reload(); return Promise.reject(new Error('Session expired')); }
-        var clone = r.clone();
-        return clone.json().then(function(d) { return { ok: r.ok, s: r.status, d: d }; });
-      });
-    });
-  }
-
   var prompt = id('prompt').value.trim();
   if(!prompt){ return toast('Enter a question first','err'); }
   var btn=id('btn-analyze');
@@ -311,11 +336,14 @@ id('btn-copy').onclick = function(){
 };
 
 id('btn-upgrade').onclick = function(){
-  fetch('/api/create-checkout',{
+  withAuth({
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+_sess.access_token},
+    url:'/api/create-checkout',
     body:JSON.stringify({tier:'starter'})
-  }).then(function(r){ return r.json(); }).then(function(d){ if(d.url) location.href=d.url; });
+  }).then(function(r){
+    if(!r.ok){ throw new Error((r.d && r.d.error) || 'Checkout error'); }
+    if(r.d.url){ location.href=r.d.url; }
+  }).catch(function(e){ toast(e.message,'err'); });
 };
 
 /* ── clients ── */
@@ -373,17 +401,6 @@ id('btn-clear-logs').onclick=function(){
   sb.from('diagnostic_logs').delete().eq('user_id',_sess.user.id).then(function(){ loadLogs(); toast('History cleared'); });
 };
 
-/* ── helpers ── */
-function id(i){ return document.getElementById(i); }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function setMsg(m,e){ var el=id('login-msg'); el.textContent=m; el.style.color=e?'#ff4f57':'#8888a2'; }
-function toast(m,t){
-  var el=id('toast'); clearTimeout(_tt);
-  el.textContent=m;
-  el.style.color=t==='err'?'#ff4f57':t==='ok'?'#1adb8f':'#eeeef2';
-  el.style.transform='translateX(-50%) translateY(0)';
-  _tt=setTimeout(function(){ el.style.transform='translateX(-50%) translateY(100px)'; },3000);
-}
 })();
 </script>
 </body>
