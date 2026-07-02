@@ -2,4 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Sitemap: https://national-sparky-app.vercel.app/sitemap.xml
+Sitemap: https://national-sparky-app.vercel.app/sitemap.xml
 Host: https://national-sparky-app.vercel.app

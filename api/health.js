@@ -1,8 +1,9 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Content-Type', 'text/html');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'GET') return res.status(405).send('<html><body>Method not allowed</body></html>');
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   let openRouter = { set: !!apiKey, valid: false };
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
           'X-Title': 'SparkySolve Health'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-4o-mini',
+          model: process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct:free',
           messages: [{ role: 'user', content: 'Ping' }],
           max_tokens: 1
         })
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
     }
   }
 
-  res.status(200).json({
+  const payload = {
     ok: true,
     app: 'national-sparky-app',
     routes: ['/api/analyze', '/api/diagnose', '/api/create-checkout', '/api/stripe-webhook'],
@@ -43,5 +44,11 @@ export default async function handler(req, res) {
       hasStripeWebhook: !!process.env.STRIPE_WEBHOOK_SECRET
     },
     openRouter
-  });
+  };
+
+  res.status(200).send(`<!doctype html><html><head><meta charset=utf-8><title>Health</title></head><body><pre id="health">${escapeHtml(JSON.stringify(payload, null, 2))}</pre></body></html>`);
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>'"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
 }
