@@ -63,6 +63,7 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
   <header style="background:#15151d;border-bottom:1px solid rgba(255,255,255,.08);padding:.65rem 1rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:50">
     <span style="font-size:.95rem;font-weight:600;flex:1">⚡ SparkySolve</span>
     <span id="hdr-usage" style="font-size:.72rem;background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:3px 10px" class="muted">—</span>
+    <button class="btn btn-dim btn-sm" id="btn-settings" style="width:auto" title="Settings">⚙</button>
     <button class="btn btn-dim btn-sm" id="btn-logout" style="width:auto">↪</button>
   </header>
 
@@ -224,6 +225,7 @@ function showApp(){
 
 /* ── logout ── */
 id('btn-logout').onclick = function(){ logout(); };
+id('btn-settings').onclick = function(){ openSettings(); };
 
 function logout(){ sb.auth.signOut(); }
 
@@ -367,6 +369,99 @@ if(SpeechRecognition){
   id('btn-voice').style.display = 'none';
 }
 
+/* ── settings dialog ── */
+var _settings = {
+  theme: (localStorage.getItem('sparky.theme') || 'dark'),
+  shortcuts: JSON.parse(localStorage.getItem('sparky.shortcuts') || 'null') || {
+    analyze: 'Ctrl+Enter',
+    clear: 'Ctrl+Backspace',
+    voice: 'Ctrl+M',
+    focusPrompt: 'Ctrl+/'
+  }
+};
+function applyTheme(t){
+  _settings.theme = t;
+  localStorage.setItem('sparky.theme', t);
+  var root = document.documentElement;
+  if(t==='light'){
+    root.style.setProperty('--bg-body','#f6f7fb');
+    root.style.setProperty('--bg-card','#ffffff');
+    root.style.setProperty('--bg-input','#ffffff');
+    root.style.setProperty('--text-main','#1f232d');
+    root.style.setProperty('--text-dim','#6b7885');
+    root.style.setProperty('--border','rgba(0,0,0,0.08)');
+  }else{
+    root.style.setProperty('--bg-body','#0b0b0f');
+    root.style.setProperty('--bg-card','#15151d');
+    root.style.setProperty('--bg-input','#1c1c27');
+    root.style.setProperty('--text-main','#eeeef2');
+    root.style.setProperty('--text-dim','#8888a2');
+    root.style.setProperty('--border','rgba(255,255,255,0.08)');
+  }
+}
+function openSettings(){
+  var wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem';
+  wrap.innerHTML='<div style="background:#15151d;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.1rem 1.25rem;width:100%;max-width:360px;color:#eeeef2;font-family:inherit" class="card"></div>';
+  document.body.appendChild(wrap);
+  var box=wrap.firstElementChild;
+  var title=document.createElement('div');
+  title.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem';
+  title.innerHTML='<div style="font-weight:600;font-size:.95rem">Settings</div><button style="background:transparent;border:none;color:#8888a2;cursor:pointer;font-size:1.1rem">✕</button>';
+  box.appendChild(title);
+
+  var themeRow=document.createElement('div');
+  themeRow.style.cssText='display:flex;gap:.5rem;margin-bottom:.6rem';
+  ['dark','light'].forEach(function(v){
+    var b=document.createElement('button');
+    b.textContent=v==='light'?'☀️ Light':'🌙 Dark';
+    b.className='btn btn-dim btn-sm';
+    b.style.cssText='width:auto';
+    b.onclick=function(){applyTheme(v);openSettings();};
+    themeRow.appendChild(b);
+  });
+  box.appendChild(themeRow);
+
+  var sc=document.createElement('div');
+  sc.style.cssText='font-size:.8rem;color:#aaaaaa;margin:.2rem 0 .35rem';
+  sc.textContent='Keyboard shortcuts';
+  box.appendChild(sc);
+
+  Object.keys(_settings.shortcuts).forEach(function(name){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:.35rem 0;gap:.75rem';
+    var label=document.createElement('div');
+    label.textContent=name;
+    label.style.cssText='font-size:.82rem';
+    var input=document.createElement('input');
+    input.className='inp';
+    input.value=_settings.shortcuts[name]||'';
+    input.style.cssText='width:160px;text-align:center;text-transform:uppercase';
+    input.dataset.shortcut=name;
+    input.addEventListener('focus',function(){ this.select(); });
+    input.addEventListener('keydown',function(e){
+      var parts=[];
+      if(e.ctrlKey||e.metaKey)parts.push('Ctrl');
+      if(e.shiftKey)parts.push('Shift');
+      if(e.altKey)parts.push('Alt');
+      if(['Control','Shift','Alt','Meta'].indexOf(e.key)===-1){
+        parts.push(e.key.length===1?e.key.toUpperCase():e.key);
+      }
+      e.preventDefault(); e.stopPropagation();
+      var combo=parts.join('+');
+      this.value=combo;
+      _settings.shortcuts[this.dataset.shortcut]=combo;
+      localStorage.setItem('sparky.shortcuts',JSON.stringify(_settings.shortcuts));
+    });
+    row.appendChild(label); row.appendChild(input); sc.appendChild(row);
+  });
+  box.appendChild(sc);
+
+  wrap.onclick=function(e){if(e.target===wrap)wrap.remove();};
+  title.querySelector('button').onclick=function(){wrap.remove();};
+}
+function openSettingsWrap(){openSettings();}
+
 id('btn-voice').onclick = function(){
   if(!_voiceSupported){ toast('Speech recognition not supported in this browser','err'); return; }
   if(_voiceListening){
@@ -460,6 +555,22 @@ id('btn-clear-logs').onclick=function(){
   if(!confirm('Clear all history?')) return;
   sb.from('diagnostic_logs').delete().eq('user_id',_sess.user.id).then(function(){ loadLogs(); toast('History cleared'); });
 };
+
+/* ── shortcuts ── */
+var _lastCombo = '';
+document.addEventListener('keydown', function(e){
+  if(!e.ctrlKey && !e.metaKey) return;
+  var combo = (e.ctrlKey||e.metaKey?'Ctrl/⌘':'') + (e.shiftKey?'+Shift':'') + (e.altKey?'+Alt':'') + (['Control','Shift','Alt','Meta'].indexOf(e.key)===-1?'+'+(e.key.length===1?e.key.toUpperCase():e.key):'');
+  combo = combo.replace(/^\+\+/, '+').replace(/^\+\//,'/');
+  var sc = _settings && _settings.shortcuts || {};
+  if(combo === (sc.analyze||'Ctrl+Enter')) { e.preventDefault(); id('btn-analyze') && id('btn-analyze').click(); }
+  else if(combo === (sc.clear||'Ctrl+Backspace')) { e.preventDefault(); id('btn-clear') && id('btn-clear').click(); }
+  else if(combo === (sc.voice||'Ctrl+M')) { e.preventDefault(); id('btn-voice') && id('btn-voice').click(); }
+  else if(combo === (sc.focusPrompt||'Ctrl+/')) { e.preventDefault(); id('prompt') && id('prompt').focus(); }
+});
+
+/* ── theme init ── */
+applyTheme(_settings.theme);
 
 })();
 </script>

@@ -165,7 +165,13 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    const result = await callOpenRouter('openai/gpt-4o-mini');
+    const primaryModel = (process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct:free');
+    const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || null;
+    let result = await callOpenRouter(primaryModel);
+
+    if (!result.ok && result.reason === 'credits_exhausted' && fallbackModel && fallbackModel !== primaryModel) {
+      result = await callOpenRouter(fallbackModel);
+    }
 
     if (!result.ok) {
       if (result.reason === 'credits_exhausted') {

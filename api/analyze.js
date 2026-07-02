@@ -21,6 +21,11 @@ export default async function handler(req, res) {
     const systemPrompt = `You are Electrical OS AI. Tone: ${tonePrompt} Always prioritize safety and reference NEC sections.`;
 
     try {
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: text }
+        ];
+
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -30,13 +35,10 @@ export default async function handler(req, res) {
                 'X-Title': 'SparkySolve'
             },
             body: JSON.stringify({
-                model: 'openai/gpt-4o-mini',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: text }
-                ],
+                model: process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct:free',
+                messages,
                 temperature: 0.4,
-                max_tokens: 202
+                max_tokens: 180
             })
         });
 
