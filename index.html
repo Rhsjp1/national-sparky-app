@@ -115,6 +115,23 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
         </div>
         <pre id="result-pre"></pre>
       </div>
+
+      <!-- Chat follow-up panel -->
+      <div id="chat-wrap" class="hidden card" style="border-color:rgba(244,161,0,.25)">
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem" class="dim">🎙️ Ask Sparky about this diagnosis</div>
+        <div id="chat-messages" style="max-height:280px;overflow-y:auto;background:#0b0b0f;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.65rem;font-size:.82rem;line-height:1.55;margin-bottom:.5rem"></div>
+        <div style="display:flex;gap:6px">
+          <input class="inp" id="chat-input" placeholder="e.g. Why grounding and not a bad bulb?" style="flex:1;font-size:.82rem;padding:.5rem .7rem"/>
+          <button class="btn btn-gold" id="btn-chat-send" style="width:auto;padding:.5rem .9rem;font-size:.8rem">Send</button>
+        </div>
+        <!-- Quick replies -->
+        <div id="chat-quick" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:.5rem">
+          <button class="btn btn-dim btn-sm chat-qr" data-q="Explain this diagnosis in simple terms">Plain English</button>
+          <button class="btn btn-dim btn-sm chat-qr" data-q="What NEC articles apply to this issue?">NEC References</button>
+          <button class="btn btn-dim btn-sm chat-qr" data-q="What safe troubleshooting steps should I take?">Troubleshoot</button>
+          <button class="btn btn-dim btn-sm chat-qr" data-q="What tools and materials do I need?">Tools Needed</button>
+        </div>
+      </div>
     </div>
 
     <!-- DISPATCH -->
@@ -323,6 +340,7 @@ id('btn-analyze').onclick = function(){
     id('result-wrap').classList.remove('hidden');
     id('diag-status').textContent='';
     if(r.d.usage){ _used=(r.d.usage.used||_used+1); loadUsage(); }
+    if(r.d.chatSessionId){ openChatPanel(r.d.chatSessionId); }
   }).catch(function(e){ toast(e.message,'err'); id('diag-status').textContent=''; })
   .finally(function(){ btn.disabled=false; btn.textContent='⚡ Analyze'; });
 };
@@ -330,6 +348,9 @@ id('btn-analyze').onclick = function(){
 id('btn-clear').onclick = function(){
   id('prompt').value='';
   id('result-wrap').classList.add('hidden');
+  id('chat-wrap').classList.add('hidden');
+  id('chat-messages').innerHTML='';
+  _chatSessionId=null;
   id('diag-status').textContent='';
 };
 
@@ -489,6 +510,83 @@ id('btn-voice').onclick = function(){
 id('btn-copy').onclick = function(){
   navigator.clipboard.writeText(id('result-pre').textContent).then(function(){ toast('Copied ✓'); });
 };
+
+/* ── chat follow-up ── */
+var _chatSessionId = null;
+var _chatLoading = false;
+
+function openChatPanel(sessionId){
+  _chatSessionId = sessionId;
+  id('chat-wrap').classList.remove('hidden');
+  id('chat-messages').innerHTML = '<div class="muted" style="text-align:center;padding:.5rem;font-size:.78rem">Ask a follow-up question about this diagnosis…</div>';
+}
+
+function addChatBubble(role, text){
+  var box = id('chat-messages');
+  // Remove placeholder if present
+  if(box.children.length === 1 && box.children[0].classList.contains('muted')){
+    box.innerHTML = '';
+  }
+  var div = document.createElement('div');
+  div.style.cssText = 'margin-bottom:.5rem;padding:.4rem .55rem;border-radius:8px;font-size:.82rem;line-height:1.5;white-space:pre-wrap';
+  if(role === 'user'){
+    div.style.background = 'rgba(244,161,0,.12)';
+    div.style.border = '1px solid rgba(244,161,0,.2)';
+    div.style.marginLeft = '1.5rem';
+  } else {
+    div.style.background = '#1c1c27';
+    div.style.border = '1px solid rgba(255,255,255,.06)';
+    div.style.marginRight = '1.5rem';
+  }
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function sendChat(msg){
+  if(!_chatSessionId || _chatLoading) return;
+  var text = (msg || '').trim();
+  if(!text) return;
+  _chatLoading = true;
+  id('btn-chat-send').disabled = true;
+  id('btn-chat-send').textContent = '…';
+  addChatBubble('user', text);
+  id('chat-input').value = '';
+
+  withAuth({
+    method: 'POST',
+    url: '/api/sparky-chat',
+    body: JSON.stringify({ sessionId: _chatSessionId, message: text })
+  }).then(function(r){
+    if(!r.ok){
+      toast((r.d && r.d.error) || 'Chat error', 'err');
+      return;
+    }
+    addChatBubble('assistant', r.d.reply || 'No response.');
+  }).catch(function(e){
+    toast(e.message, 'err');
+  }).finally(function(){
+    _chatLoading = false;
+    id('btn-chat-send').disabled = false;
+    id('btn-chat-send').textContent = 'Send';
+  });
+}
+
+id('btn-chat-send').onclick = function(){
+  sendChat(id('chat-input').value);
+};
+id('chat-input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendChat(id('chat-input').value);
+  }
+});
+// Quick reply buttons
+document.querySelectorAll('.chat-qr').forEach(function(btn){
+  btn.onclick = function(){
+    sendChat(btn.dataset.q);
+  };
+});
 
 id('btn-upgrade').onclick = function(){
   withAuth({

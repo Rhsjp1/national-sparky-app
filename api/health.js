@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const payload = {
     ok: true,
     app: 'national-sparky-app',
-    routes: ['/api/analyze', '/api/diagnose', '/api/create-checkout', '/api/stripe-webhook'],
+    "routes": ["/api/analyze", "/api/diagnose", "/api/sparky-chat", "/api/create-checkout", "/api/stripe-webhook"],
     env: {
       hasOpenRouter: !!apiKey,
       hasSupabaseUrl: !!process.env.SUPABASE_URL,

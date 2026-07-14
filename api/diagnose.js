@@ -187,6 +187,34 @@ module.exports = async function handler(req, res) {
     }
 
     const textOut = result.reply;
+
+    // Create a chat session so the user can ask follow-up questions
+    let chatSessionId = null;
+    try {
+      const { data: chatSession } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: user.id,
+          prompt_summary: prompt.substring(0, 200),
+          diagnostic_log_id: null // will be linked after log insert
+        })
+        .select('id')
+        .single();
+
+      if (chatSession) {
+        chatSessionId = chatSession.id;
+        // Insert the diagnosis as the first assistant message
+        await supabase.from('chat_messages').insert({
+          session_id: chatSessionId,
+          role: 'assistant',
+          content: textOut
+        });
+      }
+    } catch (chatErr) {
+      console.error('[diagnose] chat session creation error:', chatErr.message);
+      // Non-fatal — diagnosis still works
+    }
+
     const logPromises = [
       supabase.from('usage_events').insert({
         user_id: user.id,
@@ -205,7 +233,13 @@ module.exports = async function handler(req, res) {
       })
     ];
 
-    Promise.all(logPromises).catch((e) => console.error('[diagnose] log error:', e.message));
+    Promise.all(logPromises).then(async (results) => {
+      // Link the chat session to the diagnostic log
+      const logId = results && results[1] && results[1].data && results[1].data[0] && results[1].data[0].id;
+      if (chatSessionId && logId) {
+        await supabase.from('chat_sessions').update({ diagnostic_log_id: logId }).eq('id', chatSessionId);
+      }
+    }).catch((e) => console.error('[diagnose] log error:', e.message));
 
     let usage = { tier };
     if (tier === 'free') {
@@ -218,7 +252,7 @@ module.exports = async function handler(req, res) {
       };
     }
 
-    return res.status(200).json({ result: textOut, usage });
+    return res.status(200).json({ result: textOut, usage, chatSessionId });
   } catch (err) {
     console.error('[diagnose] fetch failed:', err.message);
     return res.status(502).json({ error: 'Could not reach AI service' });
