@@ -35,7 +35,7 @@ export default async function handler(req, res) {
                 'X-Title': 'SparkySolve'
             },
             body: JSON.stringify({
-                model: process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct',
+                model: process.env.OPENROUTER_MODEL || 'poolside/laguna-s-2.1:free',
                 messages,
                 temperature: 0.4,
                 max_tokens: 180

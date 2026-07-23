@@ -19,7 +19,7 @@ export default async function handler(req, res) {
           'X-Title': 'SparkySolve Health'
         },
         body: JSON.stringify({
-          model: process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct',
+          model: process.env.OPENROUTER_MODEL || 'poolside/laguna-s-2.1:free',
           messages: [{ role: 'user', content: 'Ping' }],
           max_tokens: 1
         })

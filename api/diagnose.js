@@ -165,7 +165,7 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    const primaryModel = (process.env.OPENROUTER_MODEL || 'liquid/lfm-2.5-1.2b-instruct');
+    const primaryModel = (process.env.OPENROUTER_MODEL || 'poolside/laguna-s-2.1:free');
     const fallbackModel = process.env.OPENROUTER_FALLBACK_MODEL || null;
     let result = await callOpenRouter(primaryModel);
 
