@@ -23,6 +23,798 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
 .tab-btn.on{color:#f4a100;border-bottom-color:#f4a100}
 #result-pre{background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:1rem;font-size:.8rem;line-height:1.65;white-space:pre-wrap;font-family:monospace;max-height:360px;overflow-y:auto}
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:#1c1c27;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.55rem 1rem;font-size:.82rem;z-index:999;transition:transform .25s;pointer-events:none;white-space:nowrap}
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
+/* Compliance & Audit UI styles — injected into ns_repo_clone/index.html */
+.c-search{width:100%;background:#1c1c27;border:1px solid var(--border);border-radius:8px;color:var(--text-main);font-size:.85rem;padding:.6rem .75rem;outline:none}
+.c-search:focus{border-color:#f4a100}
+.c-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.c-chip{display:inline-flex;align-items:center;gap:6px;background:#1c1c27;border:1px solid var(--border);border-radius:18px;color:var(--text-dim);font-size:.72rem;padding:3px 11px;cursor:pointer;transition:all .15s}
+.c-chip:hover{border-color:#f4a100}
+.c-chip.is-on{background:#f4a100;color:#0b0b0f;font-weight:600}
+.c-chip.is-on .c-chip-ic{font-size:.68rem}
+.c-empty{color:var(--text-dim);font-size:.82rem;padding:1.2rem 0;text-align:center}
+.c-result{list-style:none;border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem;background:#15151d;cursor:pointer;transition:all .12s}
+.c-result:hover{border-color:#2a9d8f;background:#16202b}
+.c-result.is-match{border-color:#f4a100;background:#1a1408}
+.c-result .c-title{font-size:.88rem;font-weight:600;color:var(--text-main);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.c-result .c-sub{font-size:.68rem;color:var(--text-dim);margin-top:2px}
+.c-result .c-effect{font-size:.74rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px;line-height:1.4}
+.c-result .c-effect b{color:#f4a100}
+.c-detail{background:#101016;border:1px solid var(--border);border-radius:12px;padding:1rem;margin-top:.6rem;display:none}
+.c-detail.is-open{display:block}
+.c-detail .c-d-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-detail .c-d-title{font-size:.9rem;font-weight:600}
+.c-detail .c-d-close{background:transparent;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;padding:2px 6px;border-radius:6px}
+.c-detail .c-d-close:hover{color:#ff4f57}
+.c-detail .c-d-row{display:flex;gap:8px;font-size:.72rem;color:var(--text-dim);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em}
+.c-detail .c-d-row b{display:block;color:var(--text-main);font-weight:500}
+.c-detail .c-d-box{margin-top:.5rem;border-top:1px solid var(--border);padding-top:.45rem}
+.c-detail .c-d-box b{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);display:block;margin-bottom:.2rem}
+.c-detail .c-d-box p{margin:0;font-size:.76rem;color:#cdd6e2;line-height:1.45}
+.c-detail .c-d-box.ref b{color:#2a9d8f}
+.c-detail .c-d-box.warn b{color:#ff4f57}
+/* ---- AUDIT tab ---- */
+.c-audit-steps{display:flex;flex-direction:column;gap:1rem}
+.c-audit-step{border:1px solid var(--border);border-radius:12px;background:#15151d;padding:1rem}
+.c-audit-step .c-step-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+.c-audit-step textarea{caret-color:#f4a100}
+.c-audit-step.is-active{border-color:#f4a100}
+.c-checklist{display:flex;flex-direction:column;gap:.45rem}
+.c-checklist-item{border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;background:#15151d}
+.c-checklist-item.is-critical{border-color:#ff4f57;background:#201010}
+.c-checklist-item .c-c-top{display:flex;align-items:center;gap:8px}
+.c-checklist-item .c-c-check{width:18px;height:18px;border-radius:5px;background:#1c1c27;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;position:relative}
+.c-checklist-item.is-checked .c-c-check{background:#1adb8f;border-color:#1adb8f}
+.c-checklist-item .c-c-ref{font-size:.68rem;font-weight:700;color:#f4a100;text-transform:uppercase;letter-spacing:.05em}
+.c-checklist-item .c-c-title{font-size:.78rem;font-weight:600;color:var(--text-main);min-width:0}
+.c-checklist-item .c-c-effect{font-size:.72rem;color:#cdd6e2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.c-checklist-item .c-c-flag{font-size:.6rem;font-weight:700;color:#ff4f57;flex-shrink:0;line-height:1.4}
+.c-audit-summary{background:#101016;border:1px solid var(--border);border-radius:10px;padding:1rem;margin-top:.6rem;font-size:.74rem}
+.c-audit-summary b{color:#f4a100}
+.c-report{border:1px solid #2a9d8f;border-radius:12px;background:#0b1014;padding:1.2rem;margin-top:.6rem;display:none}
+.c-report.is-shown{display:block}
+.c-report .c-r-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.c-report .c-r-title{font-size:.9rem;font-weight:600;color:#2a9d8f}
+.c-report .c-r-sub{font-size:.7rem;color:var(--text-dim)}
+.c-report table{width:100%;border-collapse:collapse;font-size:.72rem}
+.c-report th{background:#15151d;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-size:.62rem;padding:.3rem .4rem;text-align:left;border-bottom:1px solid var(--border)}
+.c-report td{padding:.3rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.c-report tr.safety-critical td{background:#201010}
+.c-report tr.safety-critical td b{color:#ff4f57}
+.c-report .c-r-foot{margin-top:.75rem;font-size:.68rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:.5rem}
+.c-result-listing{padding-bottom:.6rem}
+#c-search{flex:1;min-width:200px}
+@media (max-width: 640px){
+  .c-detail,.c-report{padding:.75rem}
+  .c-checklist-item .c-c-effect{display:block;-webkit-line-clamp:2}
+}
+/* print: show only the report */
+@media print{
+  body *{visibility:hidden}
+  #c-print-area, #c-print-area *{visibility:visible}
+  #c-print-area{background:#fff;color:#000;width:100%}
+  .c-report{border:1px solid #000}
+}
+
 </style>
 </head>
 <body>
@@ -53,6 +845,105 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
     <span>🗺️ GPS dispatch + client routing</span>
     <span>🎙️ Voice-to-diagnosis + photo analysis</span>
     <span>🔒 5 free AI diagnostics / month</span>
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
+<!-- NEW: compliance feature cell (login page) -->
+<div class="dim" style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;max-width:360px;width:100%">
+  <span>⚡ NC Code Circuit Analyzer (NEC 2023)</span>
+  <span>🗺️ GPS dispatch + client routing</span>
+  <span>🎙️ Voice-to-diagnosis + photo analysis</span>
+  <span>🔒 5 free AI diagnostics / month</span>
+  <span style="display:flex;align-items:center;gap:6px">📋 Compliance reference + audit checklist</span>
+</div>
+
   </div>
 </div>
 
@@ -78,6 +969,28 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
     <button class="tab-btn on" data-tab="diagnose">⚡ Diagnose</button>
     <button class="tab-btn" data-tab="dispatch">🗺️ Dispatch</button>
     <button class="tab-btn" data-tab="logs">📋 Logs</button>
+    <button class="tab-btn" data-tab="compliance">📋 Compliance</button>
+    <button class="tab-btn" data-tab="audit">🔍 Audit</button>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   </nav>
 
   <main style="flex:1;overflow-y:auto;padding:1rem">
@@ -157,6 +1070,114 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
     </div>
 
     <!-- LOGS -->
+    <!-- tab: COMPLIANCE -->
+<div id="tab-compliance" class="hidden">
+  <div class="card" style="margin-bottom:.75rem">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:220px">
+        <label for="c-search" style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Search citations, codes, topics — or filter below</label>
+        <input id="c-search" class="c-search" placeholder="e.g. GFCI kitchen, 250.52, arc flash, NEC 210.8…" />
+      </div>
+      <button id="c-reveal" class="btn btn-dim btn-sm" style="width:auto">Reveal all</button>
+    </div>
+    <div id="c-chips" class="c-chips"></div>
+  </div>
+  <div id="c-results" class="c-result-listing"></div>
+  <div id="c-detail" class="c-detail"></div>
+</div>
+
+<!-- tab: AUDIT -->
+<div id="tab-audit" class="hidden">
+  <div class="card">
+    <div class="c-audit-steps">
+      <div id="c-step-1" class="c-audit-step is-active">
+        <div class="c-step-label">Step 1 — Describe the job</div>
+        <textarea id="c-audit-scenario" class="inp tx" rows="3" placeholder="e.g. 120V kitchen receptacles, two-wire NM-B in a single-family dwelling"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button id="c-run-audit" class="btn btn-gold">Run verification</button>
+          <button id="c-audit-clear" class="btn btn-dim btn-sm">Clear</button>
+        </div>
+        <p id="c-audit-msg" style="font-size:.72rem;color:var(--text-dim);min-height:1.1em;margin-top:.4rem" class="dim">Enter a circuit / project description, then run.</p>
+      </div>
+      <div id="c-step-2" class="c-audit-step">
+        <div class="c-step-label">Step 2 — Verify the checklist items below</div>
+        <div id="c-audit-list" class="c-checklist"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button id="c-next-audit" class="btn btn-gold">Review report →</button>
+        </div>
+      </div>
+      <div id="c-step-3" class="c-audit-step">
+        <div class="c-step-label">Step 3 — Compliance verification report</div>
+        <div id="c-audit-report" class="c-report"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button id="c-export-report" class="btn btn-dim btn-sm">Export / print report</button>
+          <button id="c-again-audit" class="btn btn-dim btn-sm">Start over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
+    <!-- tab: COMPLIANCE -->
+
+
+<!-- tab: AUDIT -->
+
+
     <div id="tab-logs" class="hidden">
       <div class="card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
@@ -172,7 +1193,555 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
 
 <div id="toast"></div>
 
+<script>(function() {
+'use strict';
+
+function isSafetyPinned(scenario) {
+    var low = scenario.toLowerCase();
+    var safetyTerms = ['energized', 'live', 'lockout', 'tagout', 'arc flash', 'switchgear', '480v'];
+    for (var i = 0; i < safetyTerms.length; i++) {
+      if (low.indexOf(safetyTerms[i]) > -1) return true;
+    }
+    var words = low.split(/\s+/);
+    var hasPanelboard = words.indexOf('panelboard') > -1;
+    var hasOpen = words.indexOf('open') > -1;
+    return hasPanelboard && hasOpen;
+  }
+
+  var safetyRefs = ['NFPA 70E 120.1', 'NFPA 70E 130.5', 'NFPA 70E 130.7', '1910.333', '1910.147'];
+
+  function runAudit(scenario) {
+    var rawText = scenario.toLowerCase().trim();
+    var tokens = expandSynonyms(rawText);
+    tokens = expandTextToTokens(tokens, STOPWORDS);
+
+    var allItems = [];
+    COMPLIANCE.data.results.checklists.forEach(function (ch) {
+      ch.items.forEach(function (i) {
+        var sc = computeScore(tokens, i);
+        var isPinned = isSafetyPinned(scenario) && safetyRefs.indexOf(i.ref) > -1;
+        var meetsThreshold = sc.score >= 4;
+        var hasRequiredMatch = sc.keywordMatches > 0;
+        if (isPinned || (meetsThreshold && hasRequiredMatch)) {
+          var entry = { checklist: ch, item: i, score: sc.score };
+          if (isPinned) {
+            entry.group = 'Safety-critical';
+          }
+          allItems.push(entry);
+        }
+      });
+    });
+
+    allItems.sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      if (a.item.safety_critical !== b.item.safety_critical) {
+        return a.item.safety_critical ? -1 : 1;
+      }
+      return 0;
+    });
+
+    var seen = {};
+    allItems = allItems.filter(function (x) {
+      if (seen[x.item.ref]) return false;
+      seen[x.item.ref] = true;
+      return true;
+    });
+
+    // Safety-pinned items: always include, cap at 8
+    var safetyItems = [];
+    if (isSafetyPinned(scenario)) {
+      COMPLIANCE.data.results.checklists.forEach(function (ch) {
+        ch.items.forEach(function (i) {
+          if (safetyRefs.indexOf(i.ref) > -1) {
+            safetyItems.push({ checklist: ch, item: i, score: 99, group: 'Safety-critical' });
+          }
+        });
+      });
+    }
+
+    var all = safetyItems.concat(allItems);
+    seen = {};
+    all = all.filter(function (x) {
+      if (seen[x.item.ref]) return false;
+      seen[x.item.ref] = true;
+      return true;
+    });
+
+    all = all.slice(0, 8);
+
+    // FIX #4: if scenario mentions panelboard/main panel but no item matches on panelboard, return no-match
+    var hasPanel = /panelboard|main panel/.test(rawText);
+    if (hasPanel) {
+      var panelMatch = COMPLIANCE.data.results.checklists.some(function (ch) {
+        return ch.items.some(function (i) {
+          var iText = (i.ref + ' ' + i.title + ' ' + (i.keywords || []).join(' ') + ' ' + i.effect).toLowerCase();
+          return iText.indexOf('panelboard') > -1 && (i.keywords || []).some(function (k) { return k === 'panelboard' || k.indexOf('panelboard') > -1; });
+        });
+      });
+      if (!panelMatch) {
+        return { rules: [], items: [], any: false, safety_pinned: false };
+      }
+    }
+
+    return { rules: [], items: all, any: all.length > 0, safety_pinned: isSafetyPinned(scenario) };
+  }
+
+  // Raw debug: token list + per-item matching breakdown (no summarization)
+  function debugAudit(scenario) {
+    console.log('DEBUG debugAudit called with scenario:', scenario);
+    var rawText = scenario.toLowerCase().trim();
+    var tokens = expandSynonyms(rawText);
+    tokens = expandTextToTokens(tokens, STOPWORDS);
+    console.log('DEBUG tokens after stopwords+synonyms:', tokens);
+    var results = [];
+    if (!COMPLIANCE.data) {
+      console.log('DEBUG COMPLIANCE.data is undefined');
+      return results;
+    }
+    console.log('DEBUG COMPLIANCE.data.results.checklists:', COMPLIANCE.data.results.checklists ? COMPLIANCE.data.results.checklists.length : 'undefined');
+    COMPLIANCE.data.results.checklists.forEach(function (ch) {
+      ch.items.forEach(function (i) {
+        var sc = computeScore(tokens, i);
+        var parts = [];
+        tokens.forEach(function (t) {
+          if (i.keywords && i.keywords.indexOf(t) > -1) parts.push('keywords:' + t);
+          if ((i.ref + ' ' + i.title).toLowerCase().indexOf(t) > -1) parts.push('title/ref:' + t);
+          if ((i.ref + ' ' + i.title + ' ' + i.effect).toLowerCase().indexOf(t) > -1) parts.push('effect:' + t);
+        });
+        results.push({ ref: i.ref, checklist: ch.id, score: sc.score, keywordMatches: sc.keywordMatches, titleRefMatches: sc.titleRefMatches, effectMatches: sc.effectMatches, hasKeyword: sc.hasKeyword, matchedParts: parts.join(', ') || 'none' });
+      });
+    });
+    results.sort(function (a, b) { return b.score - a.score; });
+    console.log('DEBUG debugAudit results (top 10):');
+    results.slice(0, 10).forEach(function (r) { console.log('  ' + r.ref + ' | score=' + r.score + ' | kw=' + r.keywordMatches + ' tr=' + r.titleRefMatches + ' ef=' + r.effectMatches + ' | ' + r.matchedParts); });
+    return results;
+  }
+
+  function renderAudit(summary) {
+    var list = $('c-audit-list');
+    var items = summary.items;
+    var html = '';
+
+    if (!items.length) {
+      list.innerHTML = '<div class="c-empty">No specific rules matched. Try describing the work, location and equipment.</div>';
+      setAuditMsg('No specific rules matched. Try describing the work, location and equipment.');
+      return;
+    }
+
+    // Group by checklist, order groups by top item's score
+    var groups = {};
+    items.forEach(function (x) {
+      if (!groups[x.checklist.id]) groups[x.checklist.id] = [];
+      groups[x.checklist.id].push(x);
+    });
+    var groupOrder = Object.keys(groups).map(function (gid) {
+      return { id: gid, topScore: Math.max.apply(null, groups[gid].map(function (x) { return x.score; })) };
+    });
+    groupOrder.sort(function (a, b) { return b.topScore - a.topScore; });
+
+    var itemCount = 0;
+    groupOrder.forEach(function (group) {
+      groups[group.id].forEach(function (x) {
+        if (itemCount >= 8) return;
+        var risk = x.item.safety_critical ? '<span class="c-c-flag">⚠ safety-critical</span>' : '';
+        html += '<div class="c-checklist-item' + (x.item.safety_critical ? ' is-critical' : '') + '" data-ref="' + esc(x.item.ref) + '">' +
+          '<div class="c-c-top"><div class="c-c-check" title="Toggle completion"></div><span class="c-c-ref">' + esc(x.item.ref) + '</span></div>' +
+          '<div class="c-c-title">' + esc(x.item.title) + '</div>' +
+          '<div class="c-c-effect">' + esc(x.item.effect) + '</div>' +
+          '<div class="c-c-top" style="justify-content:flex-end">' + risk + '</div>' +
+          '</div>';
+        itemCount++;
+      });
+    });
+
+    list.innerHTML = html || '<div class="c-empty">No checklist items matched this scenario. Try a more specific description.</div>';
+    list.querySelectorAll('.c-checklist-item').forEach(function (item) {
+      var box = item.querySelector('.c-c-check');
+      box.addEventListener('click', function () {
+        item.classList.toggle('is-checked');
+        if (item.classList.contains('is-checked')) completed[item.dataset.ref] = true;
+        else delete completed[item.dataset.ref];
+      });
+    });
+    setAuditMsg('Matched ' + items.length + ' items.');
+  }
+
+  function setAuditMsg(m) { $('c-audit-msg').textContent = m; }
+
+  function showStep(n) {
+    [1, 2, 3].forEach(function (s) {
+      $('c-step-' + s).classList.toggle('is-active', s === n);
+      $('c-step-' + s).style.display = s === n ? '' : 'none';
+    });
+  }
+
+  function renderReport(summary) {
+    var r = $('c-audit-report');
+    var rules = summary.rules.map(function (x) { return x.label; }).join('; ');
+    var rows = summary.items.map(function (x) {
+      var ck = completed[x.item.ref] ? '✓' : '✗';
+      var cls = x.item.safety_critical ? ' class="safety-critical"' : '';
+      return '<tr' + cls + '><td>' + ck + '</td><td><b>' + esc(x.item.ref) + '</b></td><td>' + esc(x.item.title) + '</td><td>' + esc(x.item.effect) + '</td></tr>';
+    }).join('');
+    var sources = '';
+    COMPLIANCE.data.results.codes.forEach(function (c) { if (c.safety_critical) sources += '<tr class="safety-critical"><td>★</td><td>' + esc(c.ref) + '</td><td>' + esc(c.title) + '</td><td>' + esc(c.effect) + '</td></tr>'; });
+    r.innerHTML = '' +
+      '<div class="c-r-head"><span class="c-r-title">⚡ Compliance Verification Report</span></div>' +
+      '<div class="c-r-sub">Scenario: “' + esc($('c-audit-scenario').value) + '” · ' + rules + '</div>' +
+      '<table><thead><tr><th>✓</th><th>Citation</th><th>Item</th><th>Requirement / effect</th></tr></thead><tbody>' + rows + sources + '</tbody></table>' +
+      '<div class="c-r-foot">Reference only. Verify each item against the controlling code edition and the local AHJ before relying on it for a permit or inspection. This report is an aide-mémoire, not legal advice and not a substitute for a licensed electrician’s judgement.</div>';
+    r.classList.add('is-shown');
+    showStep(3);
+  }
+
+  function init() {
+    $('c-search').addEventListener('input', function () { renderResults(activeCat); });
+    $('c-reveal').addEventListener('click', function () { $('c-search').value = ''; renderResults('all'); });
+
+    $('c-run-audit').addEventListener('click', function () {
+      var scenario = $('c-audit-scenario').value.trim();
+      if (!scenario) { setAuditMsg('Enter a circuit / project description first.'); return; }
+      var summary = runAudit(scenario);
+      if (!summary.any) { setAuditMsg('No topics matched — describe the job more specifically (e.g. “GFCI kitchen”, “grounding 250.52”).'); }
+      renderAudit(summary);
+    });
+    $('c-audit-clear').addEventListener('click', function () {
+      $('c-audit-scenario').value = '';
+      $('c-audit-msg').textContent = 'Enter a circuit / project description first.';
+      $('c-audit-list').innerHTML = '';
+      showStep(1);
+      completed = {};
+    });
+    $('c-next-audit').addEventListener('click', function () {
+      var scenario = $('c-audit-scenario').value.trim();
+      if (!scenario) { setAuditMsg('Describe the job first to generate a report.'); return; }
+      var summary = runAudit(scenario);
+      renderReport(summary);
+    });
+    $('c-export-report').addEventListener('click', function () { window.print(); });
+    $('c-again-audit').addEventListener('click', function () {
+      $('c-audit-report').classList.remove('is-shown');
+      $('c-audit-scenario').value = '';
+      showStep(1);
+      completed = {};
+      setAuditMsg('Describe the job first.');
+    });
+
+    // tab wiring
+    document.querySelectorAll('.tab-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('on', b.dataset.tab === tab); });
+        ['diagnose', 'dispatch', 'logs', 'compliance', 'audit'].forEach(function (t) { $('tab-' + t).classList.toggle('hidden', t !== tab); });
+        if (tab === 'compliance') {
+          if (!COMPLIANCE.loaded) loadData();
+          else renderResults(activeCat);
+        }
+        if (tab === 'audit') {
+          showStep(1);
+          completed = {};
+          setAuditMsg('Enter a circuit / project description first.');
+          $('c-audit-report').classList.remove('is-shown');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (COMPLIANCE.loaded) { init(); return; }
+    loadData().then(function () { init(); }).catch(function (e) { setStatus('Compliance data unavailable: ' + e.message); });
+  });
+  globalThis.debugAudit = debugAudit;
+  globalThis.runAudit = runAudit;
+  })();
+
+/* Compliance reference + audit checklist logic for National Sparky (SparkySolve).
+   Injected into index.html. Data source: data/compliance.json (backend: api/compliance.js).
+   Immutable reference data + deterministic audit matching. Not legal advice. */
+(function () {
+  'use strict';
+
+  var COMPLIANCE = { loaded: false, data: null, index: null };
+// Data is injected by the test harness (debug_test.js) or loaded via fetch in production
+if (typeof COMPLIANCE_DATA_LOADER !== "undefined") {
+  try {
+    COMPLIANCE = JSON.parse(COMPLIANCE_DATA_LOADER);
+  } catch (e) {
+    COMPLIANCE = COMPLIANCE_DATA_LOADER;
+  }
+  console.log("INSIDE IIFE: COMPLIANCE set to COMPLIANCE_DATA_LOADER");
+}
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  var catLabel = { 'nec-2023': 'NEC 2023', 'nfpa-70e': 'NFPA 70E', 'osha-1910': 'OSHA 1910', 'nfpa-70b': 'NFPA 70B', 'nc': 'NC law', 'ahj': 'AHJ', 'audit': 'Audit' };
+
+  var activeCat = 'all';
+  var completed = {};   // item-ref -> true (checkbox completion state)
+
+  /* ---------- reference data (compliance reference module) ---------- */
+  async function loadData() {
+    var res = await fetch('/api/compliance');
+    if (!res.ok) throw new Error('compliance data unavailable');
+    COMPLIANCE.data = await res.json();
+    COMPLIANCE.loaded = true;
+    buildChips();
+    renderResults(activeCat);
+    setStatus('Reference loaded — ' + COMPLIANCE.data.results.codes.length + ' codes');
+  }
+
+  function buildChips() {
+    var box = $('c-chips');
+    var html = '';
+    Object.keys(catLabel).forEach(function (cid) {
+      var active = activeCat === cid ? ' is-on' : '';
+      html += '<button class="c-chip' + active + '" data-cat="' + cid + '"><span class="c-chip-ic">●</span>' + esc(catLabel[cid]) + '</button>';
+    });
+    box.innerHTML = html;
+    box.querySelectorAll('.c-chip').forEach(function (b) {
+      b.addEventListener('click', function () {
+        activeCat = b.dataset.cat;
+        buildChips();
+        renderResults(activeCat);
+      });
+    });
+  }
+
+  function filterCodes(codes, q) {
+    if (!q) return codes;
+    var keys = q.split(/\s+/).filter(Boolean);
+    return codes.filter(function (c) {
+      var t = (c.title + ' ' + c.ref + ' ' + c.effect + ' ' + c.verify).toLowerCase();
+      if (t.indexOf(q.toLowerCase()) > -1) return true;
+      return (c.keywords || []).some(function (k) { return k && k.toLowerCase() === q.toLowerCase(); });
+    });
+  }
+
+  function filterChecklistItems(items, q) {
+    if (!q) return items;
+    return items.filter(function (i) {
+      var t = (i.title + ' ' + i.ref + ' ' + i.effect).toLowerCase();
+      if (t.indexOf(q.toLowerCase()) > -1) return true;
+      return (i.keywords || []).some(function (k) { return k && k.toLowerCase() === q.toLowerCase(); });
+    });
+  }
+
+  function renderResults(activeCat) {
+    var q = $('c-search').value.trim();
+    var list = $('c-results');
+    var codes = COMPLIANCE.data.results.codes;
+    var chk = COMPLIANCE.data.results.checklists;
+
+    var filteredCodes = activeCat === 'all' ? codes : codes.filter(function (c) { return c.category === activeCat; });
+    var filteredCodesQ = filterCodes(filteredCodes, q);
+
+    var filteredChk = chk.filter(function (c) { return activeCat === 'all' || c.category === activeCat; });
+
+    // Build a NON-mutating filtered view: never reassign c.items (keeps the
+    // original data intact, so search/filter can be reversed cleanly).
+    var displayChk = filteredChk.map(function (c) {
+      return { id: c.id, title: c.title, category: c.category, items: filterChecklistItems(c.items, q) };
+    }).filter(function (c) { return c.items.length > 0; });
+
+    var shown = 0;
+    var html = '';
+    filteredCodesQ.forEach(function (c) {
+      if (shown >= 80) return;
+      var risk = c.safety_critical ? '<span class="dim" style="color:#ff4f57;font-size:.65rem">▲ safety-critical</span>' : '';
+      html += '<div class="c-result" data-id="' + esc(c.id) + '" data-sec="' + esc(c.ref) + '">' +
+        '<div class="c-title">' + esc(c.ref) + ' — ' + esc(c.title) + '</div>' +
+        '<div class="c-sub">' + esc(c.edition || '') + (c.adopted_by ? ' · ' + esc(c.adopted_by) : '') + ' · ' + (c.status || 'current') + risk + '</div>' +
+        '<div class="c-effect">' + esc(c.effect) + '</div>' +
+        '</div>';
+      shown++;
+    });
+
+    displayChk.forEach(function (ch) {
+      ch.items.forEach(function (i) {
+        if (shown >= 80) return;
+        var risk = i.safety_critical ? '<span class="dim" style="color:#ff4f57;font-size:.65rem">▲ safety-critical</span>' : '';
+        html += '<div class="c-result" data-id="' + esc(ch.id) + '-' + esc(i.ref) + '" data-sec="' + esc(i.ref) + '">' +
+          '<div class="c-title">' + esc(i.ref) + ' — ' + esc(i.title) + '</div>' +
+          '<div class="c-sub">' + esc(ch.title) + ' checklist · ' + (i.safety_critical ? 'safety-critical' : 'reference') + risk + '</div>' +
+          '<div class="c-effect">' + esc(i.effect) + '</div>' +
+          '</div>';
+        shown++;
+      });
+    });
+
+    list.innerHTML = html || '<div class="c-empty">No matches for “' + esc(q) + '”. Try a different citation, topic, or keyword.</div>';
+
+    list.querySelectorAll('.c-result').forEach(function (el) {
+      el.addEventListener('click', function () { openDetail(el.dataset.id, el.dataset.sec); });
+    });
+  }
+
+  function findSource(sec, id) {
+    var matches = COMPLIANCE.data.results.codes.filter(function (c) { return c.ref === sec; });
+    if (matches.length > 0) {
+      var byId = matches.filter(function (c) { return c.id === id; });
+      if (byId.length > 0) return byId[0];
+      return matches[0];
+    }
+    return null;
+  }
+
+  function findEffect(sec, id) {
+    var code = COMPLIANCE.data.results.codes.filter(function (c) { return c.ref === sec || c.id === id; })[0];
+    if (code) return code.effect;
+    var chk = COMPLIANCE.data.results.checklists.filter(function (c) { return c.items.some(function (i) { return i.ref === sec || i.id === id; }); })[0];
+    if (chk) return chk.items.filter(function (i) { return i.ref === sec || i.id === id; })[0].effect;
+    return '';
+  }
+
+  function findVerify(sec, id) {
+    var code = COMPLIANCE.data.results.codes.filter(function (c) { return c.ref === sec || c.id === id; })[0];
+    if (code) return code.verify;
+    var chk = COMPLIANCE.data.results.checklists.filter(function (c) { return c.items.some(function (i) { return i.ref === sec || i.id === id; }); })[0];
+    if (chk) {
+      var item = chk.items.filter(function (i) { return i.ref === sec || i.id === id; })[0];
+      return item ? item.effect + '. Confirm against the controlling edition.' : '';
+    }
+    return '';
+  }
+
+  function openDetail(id, sec) {
+    var detail = $('c-detail');
+    detail.innerHTML = '';
+    var src = findSource(sec, id);
+    var html = '';
+    var isUnresolved = src.status === 'unresolved' || (src.ref_status && src.ref_status === 'unverified');
+    if (src) {
+      var sourceHtml = '<div class="c-d-row"><span class="dim">Source reference</span><b>';
+      if (isUnresolved) {
+        sourceHtml += 'Source reference unresolved';
+      } else {
+        sourceHtml += esc(src.ref);
+      }
+      sourceHtml += '</b></div>';
+      html += sourceHtml;
+      if (src.status) html += '<div class="c-d-row"><span class="dim">Status</span><b>' + esc(src.status) + '</b></div>';
+      if (isUnresolved) {
+        html += '<div class="c-d-row warn"><span class="dim">Reference verification</span><b>unverified — not an authoritative citation</b></div>';
+      } else {
+        html += '<div class="c-d-row"><span class="dim">Reference verification</span><b>' + esc(src.ref_status || '') + '</b></div>';
+      }
+      if (src.ref_candidate && src.ref_status !== 'unverified') {
+        html += '<div class="c-d-row"><span class="dim">Reference candidate</span><b>' + esc(src.ref_candidate) + '</b></div>';
+      }
+      if (src.ref_candidate && src.ref_status === 'unverified') {
+        html += '<div class="c-d-row warn"><span class="dim">Unverified candidate</span><b>NEC 110.24 — informational only, not authoritative</b></div>';
+      }
+    }
+    html += '<div class="c-d-box"><b>Effect</b><p>' + esc(findEffect(sec, id)) + '</p></div>';
+    var verify = findVerify(sec, id);
+    if (verify) html += '<div class="c-d-box warn"><b>Verify against controlling text</b><p>' + esc(verify) + '</p></div>';
+    if (src && src.type) html += '<div class="c-d-box ref"><b>Category</b><p>' + esc(src.type) + '</p></div>';
+    detail.innerHTML = html;
+
+    var title = document.createElement('div');
+    title.className = 'c-d-title';
+    title.textContent = sec || id;
+    detail.appendChild(title);
+
+    var close = document.createElement('button');
+    close.id = 'c-detail-close';
+    close.className = 'c-d-close';
+    close.textContent = '✕';
+    detail.appendChild(close);
+
+    detail.classList.add('is-open');
+    detail.querySelector('.c-d-close').addEventListener('click', function () { detail.classList.remove('is-open'); });
+  }
+
+  function setStatus(m) {
+    var el = document.getElementById('hdr-usage');
+    if (el) el.textContent = '📋 ' + m;
+  }
+
+  /* ---------- AUDIT (automated verification) ---------- */
+  var AUDIT_RULES = [
+    { label: 'Grounding & bonding (NEC 250)', pat: /ground|electrode|neutral|service|250|grounding-conductor|bonding|cground/i },
+    { label: 'Branch circuits & overcurrent (NEC 240, 300.11)', pat: /circuit|breaker|overcurrent|240|300\.11|110\.3|amp|ampere/i },
+    { label: 'GFCI / AFCI (NEC 210.8, 210.12)', pat: /gfci|afci|arc-fault|ground-fault|210\.8|210\.12/i },
+    { label: 'Panel & service (NEC 408, 230)', pat: /panel|service|bus|408|230|disconnect|lug|subpanel/i },
+    { label: 'Cables & NM-B (NEC 300.5, 334.15)', pat: /nm-?b|cable|300\.5|334\.15|nail.?plate|sheath/i },
+    { label: 'Hazardous locations (NEC 500, 505)', pat: /hazard|class.?div|zone|500|505|flammable|explosiv|ventil/i },
+    { label: 'Battery / storage (NEC 480, 706)', pat: /battery|storage|480|706|li.?ion|cell/i },
+    { label: 'Emergency & standby (NEC 700, 701)', pat: /emergency|generator|standby|700|701|transfer/i },
+    { label: 'Outdoor, damp & underground', pat: /outdoor|damp|underground|344|352|362|conduit/i },
+    { label: 'Permit, license & inspection (NC Ch. 87, NEC 90.4)', pat: /permit|license|jurisdiction|87\.|90\.4|ahj|inspection|building-code/i }
+  ];
+
+  var STOPWORDS = {a:1, an:1, the:1, and:1, or:1, for:1, to:1, of:1, in:1, on:1, at:1, by:1, with:1, new:1, need:1, want:1, do:1, i:1, my:1, is:1, are:1, be:1, keep:1, keeps:1, add:1, adding:1, install:1, installing:1, replace:1, replacing:1, swap:1, swapping:1, check:1, out:1};
+
+  var SYNONYM_MAP = {
+    'outlet': 'receptacle', 'outlets': 'receptacle', 'plug': 'receptacle', 'plugs': 'receptacle', 'socket': 'receptacle',
+    'gfi': 'gfci', 'gfci': 'gfci', 'tripping': 'gfci', 'trips': 'gfci', 'shock': 'gfci',
+    'afci': 'afci', 'arc-fault': 'afci',
+    'breaker': 'overcurrent', 'breakers': 'overcurrent',
+    'panel': 'panelboard', 'load center': 'panelboard', 'service panel': 'panelboard',
+    'live': 'energized', 'hot': 'energized', 'energized': 'energized', 'open': 'energized',
+    'lockout': 'lockout_tagout', 'tagout': 'lockout_tagout', 'loto': 'lockout_tagout',
+    'arc flash': 'arc_flash', 'arc-flash': 'arc_flash',
+    'ground rod': 'grounding_electrode', 'grounding rod': 'grounding_electrode',
+    'license': 'licensing', 'licensed': 'licensing', 'permit': 'permit',
+    'maintain': 'maintenance', 'maintenance': 'maintenance'
+  };
+
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function expandSynonyms(text) {
+    var out = text;
+    Object.keys(SYNONYM_MAP).sort(function (a, b) { return b.length - a.length; }).forEach(function (key) {
+      var value = SYNONYM_MAP[key];
+      if (key.indexOf(' ') === -1) {
+        var regex = '\\b' + escapeRegExp(key) + '\\b';
+        out = out.replace(new RegExp(regex, 'gi'), value);
+      } else {
+        var regex = escapeRegExp(key);
+        out = out.replace(new RegExp(regex, 'gi'), value);
+      }
+    });
+    return out;
+  }
+
+  function stem(w) {
+    if (w.length > 3 && w.charAt(w.length - 1) === 's') return w.slice(0, -1);
+    return w;
+  }
+
+  function expandTextToTokens(text, stopwords) {
+    var t = text.replace(/(\d+\.\d+)([a-z])/gi, '$1 $2');
+    t = t.replace(/-/g, ' ');
+    var tokens = t.match(/\d+\.\d+[a-z]?|\d+[a-z]?|[a-z][a-z0-9]*/g);
+    if (!tokens) return [];
+    tokens = tokens.filter(function (w) { return w.length > 2 && !stopwords[w]; }).map(function (w) { return stem(w); });
+    return tokens;
+  }
+
+  function computeScore(tokens, item) {
+    var itemText = (item.ref + ' ' + item.title + ' ' + item.effect).toLowerCase();
+    var keywordText = (item.keywords || []).join(' ').toLowerCase();
+    var titleRefText = (item.ref + ' ' + item.title).toLowerCase();
+    var keywordMatches = 0, titleRefMatches = 0, effectMatches = 0;
+    tokens.forEach(function (t) {
+      if (keywordText.indexOf(' ' + t + ' ') > -1 || keywordText.indexOf(' ' + t) === 0 || keywordText.indexOf(t + ' ') === 0) keywordMatches++;
+      if (titleRefText.indexOf(t) > -1) titleRefMatches++;
+      if (itemText.indexOf(t) > -1) effectMatches++;
+    });
+    var score = keywordMatches * 3 + titleRefMatches * 2 + effectMatches * 1;
+    return { score: score, keywordMatches: keywordMatches, titleRefMatches: titleRefMatches, effectMatches: effectMatches, hasKeyword: keywordMatches > 0 };
+  }
+
+  
+})();
+</script>
 <script>
+
 (function(){
 'use strict';
 
@@ -671,6 +2240,7 @@ document.addEventListener('keydown', function(e){
 applyTheme(_settings.theme);
 
 })();
+
 </script>
 </body>
 </html>
