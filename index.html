@@ -1752,7 +1752,10 @@ var FREE_LIM = 5;
 var sb, _sess, _tier='free', _used=0, _tt;
 
 /* ── init ── */
-sb = window.supabase.createClient(SB_URL, SB_KEY);
+sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true } });
+
+/* surface expired/invalid magic-link errors instead of a silent login screen */
+(function(){ var m=/error_description=([^&]+)/.exec(location.hash||''); if(m){ window.addEventListener('load', function(){ setTimeout(function(){ try{ setMsg(decodeURIComponent(m[1].replace(/\+/g,' '))+' \u2014 request a fresh link below.', 1); }catch(e){} }, 400); }); } })();
 
 /* ── auth state ── */
 sb.auth.onAuthStateChange(function(_e, sess){
