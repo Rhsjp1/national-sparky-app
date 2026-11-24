@@ -9,7 +9,7 @@ const MAX_IMAGE_B64_BYTES = 4 * 1024 * 1024;
 const SPARKY_SYSTEM = `You are SparkySolve, an expert AI assistant for licensed electricians working in North Carolina.
 
 Core competencies:
-• North Carolina Electrical Code (NEC 2023 as adopted by NC Building Code Council)
+• The NEC edition adopted in the job's jurisdiction — each request states the jurisdiction and its adopted edition; reference that edition, and flag anything that depends on the edition or on local amendments
 • Circuit analysis, fault diagnosis, and root-cause identification
 • NEC article citations — always reference the specific article and section
 • Code compliance, inspection readiness, and permit documentation
@@ -147,7 +147,7 @@ module.exports = async function handler(req, res) {
         model,
         messages,
         temperature: 0.4,
-        max_tokens: 180
+        max_tokens: 700
       })
     });
 

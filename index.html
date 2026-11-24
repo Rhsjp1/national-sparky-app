@@ -973,6 +973,8 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
     <button class="tab-btn" data-tab="audit">🔍 Audit</button>
     <button class="tab-btn" data-tab="registry">🏛️ Registry</button>
     <button class="tab-btn" data-tab="calcs">🧮 Calcs</button>
+    <button class="tab-btn" data-tab="plans">📐 Plans</button>
+    <button class="tab-btn" data-tab="install">🔧 Install</button>
     
     
     
@@ -1173,6 +1175,85 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
 
   <div class="muted" style="font-size:.72rem;padding:.25rem .1rem 1rem">Reference calculations only. Not legal advice and not a code-compliance determination. The adopted edition and amendments in force are set by the state and the local AHJ and must be confirmed before work begins.</div>
 </div>
+
+<!-- tab: PLANS -->
+<div id="tab-plans" class="hidden">
+  <div class="card" style="margin-bottom:.75rem">
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">📐 Draw-Up Generator</div>
+    <div class="muted" style="font-size:.78rem;margin-bottom:.6rem">Draft layout and panel schedule from your measurements. This is a planning draw-up, not a construction document — field-verify every dimension. Receptacle counts are planning estimates from NEC 210.52 spacing rules.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">Project name</label><input id="dp-name" class="inp" value="New project"></div>
+      <div><label class="dim" style="font-size:.7rem">Panel size (amps)</label><select id="dp-panelamps" class="inp"><option>100</option><option selected>200</option><option>320</option><option>400</option></select></div>
+    </div>
+    <div style="font-weight:600;font-size:.82rem;margin:.7rem 0 .3rem">Rooms</div>
+    <div id="dp-rooms"></div>
+    <button class="btn btn-dim btn-sm" id="dp-addroom" style="margin-top:.3rem">+ Add room</button>
+    <div style="font-weight:600;font-size:.82rem;margin:.7rem 0 .3rem">Circuits</div>
+    <div id="dp-circuits"></div>
+    <button class="btn btn-dim btn-sm" id="dp-addcircuit" style="margin-top:.3rem">+ Add circuit</button>
+    <button class="btn btn-gold" id="dp-gen" style="margin-top:.8rem">Generate draw-up</button>
+    <div id="dp-out" style="margin-top:.8rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">🗂️ Plan Check — Blueprint Reading</div>
+    <div class="muted" style="font-size:.78rem;margin-bottom:.6rem">Upload a photo or scan of a plan, blueprint, or panel schedule. The AI reads what is visible and cross-checks it against the adopted edition for the jurisdiction below. It flags — it never approves. Uses one diagnostic from the same monthly pool as the Diagnose tab.</div>
+    <label for="pc-state" style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Jurisdiction</label>
+    <select id="pc-state" class="inp" style="width:100%;margin-bottom:.5rem"></select>
+    <input id="pc-file" type="file" accept="image/*" class="inp" style="margin-bottom:.5rem">
+    <img id="pc-preview" alt="" style="display:none;max-width:100%;border-radius:8px;margin-bottom:.5rem">
+    <textarea id="pc-notes" class="inp" rows="2" placeholder="Optional context — e.g. '200A service, single-family, kitchen remodel'"></textarea>
+    <button class="btn btn-gold" id="pc-run" style="margin-top:.6rem">Read this plan</button>
+    <div id="pc-out" style="margin-top:.7rem"></div>
+    <div style="font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem">Structured cross-check (works without AI)</div>
+    <div class="muted" style="font-size:.75rem;margin-bottom:.5rem">Mark what the plan shows. Anything marked "Not shown" gets flagged with its citation for the selected jurisdiction's edition.</div>
+    <div id="pc-checks"></div>
+    <button class="btn btn-dim" id="pc-score" style="margin-top:.6rem">Score my cross-check</button>
+    <div id="pc-scoreout" style="margin-top:.7rem"></div>
+  </div>
+</div>
+
+<!-- tab: INSTALL -->
+<div id="tab-install" class="hidden">
+  <div class="card" style="margin-bottom:.75rem">
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">🔧 Installation Requirements</div>
+    <div class="muted" style="font-size:.78rem;margin-bottom:.6rem">Job-type requirement checklists with NEC citations, adjusted for the adopted edition in the jurisdiction you pick. Reference only — the AHJ and the adopted edition in force govern.</div>
+    <label for="in-state" style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Jurisdiction</label>
+    <select id="in-state" class="inp" style="width:100%;margin-bottom:.5rem"></select>
+    <label for="in-job" style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Job type</label>
+    <select id="in-job" class="inp" style="width:100%">
+      <option value="service">Service upgrade / new service</option>
+      <option value="panel">Panel changeout (same service size)</option>
+      <option value="ev">EV charger (Level 2)</option>
+      <option value="hottub">Hot tub / spa</option>
+      <option value="generator">Standby generator with transfer equipment</option>
+      <option value="range">Range / dryer circuit</option>
+      <option value="waterheater">Water heater</option>
+      <option value="hvac">HVAC / heat pump / mini-split</option>
+    </select>
+    <button class="btn btn-gold" id="in-gen" style="margin-top:.6rem">Build checklist</button>
+    <div id="in-out" style="margin-top:.7rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">🔁 Conversions &amp; Quick Tables</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">Watts (W)</label><input id="cv-w" type="number" class="inp" placeholder="e.g. 5500"></div>
+      <div><label class="dim" style="font-size:.7rem">Volts (V)</label><input id="cv-v" type="number" class="inp" value="240"></div>
+      <div><label class="dim" style="font-size:.7rem">Amps (A)</label><input id="cv-a" type="number" class="inp" placeholder="e.g. 22.9"></div>
+      <div><label class="dim" style="font-size:.7rem">Torque (in-lb)</label><input id="cv-tq" type="number" class="inp" placeholder="e.g. 250"></div>
+      <div><label class="dim" style="font-size:.7rem">Temp (°F)</label><input id="cv-f" type="number" class="inp" placeholder="e.g. 167"></div>
+    </div>
+    <button class="btn btn-gold" id="cv-btn" style="margin-top:.6rem">Convert</button>
+    <div id="cv-out" style="margin-top:.7rem"></div>
+    <div style="font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem">Copper ampacity quick table (Table 310.16, 75°C) with 240.4(D) small-conductor caps</div>
+    <div id="cv-ampacity" style="font-size:.8rem;line-height:1.6"></div>
+    <div style="font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem">AWG to mm² (nominal)</div>
+    <div id="cv-awg" style="font-size:.8rem;line-height:1.6"></div>
+    <div class="muted" style="font-size:.72rem;margin-top:.6rem">Reference values only. Ampacity depends on insulation rating, terminations, ambient temperature, and adjustment/correction factors — verify in Table 310.16 and 110.14(C) for the actual installation.</div>
+  </div>
+</div>
+
 
 
 <div id="tab-audit" class="hidden">
@@ -2513,6 +2594,259 @@ if (typeof document !== 'undefined') {
         'Conductors: ' + r.condVol.toFixed(2) + ' cu in. · Devices: ' + r.devVol.toFixed(2) + ' cu in. · Clamps: ' + r.clampVol.toFixed(2) + ' cu in. · Grounding (' + r.egcAllow + ' allowance): ' + r.egcVol.toFixed(2) + ' cu in.',
         'Required volume: ' + r.total.toFixed(2) + ' cu in. vs box volume ' + r.boxVol.toFixed(1) + ' cu in. (allowance ' + r.allow.toFixed(2) + ' cu in. per conductor at this size)'
       ], r.ok? 'Box volume is sufficient under 314.16.' : 'OVERFILLED under 314.16 — use a larger box.', r.ok);
+    });
+  });
+}
+</script>
+
+<script>
+/* SparkySolve Stages 2-4 — draw-ups, plan check, install checklists, conversions. Reference only. */
+function receptacleEstimate(L, W){
+  function perWall(len){ return Math.max(1, Math.ceil(len/12)); }
+  return perWall(L) + perWall(W) + perWall(L) + perWall(W);
+}
+function buildChecklist(job, yr){
+  var base = {
+    service: [
+      ['Service disconnecting means located outside, or inside nearest the point of entrance; marked and accessible', '230.70, 230.85 (2020+: emergency disconnect for dwellings)'],
+      ['Grounding electrode system: all electrodes present bonded together; supplemental rod unless 25 ohms or less proven', '250.50, 250.53, 250.56'],
+      ['Grounded conductor bonded at service only; grounding and bonding jumpers sized from Tables 250.66 / 250.102', '250.24, 250.28'],
+      ['Working space at service equipment: 36 in. deep, 30 in. wide, 6.5 ft headroom, clear and lit', '110.26'],
+      ['Panel directory: every circuit legibly identified', '408.4'],
+      ['Service load calculation documented (Art. 220) supporting the new service size', '220.82 / 220.83']
+    ],
+    panel: [
+      ['Replacement panel listed for the use; feeder/service conductors sized to the existing service rating — a changeout does not raise capacity', '110.3(B), 408.36'],
+      ['Working space: 36 in. deep, 30 in. wide, 6.5 ft headroom — not in a clothes closet or bathroom', '110.26, 240.24(D), 240.24(F)'],
+      ['Neutrals and grounds separated on a subpanel; bonded only at the service disconnect', '250.24, 408.40'],
+      ['Each neutral landed on its own terminal; no doubled neutrals', '408.41'],
+      ['Unused openings closed; knockouts sealed', '110.12, 408.7'],
+      ['Panel directory updated and legible', '408.4']
+    ],
+    ev: [
+      ['EV charging load counted at 100% (or the EMS-limited value where an energy management system limits it)', '220.57, 625.42'],
+      ['Branch circuit sized at 125% of the continuous charging load', '625.41, 210.19'],
+      ['Listed EVSE installed per manufacturer instructions; disconnect where required', '625.23, 110.3(B)'],
+      ['GFCI protection for the receptacle/outlet where the edition requires it for EV charging locations', '625.54, 210.8'],
+      ['If the service calc is tight, document the Art. 220 calculation or the EMS setting in the job file', '220.82, 220.70 (2023)']
+    ],
+    hottub: [
+      ['GFCI protection for the spa/hot tub and its receptacle outlets', '680.44, 680.42'],
+      ['Equipotential bonding of perimeter surfaces and metal parts within reach', '680.26'],
+      ['Emergency shutoff within sight, 5 ft minimum from the tub, readily accessible to users', '680.41 (spas/hot tubs other than one-family dwellings vary — verify)'],
+      ['Disconnecting means within sight and at least 5 ft from the water', '680.12, 680.41'],
+      ['Receptacle spacing: at least one receptacle 6–20 ft away; none within 6 ft of the inside walls', '680.43(A), 210.52 (verify indoor/outdoor section for the installation)'],
+      ['Bonding conductor solid copper, 8 AWG minimum, for the equipotential grid', '680.26(B)']
+    ],
+    generator: [
+      ['Transfer equipment listed and installed so the generator cannot backfeed the utility', '702.5, 702.4(B)'],
+      ['Load calculation or load management documented for the backed-up loads', '702.4'],
+      ['Generator disconnect and signage at the service showing the standby source', '702.7, 445.18'],
+      ['Grounding/bonding follows whether the generator is a separately derived system (switched neutral) or not', '250.30, 702.11'],
+      ['Exhaust and placement clearances are building/fire code items — confirm locally, not an NEC item', 'Local code / NFPA 37']
+    ],
+    range: [
+      ['Demand load for household range may use Table 220.55 instead of full nameplate for service/feeder calcs', '220.55'],
+      ['Branch circuit sized to nameplate and Table 210.21(B)(3) receptacle rating rules (a 50A receptacle on a 40A or 50A circuit per 210.21(B)(3))', '210.21(B)(3), 220.55'],
+      ['4-wire connection on new installations: equipment ground separate from neutral', '250.140'],
+      ['Dryer circuit: 30A typical, counted 5,000 VA minimum or nameplate if larger in load calcs', '220.54']
+    ],
+    waterheater: [
+      ['Storage water heater branch circuit sized at 125% of nameplate (continuous load)', '422.13'],
+      ['Disconnect within sight or lockable breaker where the unit is not within sight', '422.31'],
+      ['Nameplate rating and circuit verified against the actual unit installed', '110.3(B), 422.60']
+    ],
+    hvac: [
+      ['Size conductors and overcurrent protection from the nameplate: MCA and MOCP govern, not a generic ampacity table', '440.4(B), 440.6, 110.3(B)'],
+      ['Disconnect within sight of the unit', '440.14'],
+      ['GFCI protection for outdoor HVAC outlets where the adopted edition requires it (2020 added 210.8(F) for outdoor outlets up to 50A — check the edition and any state delay/amendment)', '210.8(F)'],
+      ['Working space at the disconnect and unit per 110.26', '110.26']
+    ]
+  };
+  var items = (base[job] || []).slice();
+  if (job === 'service' || job === 'panel') {
+    if (yr && yr >= 2020) items.unshift(['Type 1 or Type 2 surge protective device (SPD) at the dwelling service — required by the adopted edition', '230.67']);
+    else items.push(['Surge protection at the service: not required by editions before 2020 (230.67 arrived with the 2020 NEC) — confirm the adopted edition', '230.67']);
+  }
+  if (yr && yr >= 2023 && job === 'ev') items.push(['Energy management systems recognized for service-load control in the 2023 edition — document the EMS max setting', '220.70']);
+  return items;
+}
+var CROSS_CHECKS = [
+  {t:'Surge protective device shown at the dwelling service', cite:'230.67', minEd:2020},
+  {t:'GFCI protection shown for kitchen, bath, laundry, garage, basement, and exterior receptacles', cite:'210.8(A)'},
+  {t:'AFCI protection shown for dwelling living areas (bedrooms, living room, hallways, similar rooms)', cite:'210.12'},
+  {t:'Tamper-resistant receptacles in dwelling areas', cite:'406.12'},
+  {t:'Two 20A small-appliance branch circuits for kitchen/dining receptacles', cite:'210.11(C)(1), 210.52(B)'},
+  {t:'Kitchen island/peninsula receptacle provision (2023: receptacle optional, but a provision for a future receptacle is required if none is installed)', cite:'210.52(C)', minEd:null},
+  {t:'Laundry branch circuit (20A, no other outlets)', cite:'210.11(C)(2)'},
+  {t:'Panel working space shown clear: 36 in. deep x 30 in. wide', cite:'110.26'},
+  {t:'Grounding electrode system shown (rods/plate/Ufer as applicable, bonded)', cite:'250.50, 250.53'},
+  {t:'Smoke and CO alarms shown (building/fire code item, not NEC — listed here so it is not missed)', cite:'NFPA 72 / local building code'}
+];
+function awgToMm2(awg){
+  var t = {'14':2.08,'12':3.31,'10':5.26,'8':8.37,'6':13.3,'4':21.2,'3':26.7,'2':33.6,'1':42.4,'1/0':53.5,'2/0':67.4,'3/0':85.0,'4/0':107.2,'250':127,'300':152,'350':177,'400':203,'500':253};
+  return t[awg] || null;
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', function(){
+    if (typeof REGISTRY === 'undefined') return;
+    function fillState(id){
+      var sel = document.getElementById(id); if (!sel) return;
+      REGISTRY.forEach(function(s){ var o=document.createElement('option'); o.value=s.code; o.textContent=s.name+' ('+s.code+')'; if(s.code==='NC')o.selected=true; sel.appendChild(o); });
+    }
+    fillState('pc-state'); fillState('in-state');
+    function entry(id){ var v=document.getElementById(id).value; for (var j=0;j<REGISTRY.length;j++) if (REGISTRY[j].code===v) return REGISTRY[j]; return null; }
+    function yrOf(e){ return (typeof editionYearOf==='function') ? editionYearOf(e) : null; }
+    function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+    /* ── Stage 2: draw-up generator ── */
+    var roomsEl = document.getElementById('dp-rooms'), circEl = document.getElementById('dp-circuits');
+    function roomRow(name, L, W, type){
+      var d = document.createElement('div');
+      d.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr auto;gap:.4rem;margin-bottom:.4rem';
+      d.innerHTML = '<input class="inp dp-rname" placeholder="Room name" value="'+esc(name||'')+'">'
+        + '<input class="inp dp-rl" type="number" min="1" value="'+(L||12)+'" title="Length ft">'
+        + '<input class="inp dp-rw" type="number" min="1" value="'+(W||10)+'" title="Width ft">'
+        + '<select class="inp dp-rtype"><option value="living">Living</option><option value="bedroom">Bedroom</option><option value="kitchen">Kitchen</option><option value="bath">Bath</option><option value="other">Other</option></select>'
+        + '<button class="btn btn-dim btn-sm dp-del" type="button">✕</button>';
+      d.querySelector('.dp-rtype').value = type || 'living';
+      d.querySelector('.dp-del').addEventListener('click', function(){ d.remove(); });
+      roomsEl.appendChild(d);
+    }
+    function circuitRow(label, amps, poles){
+      var d = document.createElement('div');
+      d.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr auto;gap:.4rem;margin-bottom:.4rem';
+      d.innerHTML = '<input class="inp dp-clabel" placeholder="Circuit label" value="'+esc(label||'')+'">'
+        + '<input class="inp dp-camps" type="number" min="1" value="'+(amps||20)+'" title="Breaker amps">'
+        + '<select class="inp dp-cpoles"><option value="1">1-pole</option><option value="2">2-pole</option></select>'
+        + '<select class="inp dp-csize"><option>14 AWG</option><option selected>12 AWG</option><option>10 AWG</option><option>8 AWG</option><option>6 AWG</option><option>4 AWG</option><option>2 AWG</option><option>1/0 AWG</option></select>'
+        + '<button class="btn btn-dim btn-sm dp-del" type="button">✕</button>';
+      d.querySelector('.dp-cpoles').value = String(poles||1);
+      d.querySelector('.dp-del').addEventListener('click', function(){ d.remove(); });
+      circEl.appendChild(d);
+    }
+    if (roomsEl) {
+      roomRow('Living Room', 16, 12, 'living'); roomRow('Kitchen', 12, 10, 'kitchen'); roomRow('Primary Bedroom', 14, 12, 'bedroom');
+      circuitRow('Kitchen small appliance 1', 20, 1); circuitRow('Range', 50, 2); circuitRow('Lighting / general', 15, 1);
+      document.getElementById('dp-addroom').addEventListener('click', function(){ roomRow('', 12, 10, 'other'); });
+      document.getElementById('dp-addcircuit').addEventListener('click', function(){ circuitRow('', 20, 1); });
+      document.getElementById('dp-gen').addEventListener('click', function(){
+        var rooms = [], circuits = [], totalVA = 0;
+        roomsEl.querySelectorAll(':scope > div').forEach(function(d){
+          var L = parseFloat(d.querySelector('.dp-rl').value)||0, W = parseFloat(d.querySelector('.dp-rw').value)||0;
+          rooms.push({name:d.querySelector('.dp-rname').value||'Room', L:L, W:W, type:d.querySelector('.dp-rtype').value, rec:receptacleEstimate(L,W)});
+        });
+        circEl.querySelectorAll(':scope > div').forEach(function(d){
+          var a = parseFloat(d.querySelector('.dp-camps').value)||0, p = parseInt(d.querySelector('.dp-cpoles').value,10);
+          var va = a * (p===2?240:120); totalVA += va;
+          circuits.push({label:d.querySelector('.dp-clabel').value||'Circuit', amps:a, poles:p, size:d.querySelector('.dp-csize').value, va:va});
+        });
+        var scale = 14, x = 10, y = 10, rowH = 0, svgW = 640, parts = [];
+        rooms.forEach(function(r){
+          var w = Math.max(56, r.L*scale), hgt = Math.max(44, r.W*scale);
+          if (x + w > svgW) { x = 10; y += rowH + 14; rowH = 0; }
+          parts.push('<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+hgt+'" fill="#15151d" stroke="#f4a100" stroke-width="1.5" rx="3"/>'
+            + '<text x="'+(x+6)+'" y="'+(y+16)+'" fill="#eeeef2" font-size="11" font-weight="600">'+esc(r.name)+'</text>'
+            + '<text x="'+(x+6)+'" y="'+(y+30)+'" fill="#9a9aad" font-size="9.5">'+r.L+' ft × '+r.W+' ft · ~'+r.rec+' receptacles (210.52 est.)</text></g>');
+          x += w + 14; rowH = Math.max(rowH, hgt);
+        });
+        var svgH = y + rowH + 16;
+        var sched = circuits.map(function(c, i){
+          return '<div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding:.25rem 0"><span>'+(i+1)+'. '+esc(c.label)+'</span><span class="muted">'+c.amps+'A · '+c.poles+'P · '+esc(c.size)+' · ~'+c.va.toLocaleString('en-US')+' VA</span></div>';
+        }).join('');
+        var roomList = rooms.map(function(r){ return '<div>'+esc(r.name)+' — '+r.L+'×'+r.W+' ft ('+r.type+'), planning receptacle estimate ~'+r.rec+'</div>'; }).join('');
+        document.getElementById('dp-out').innerHTML =
+          '<div style="font-weight:700;font-size:.9rem">'+esc(document.getElementById('dp-name').value)+' — draft draw-up</div>'
+          + '<div class="muted" style="font-size:.75rem;margin:.2rem 0 .5rem">Panel: '+document.getElementById('dp-panelamps').value+'A · Connected circuit total (breaker × voltage, planning figure only): ~'+totalVA.toLocaleString('en-US')+' VA — run the 220.82 load calc on the Calcs tab for service sizing.</div>'
+          + '<svg viewBox="0 0 '+svgW+' '+svgH+'" style="width:100%;background:#0b0b0f;border:1px solid rgba(255,255,255,.08);border-radius:8px">'+parts.join('')+'</svg>'
+          + '<div style="font-weight:600;font-size:.85rem;margin:.6rem 0 .2rem">Rooms</div><div style="font-size:.8rem;line-height:1.55">'+roomList+'</div>'
+          + '<div style="font-weight:600;font-size:.85rem;margin:.6rem 0 .2rem">Panel schedule (draft)</div><div style="font-size:.8rem">'+sched+'</div>'
+          + '<div class="muted" style="font-size:.7rem;margin-top:.5rem">Draft planning draw-up — not a construction document. Room layout is schematic (rooms in entry order, not architectural arrangement). Receptacle counts are estimates from NEC 210.52 spacing; kitchen countertop, bath, and dedicated-circuit rules add more. Field-verify everything; AHJ has final say.</div>';
+      });
+    }
+
+    /* ── Stage 3: plan check ── */
+    var pcImg = null;
+    var pcFile = document.getElementById('pc-file');
+    if (pcFile) pcFile.addEventListener('change', function(){
+      var f = pcFile.files && pcFile.files[0]; if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function(){
+        var url = String(rd.result);
+        pcImg = { data: url.split(',')[1], mime: f.type || 'image/jpeg' };
+        var pv = document.getElementById('pc-preview'); pv.src = url; pv.style.display = 'block';
+      };
+      rd.readAsDataURL(f);
+    });
+    var checksEl = document.getElementById('pc-checks');
+    if (checksEl) {
+      checksEl.innerHTML = CROSS_CHECKS.map(function(c, i){
+        return '<div style="display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:center;margin-bottom:.4rem"><div style="font-size:.8rem">'+esc(c.t)+' <span class="muted">('+esc(c.cite)+')</span></div>'
+          + '<select class="inp pc-chk" data-i="'+i+'" style="width:130px"><option value="shown">Shown</option><option value="missing">Not shown</option><option value="na">N/A</option></select></div>';
+      }).join('');
+      document.getElementById('pc-score').addEventListener('click', function(){
+        var e = entry('pc-state'), yr = yrOf(e), flags = [];
+        checksEl.querySelectorAll('.pc-chk').forEach(function(sel){
+          var c = CROSS_CHECKS[parseInt(sel.dataset.i,10)];
+          if (sel.value === 'missing') {
+            var note = (c.minEd && yr && yr < c.minEd) ? ' — note: this requirement entered the NEC in '+c.minEd+'; the adopted edition here ('+yr+') may not require it' : '';
+            flags.push('⚠️ ' + c.t + ' — NEC ' + c.cite + note);
+          }
+        });
+        document.getElementById('pc-scoreout').innerHTML = '<div style="font-size:.82rem;line-height:1.6">'
+          + (flags.length ? flags.map(function(f){ return '<div>'+esc(f)+'</div>'; }).join('') : '<div style="color:#7bc47f;font-weight:600">No missing items in this cross-check.</div>')
+          + '<div class="muted" style="font-size:.7rem;margin-top:.3rem">Cross-check for ' + esc(e? e.name : '') + (e && e.nec ? ' (NEC '+esc(e.nec)+')' : ' (local adoption — verify edition with the AHJ)') + '. A clean cross-check is not an approval — the AHJ and the adopted edition govern.</div></div>';
+      });
+      document.getElementById('pc-run').addEventListener('click', function(){
+        var out = document.getElementById('pc-out');
+        if (!pcImg) { out.innerHTML = '<div style="font-size:.82rem;color:#e0655f">Choose a plan image first.</div>'; return; }
+        var e = entry('pc-state');
+        var ctx = e ? ('Jurisdiction: ' + e.name + '. Adopted code: ' + (e.nec ? 'NEC ' + e.nec + (e.effective? ', effective ' + e.effective : '') : 'no statewide adoption — local AHJ governs') + '. Status: ' + e.status + '.') : 'Jurisdiction unknown.';
+        var prompt = 'Read this electrical plan / blueprint image. ' + ctx + ' '
+          + 'Respond in this exact structure, concise: '
+          + 'IDENTIFIED: the panel/service, circuits, and devices you can actually see. '
+          + 'FLAGS: anything visible that appears to conflict with the adopted edition above — cite the NEC article for each; if an item depends on the edition, say so. '
+          + 'CANNOT VERIFY: what cannot be determined from this image. '
+          + 'Never state the plan is compliant, approved, or safe. This is a reference read for a licensed electrician to verify on site. '
+          + (document.getElementById('pc-notes').value.trim() ? ('User context: ' + document.getElementById('pc-notes').value.trim()) : '');
+        out.innerHTML = '<div class="muted" style="font-size:.82rem">Reading plan…</div>';
+        if (typeof withAuth !== 'function') { out.innerHTML = '<div style="font-size:.82rem;color:#e0655f">Sign-in session helper unavailable — reload the app and try again.</div>'; return; }
+        withAuth({ method:'POST', url:'/api/diagnose', body: JSON.stringify({ prompt: prompt, imageData: pcImg.data, mimeType: pcImg.mime }) })
+          .then(function(r){
+            if (!r) throw new Error('No response');
+            if (r.s === 402) { out.innerHTML = '<div style="font-size:.82rem;color:#e0655f">Free plan-read limit reached for this month.</div>'; return; }
+            if (!r.ok) throw new Error((r.d && (r.d.error || r.d.detail)) || 'Server error');
+            out.innerHTML = '<div style="font-size:.85rem;white-space:pre-wrap;line-height:1.55;background:#101016;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.7rem">' + esc(r.d.result) + '</div>'
+              + '<div class="muted" style="font-size:.7rem;margin-top:.3rem">AI reference read — verify every item on site against the adopted edition. The AHJ has final say.</div>';
+          })
+          .catch(function(err){ out.innerHTML = '<div style="font-size:.82rem;color:#e0655f">' + esc(err.message || 'Plan read failed') + '</div>'; });
+      });
+    }
+
+    /* ── Stage 4: install checklists + conversions ── */
+    var inGen = document.getElementById('in-gen');
+    if (inGen) inGen.addEventListener('click', function(){
+      var e = entry('in-state'), yr = yrOf(e);
+      var items = buildChecklist(document.getElementById('in-job').value, yr);
+      document.getElementById('in-out').innerHTML = '<div class="muted" style="font-size:.75rem;margin-bottom:.4rem">Jurisdiction: ' + esc(e? e.name : '') + (e && e.nec ? ' — NEC ' + esc(e.nec) : ' — local adoption; edition shown is a baseline, verify with the AHJ') + '</div>'
+        + items.map(function(it){ return '<label style="display:flex;gap:.5rem;font-size:.83rem;line-height:1.5;margin-bottom:.45rem"><input type="checkbox" style="margin-top:.2rem"><span>' + esc(it[0]) + ' <span class="muted">(NEC ' + esc(it[1]) + ')</span></span></label>'; }).join('')
+        + '<div class="muted" style="font-size:.7rem">Checklist is a field reference, not an inspection guarantee. Local amendments may add or change items.</div>';
+    });
+    var ampRows = [['14 AWG','20 A','15 A'],['12 AWG','25 A','20 A'],['10 AWG','35 A','30 A'],['8 AWG','50 A','50 A'],['6 AWG','65 A','65 A'],['4 AWG','85 A','85 A'],['3 AWG','100 A','100 A'],['2 AWG','115 A','115 A'],['1 AWG','130 A','130 A'],['1/0 AWG','150 A','150 A'],['2/0 AWG','175 A','175 A'],['3/0 AWG','200 A','200 A'],['4/0 AWG','230 A','230 A']];
+    var ampEl = document.getElementById('cv-ampacity');
+    if (ampEl) ampEl.innerHTML = ampRows.map(function(r){ return '<div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:.15rem 0"><span>'+r[0]+' Cu</span><span class="muted">75°C: '+r[1]+' · usable cap: '+r[2]+'</span></div>'; }).join('');
+    var awgEl = document.getElementById('cv-awg');
+    if (awgEl) awgEl.innerHTML = ['14','12','10','8','6','4','3','2','1','1/0','2/0','3/0','4/0','250','300','350','400','500'].map(function(a){ return '<span style="display:inline-block;margin:0 .7rem .2rem 0">'+a+' → '+awgToMm2(a)+' mm²</span>'; }).join('');
+    var cvBtn = document.getElementById('cv-btn');
+    if (cvBtn) cvBtn.addEventListener('click', function(){
+      function n(id){ var v = parseFloat(document.getElementById(id).value); return isNaN(v)?null:v; }
+      var W = n('cv-w'), V = n('cv-v'), A = n('cv-a'), TQ = n('cv-tq'), F = n('cv-f'), rows = [];
+      if (W !== null && V) rows.push(W.toLocaleString('en-US') + ' W ÷ ' + V + ' V = ' + (W/V).toFixed(2) + ' A');
+      if (A !== null && V) rows.push(A + ' A × ' + V + ' V = ' + (A*V).toLocaleString('en-US') + ' W (VA for resistive/pf 1.0)');
+      if (TQ !== null) rows.push(TQ + ' in-lb = ' + (TQ*0.11298).toFixed(2) + ' N·m = ' + (TQ/12).toFixed(2) + ' ft-lb');
+      if (F !== null) rows.push(F + ' °F = ' + ((F-32)*5/9).toFixed(1) + ' °C');
+      document.getElementById('cv-out').innerHTML = '<div style="font-size:.85rem;line-height:1.6">' + (rows.length? rows.map(function(r){ return '<div>'+esc(r)+'</div>'; }).join('') : '<div class="muted">Enter at least one value to convert.</div>') + '</div>';
     });
   });
 }
