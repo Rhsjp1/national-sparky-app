@@ -972,6 +972,7 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
     <button class="tab-btn" data-tab="compliance">📋 Compliance</button>
     <button class="tab-btn" data-tab="audit">🔍 Audit</button>
     <button class="tab-btn" data-tab="registry">🏛️ Registry</button>
+    <button class="tab-btn" data-tab="calcs">🧮 Calcs</button>
     
     
     
@@ -1097,6 +1098,82 @@ body{background:#0b0b0f;color:#eeeef2;font-family:system-ui,-apple-system,sans-s
   </div>
   <div id="reg-detail"></div>
 </div>
+
+<!-- tab: CALCS -->
+<div id="tab-calcs" class="hidden">
+  <div class="card" style="margin-bottom:.75rem">
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">🧮 NEC Calculators</div>
+    <div class="muted" style="font-size:.78rem;margin-bottom:.6rem">Field calculators using NEC formulas (Article 220 load, Chapter 9 fill, 314.16 box fill, voltage-drop formula). Results are reference calculations only — not a compliance determination. Confirm with the adopted edition in force and the AHJ before work begins.</div>
+    <label for="calc-state" style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em" class="dim">Jurisdiction (sets the edition these calcs reference)</label>
+    <select id="calc-state" class="inp" style="width:100%"></select>
+    <div id="calc-stamp" class="muted" style="font-size:.75rem;margin-top:.45rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:.3rem">🏠 Dwelling Service Load — NEC 220.82 Optional Method</div>
+    <div class="muted" style="font-size:.75rem;margin-bottom:.6rem">Single dwelling unit, 120/240V service. Appliances at nameplate VA (use kVA × 1000).</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">Living area (sq ft)</label><input id="ld-sqft" type="number" class="inp" value="1800" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Small-appliance circuits</label><input id="ld-sa" type="number" class="inp" value="2" min="2"></div>
+      <div><label class="dim" style="font-size:.7rem">Range / cooking (VA)</label><input id="ld-range" type="number" class="inp" value="12000" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Dryer (VA)</label><input id="ld-dryer" type="number" class="inp" value="5500" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Water heater (VA)</label><input id="ld-wh" type="number" class="inp" value="4500" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Other fixed appliances (VA)</label><input id="ld-other" type="number" class="inp" value="0" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Air conditioning (VA)</label><input id="ld-ac" type="number" class="inp" value="5000" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Electric heat (VA)</label><input id="ld-heat" type="number" class="inp" value="0" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Separately controlled heat units</label><input id="ld-heatunits" type="number" class="inp" value="1" min="1"></div>
+      <div style="display:flex;align-items:flex-end;gap:.4rem"><input id="ld-laundry" type="checkbox" checked><label for="ld-laundry" style="font-size:.8rem">Include laundry circuit (1,500 VA)</label></div>
+    </div>
+    <button class="btn btn-gold" id="ld-btn" style="margin-top:.7rem">Calculate service load</button>
+    <div id="ld-out" style="margin-top:.7rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:.3rem">🔌 Voltage Drop</div>
+    <div class="muted" style="font-size:.75rem;margin-bottom:.6rem">VD = (2 or √3) × K × I × L ÷ circular mils. K = 12.9 copper, 21.2 aluminum. NEC informational notes recommend ≤3% on a branch circuit and ≤5% total — a recommendation, not a mandate.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">System voltage</label><select id="vd-volts" class="inp"><option>120</option><option selected>240</option><option>208</option><option>277</option><option>480</option></select></div>
+      <div><label class="dim" style="font-size:.7rem">Phase</label><select id="vd-phase" class="inp"><option value="1">Single-phase</option><option value="3">Three-phase</option></select></div>
+      <div><label class="dim" style="font-size:.7rem">Conductor material</label><select id="vd-mat" class="inp"><option value="CU">Copper</option><option value="AL">Aluminum</option></select></div>
+      <div><label class="dim" style="font-size:.7rem">Conductor size</label><select id="vd-size" class="inp"></select></div>
+      <div><label class="dim" style="font-size:.7rem">Load current (amps)</label><input id="vd-amps" type="number" class="inp" value="20" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">One-way length (ft)</label><input id="vd-len" type="number" class="inp" value="100" min="0"></div>
+    </div>
+    <button class="btn btn-gold" id="vd-btn" style="margin-top:.7rem">Calculate voltage drop</button>
+    <div id="vd-out" style="margin-top:.7rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:.3rem">🧵 Conduit Fill — EMT, THHN/THWN-2 (NEC Chapter 9)</div>
+    <div class="muted" style="font-size:.75rem;margin-bottom:.6rem">Table 1 limits: 53% for 1 conductor, 31% for 2, 40% for 3 or more. Areas from Chapter 9 Tables 4 and 5.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">Conductor size (THHN)</label><select id="cf-size" class="inp"></select></div>
+      <div><label class="dim" style="font-size:.7rem">Number of conductors</label><input id="cf-count" type="number" class="inp" value="3" min="1"></div>
+      <div><label class="dim" style="font-size:.7rem">EMT trade size</label><select id="cf-conduit" class="inp"></select></div>
+    </div>
+    <button class="btn btn-gold" id="cf-btn" style="margin-top:.7rem">Check conduit fill</button>
+    <div id="cf-out" style="margin-top:.7rem"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:.3rem">📦 Box Fill — NEC 314.16</div>
+    <div class="muted" style="font-size:.75rem;margin-bottom:.6rem">Volume allowances per Table 314.16(B). Internal clamps count once; each device yoke counts twice; grounding conductors follow the edition rule shown for your jurisdiction below.</div>
+    <div id="bf-rule" class="muted" style="font-size:.75rem;margin-bottom:.6rem"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+      <div><label class="dim" style="font-size:.7rem">Largest conductor size</label><select id="bf-size" class="inp"><option>14</option><option selected>12</option><option>10</option><option>8</option><option>6</option></select></div>
+      <div><label class="dim" style="font-size:.7rem">Conductors entering (hot/neutral, each counts)</label><input id="bf-cond" type="number" class="inp" value="4" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Equipment grounding conductors</label><input id="bf-egc" type="number" class="inp" value="2" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Devices (switches/receptacles)</label><input id="bf-dev" type="number" class="inp" value="1" min="0"></div>
+      <div><label class="dim" style="font-size:.7rem">Box</label><select id="bf-box" class="inp"></select></div>
+      <div style="display:flex;align-items:flex-end;gap:.4rem"><input id="bf-clamps" type="checkbox"><label for="bf-clamps" style="font-size:.8rem">Internal cable clamps present</label></div>
+    </div>
+    <button class="btn btn-gold" id="bf-btn" style="margin-top:.7rem">Check box fill</button>
+    <div id="bf-out" style="margin-top:.7rem"></div>
+  </div>
+
+  <div class="muted" style="font-size:.72rem;padding:.25rem .1rem 1rem">Reference calculations only. Not legal advice and not a code-compliance determination. The adopted edition and amendments in force are set by the state and the local AHJ and must be confirmed before work begins.</div>
+</div>
+
 
 <div id="tab-audit" class="hidden">
   <div class="card">
@@ -2303,5 +2380,143 @@ applyTheme(_settings.theme);
   });
 })();
 </script>
+<script>
+/* SparkySolve Stage 1 — NEC calculators (pure formulas + wiring). Reference only. */
+var CM_TABLE = {'14':4110,'12':6530,'10':10380,'8':16510,'6':26240,'4':41740,'3':52620,'2':66360,'1':83690,'1/0':105600,'2/0':133100,'3/0':167800,'4/0':211600,'250':250000,'300':300000,'350':350000,'400':400000,'500':500000,'600':600000,'750':750000,'1000':1000000};
+var THHN_AREA = {'14':0.0097,'12':0.0133,'10':0.0211,'8':0.0366,'6':0.0507,'4':0.0824,'3':0.0973,'2':0.1158,'1':0.1562,'1/0':0.1855,'2/0':0.2223,'3/0':0.2679,'4/0':0.3237,'250':0.3970,'300':0.4608,'350':0.5242,'400':0.5863,'500':0.7073};
+var EMT_AREA = {'1/2':0.304,'3/4':0.533,'1':0.864,'1-1/4':1.496,'1-1/2':2.036,'2':3.356,'2-1/2':5.858,'3':8.846,'3-1/2':11.545,'4':14.753};
+var BOX_ALLOW = {'14':2.00,'12':2.25,'10':2.50,'8':3.00,'6':5.00};
+var BOX_VOLUMES = {'4 in. square x 1-1/2 in. deep':18.0,'4 in. square x 2-1/8 in. deep':30.3,'4-11/16 in. square x 1-1/2 in. deep':25.5,'4-11/16 in. square x 2-1/8 in. deep':42.0,'Single-gang device box, 18 cu in.':18.0,'3 in. x 2 in. device box, 12.5 cu in.':12.5,'4 in. octagon x 1-1/2 in. deep':12.5,'4 in. octagon x 2-1/8 in. deep':21.5};
+
+function calcLoad(i){
+  var general = i.sqft*3 + 1500*i.sa + (i.laundry?1500:0);
+  var appliances = i.rangeVA + i.dryerVA + i.whVA + i.otherVA;
+  var subtotal = general + appliances;
+  var demandApplied = Math.min(subtotal,10000) + 0.40*Math.max(0,subtotal-10000);
+  var heatFactor = i.heatUnits>=4 ? 0.40 : 0.65;
+  var hvac = Math.max(i.acVA, i.heatVA*heatFactor);
+  var total = demandApplied + hvac;
+  return {general:general, appliances:appliances, subtotal:subtotal, demandApplied:demandApplied, heatFactor:heatFactor, hvac:hvac, total:total, amps:total/240};
+}
+function calcVD(i){
+  var K = i.mat==='CU' ? 12.9 : 21.2;
+  var factor = i.phase==='3' ? 1.732 : 2;
+  var vd = factor*K*i.amps*i.len/CM_TABLE[i.size];
+  return {vd:vd, pct:vd/i.volts*100, K:K, factor:factor, cm:CM_TABLE[i.size]};
+}
+function calcFill(i){
+  var used = THHN_AREA[i.size]*i.count;
+  var total = EMT_AREA[i.conduit];
+  var limit = i.count===1 ? 0.53 : (i.count===2 ? 0.31 : 0.40);
+  var maxCount = Math.floor(total*limit/THHN_AREA[i.size]);
+  return {used:used, total:total, limit:limit, pct:used/total*100, maxCount:maxCount, ok:used<=total*limit};
+}
+function calcBox(i){
+  var a = BOX_ALLOW[i.size];
+  var condVol = i.conductors*a;
+  var clampVol = i.clamps ? a : 0;
+  var devVol = i.devices*2*a;
+  var egcAllow;
+  if (i.editionYear && i.editionYear>=2023) { egcAllow = i.egcCount===0 ? 0 : 1 + 0.25*Math.max(0, i.egcCount-4); }
+  else { egcAllow = i.egcCount>0 ? 1 : 0; }
+  var egcVol = egcAllow*a;
+  var total = condVol + clampVol + devVol + egcVol;
+  return {allow:a, condVol:condVol, clampVol:clampVol, devVol:devVol, egcAllow:egcAllow, egcVol:egcVol, total:total, boxVol:i.boxVol, ok:total<=i.boxVol};
+}
+function editionYearOf(entry){
+  if (!entry || !entry.nec) return null;
+  var m = String(entry.nec).match(/(\d{4})/);
+  return m ? parseInt(m[1],10) : null;
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', function(){
+    var sel = document.getElementById('calc-state');
+    if (!sel || typeof REGISTRY === 'undefined') return;
+    REGISTRY.forEach(function(s){
+      var o = document.createElement('option');
+      o.value = s.code; o.textContent = s.name + ' (' + s.code + ')';
+      if (s.code === 'NC') o.selected = true;
+      sel.appendChild(o);
+    });
+    var vdSize = document.getElementById('vd-size');
+    Object.keys(CM_TABLE).forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=(/^\d+$/.test(k)&&parseInt(k,10)>=250)? k+' kcmil' : k+' AWG'; if(k==='12')o.selected=true; vdSize.appendChild(o); });
+    var cfSize = document.getElementById('cf-size');
+    Object.keys(THHN_AREA).forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=(/^\d+$/.test(k)&&parseInt(k,10)>=250)? k+' kcmil THHN' : k+' AWG THHN'; if(k==='12')o.selected=true; cfSize.appendChild(o); });
+    var cfCon = document.getElementById('cf-conduit');
+    Object.keys(EMT_AREA).forEach(function(k){ var o=document.createElement('option'); o.value=k; o.textContent=k+' in. EMT'; if(k==='1/2')o.selected=true; cfCon.appendChild(o); });
+    var bfBox = document.getElementById('bf-box');
+    Object.keys(BOX_VOLUMES).forEach(function(k){ var o=document.createElement('option'); o.value=BOX_VOLUMES[k]; o.textContent=k; bfBox.appendChild(o); });
+
+    function curEntry(){ for (var j=0;j<REGISTRY.length;j++) if (REGISTRY[j].code===sel.value) return REGISTRY[j]; return null; }
+    function stamp(){
+      var s = curEntry(), yr = editionYearOf(s);
+      var txt;
+      if (!s) txt = '';
+      else if (s.nec) txt = 'Jurisdiction: ' + s.name + ' — adopted NEC ' + s.nec + (s.effective ? ', effective ' + s.effective : '') + ' (' + s.status + '). Calculator formulas reference this edition where rules differ by edition.';
+      else txt = 'Jurisdiction: ' + s.name + ' — no statewide NEC adoption; local jurisdictions govern. Calculator defaults shown; verify the AHJ\u2019s adopted edition.';
+      document.getElementById('calc-stamp').textContent = txt;
+      var rule = document.getElementById('bf-rule');
+      if (yr && yr>=2023) rule.textContent = 'Grounding-conductor rule for ' + (s?s.name:'') + ' (NEC ' + yr + '), 314.16(B)(5): the first four equipment grounding conductors count as one volume allowance; each additional one adds a quarter allowance.';
+      else rule.textContent = 'Grounding-conductor rule (NEC ' + (yr? yr : '2020 baseline') + '), 314.16(B)(5): all equipment grounding conductors together count as one volume allowance.';
+    }
+    sel.addEventListener('change', stamp); stamp();
+
+    function num(id){ var v = parseFloat(document.getElementById(id).value); return isNaN(v)?0:v; }
+    function steps(rows, verdict, ok){
+      var h = '<div style="font-size:.82rem;line-height:1.55">';
+      rows.forEach(function(r){ h += '<div>' + r + '</div>'; });
+      h += '<div style="margin-top:.4rem;font-weight:700;color:' + (ok? '#7bc47f' : '#e0655f') + '">' + verdict + '</div>';
+      h += '<div class="muted" style="font-size:.7rem;margin-top:.25rem">Reference calculation only — verify against the adopted edition and the AHJ.</div></div>';
+      return h;
+    }
+    function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+    document.getElementById('ld-btn').addEventListener('click', function(){
+      var r = calcLoad({sqft:num('ld-sqft'), sa:Math.max(2,num('ld-sa')), laundry:document.getElementById('ld-laundry').checked,
+        rangeVA:num('ld-range'), dryerVA:num('ld-dryer'), whVA:num('ld-wh'), otherVA:num('ld-other'),
+        acVA:num('ld-ac'), heatVA:num('ld-heat'), heatUnits:Math.max(1,num('ld-heatunits'))});
+      document.getElementById('ld-out').innerHTML = steps([
+        'General lighting &amp; receptacles: ' + fmt(r.general) + ' VA (3 VA/sq ft + 1,500 VA per small-appliance circuit + laundry)',
+        'Fixed appliances at nameplate: ' + fmt(r.appliances) + ' VA',
+        'Subtotal: ' + fmt(r.subtotal) + ' VA → first 10,000 VA at 100%, remainder at 40% = ' + fmt(r.demandApplied) + ' VA',
+        'Heating/cooling (larger of A/C at 100% or heat at ' + Math.round(r.heatFactor*100) + '%): ' + fmt(r.hvac) + ' VA',
+        'Total calculated load: ' + fmt(r.total) + ' VA'
+      ], 'Calculated service size: ' + r.amps.toFixed(1) + ' amps at 240V — next standard service rating at or above this is the electrician\u2019s call (see NEC 240.6 standard ratings).', true);
+    });
+
+    document.getElementById('vd-btn').addEventListener('click', function(){
+      var r = calcVD({volts:num('vd-volts'), phase:document.getElementById('vd-phase').value, mat:document.getElementById('vd-mat').value,
+        size:document.getElementById('vd-size').value, amps:num('vd-amps'), len:num('vd-len')});
+      var ok = r.pct<=3;
+      document.getElementById('vd-out').innerHTML = steps([
+        'VD = ' + r.factor + ' × ' + r.K + ' × ' + num('vd-amps') + ' A × ' + num('vd-len') + ' ft ÷ ' + fmt(r.cm) + ' cmil = ' + r.vd.toFixed(2) + ' V',
+        'Voltage at load: ' + (num('vd-volts')-r.vd).toFixed(1) + ' V'
+      ], 'Voltage drop: ' + r.pct.toFixed(2) + '% — ' + (ok? 'within the 3% branch-circuit recommendation.' : 'above the 3% branch-circuit recommendation; consider upsizing the conductor.'), ok);
+    });
+
+    document.getElementById('cf-btn').addEventListener('click', function(){
+      var r = calcFill({size:document.getElementById('cf-size').value, count:Math.max(1,Math.round(num('cf-count'))), conduit:document.getElementById('cf-conduit').value});
+      document.getElementById('cf-out').innerHTML = steps([
+        'Conductor area used: ' + r.used.toFixed(4) + ' sq in. of ' + r.total.toFixed(3) + ' sq in. conduit area = ' + r.pct.toFixed(1) + '% fill',
+        'Chapter 9 Table 1 limit for this conductor count: ' + Math.round(r.limit*100) + '%',
+        'Maximum conductors of this size in this conduit: ' + r.maxCount
+      ], r.ok? 'Within the Chapter 9 fill limit.' : 'OVER the Chapter 9 fill limit — upsize the conduit or reduce conductors.', r.ok);
+    });
+
+    document.getElementById('bf-btn').addEventListener('click', function(){
+      var s = curEntry();
+      var r = calcBox({size:document.getElementById('bf-size').value, conductors:Math.round(num('bf-cond')), egcCount:Math.round(num('bf-egc')),
+        devices:Math.round(num('bf-dev')), clamps:document.getElementById('bf-clamps').checked,
+        boxVol:parseFloat(document.getElementById('bf-box').value), editionYear:editionYearOf(s)});
+      document.getElementById('bf-out').innerHTML = steps([
+        'Conductors: ' + r.condVol.toFixed(2) + ' cu in. · Devices: ' + r.devVol.toFixed(2) + ' cu in. · Clamps: ' + r.clampVol.toFixed(2) + ' cu in. · Grounding (' + r.egcAllow + ' allowance): ' + r.egcVol.toFixed(2) + ' cu in.',
+        'Required volume: ' + r.total.toFixed(2) + ' cu in. vs box volume ' + r.boxVol.toFixed(1) + ' cu in. (allowance ' + r.allow.toFixed(2) + ' cu in. per conductor at this size)'
+      ], r.ok? 'Box volume is sufficient under 314.16.' : 'OVERFILLED under 314.16 — use a larger box.', r.ok);
+    });
+  });
+}
+</script>
+
 </body>
 </html>
